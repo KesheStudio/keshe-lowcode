@@ -1,0 +1,8 @@
+.lowcode/
+builds/
+backups/
+certs/
+versions/
+data/files/
+*.tmp
+*.corrupt

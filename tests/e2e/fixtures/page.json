@@ -1,0 +1,26 @@
+{
+  "format": "lowcode-page",
+  "schemaVersion": 1,
+  "page": {
+    "schemaVersion": 2,
+    "id": "e2e-canvas",
+    "title": "E2E 画布页",
+    "slug": "e2e-canvas",
+    "path": "e2e-canvas.html",
+    "nav": true,
+    "layout": { "mode": "flow" },
+    "blocks": [
+      {
+        "id": "e2e-heading",
+        "type": "heading",
+        "level": 2,
+        "text": "画布测试标题"
+      },
+      {
+        "id": "e2e-paragraph",
+        "type": "paragraph",
+        "md": "这一页由 E2E 用例导入，用来验证尺寸切换、图层选中与拖拽排序。"
+      }
+    ]
+  }
+}

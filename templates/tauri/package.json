@@ -1,0 +1,25 @@
+{
+  "name": "lc-desktop-app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "低代码平台导出的 Tauri 2 桌面工程模板",
+  "scripts": {
+    "validate": "node scripts/validate-config.mjs",
+    "preflight": "node scripts/preflight.mjs",
+    "sidecar:build": "node scripts/build-sidecar.mjs",
+    "render": "node scripts/render-config.mjs",
+    "icons": "node scripts/gen-icons.mjs",
+    "prepare:web": "node scripts/prepare-frontend.mjs",
+    "gen:cert": "node scripts/gen-test-cert.mjs",
+    "updates": "node scripts/gen-update-manifest.mjs",
+    "serve": "node scripts/serve-local.mjs",
+    "build:app": "node scripts/build-app.mjs",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.12.4"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 3,
+  "id": "portfolio-bold",
+  "name": "作品集 · 赤霞",
+  "tone": "warm",
+  "description": "作品集默认。暖白纸面配赤陶红，色块和图表对比更强，适合展示型页面。",
+  "modes": {
+    "light": {
+      "seeds": {
+        "bg": "#fbf4ec",
+        "surface": "#fffdf9",
+        "ink": "#201a16",
+        "muted": "#665449",
+        "line": "#e7d7c7",
+        "accent": "#b23a1e",
+        "accent2": "#9a3d6b",
+        "codeBg": "#f4e8da",
+        "success": "#2f6142",
+        "warn": "#8a4a00",
+        "danger": "#a02418",
+        "info": "#35577f"
+      }
+    },
+    "dark": {
+      "seeds": {
+        "bg": "#14100d",
+        "surface": "#1c1713",
+        "ink": "#f4e8db",
+        "muted": "#b6a494",
+        "line": "#3a2c24",
+        "accent": "#ff9a76",
+        "accent2": "#ffb38f",
+        "accentFill": "#9a331c",
+        "onAccent": "#fff6f0",
+        "codeBg": "#191310",
+        "success": "#8fc9a3",
+        "warn": "#e0ad6f",
+        "danger": "#f28b80",
+        "info": "#9db9dd"
+      }
+    }
+  }
+}

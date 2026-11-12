@@ -1,0 +1,544 @@
+/* 导出向导 · 仅布局与节奏，颜色/字号/间距一律取自 lc-tokens.css */
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+}
+
+.lc-wizard-main {
+  min-height: 0;
+}
+
+.lc-wizard-workspace {
+  overflow: hidden;
+}
+
+.lc-wizard-site-field {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--lc-space-2);
+}
+
+.lc-wizard-site-field .lc-label {
+  margin: 0;
+}
+
+.lc-wizard {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  gap: var(--lc-space-4);
+  padding: var(--lc-space-4);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.lc-wizard-rail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lc-space-2);
+  flex: 0 0 220px;
+}
+
+.lc-wizard-step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--lc-space-3);
+  width: 100%;
+  padding: var(--lc-space-3);
+  border: 1px solid var(--lc-color-line);
+  border-radius: var(--lc-radius-md);
+  background: var(--lc-color-surface);
+  color: var(--lc-color-muted);
+  font-family: var(--lc-font-sans);
+  text-align: left;
+  cursor: pointer;
+}
+
+.lc-wizard-step:hover {
+  border-color: var(--lc-color-line-strong);
+  color: var(--lc-color-ink-2);
+}
+
+.lc-wizard-step.is-active {
+  border-color: var(--lc-color-accent-line);
+  background: var(--lc-color-accent-soft);
+  color: var(--lc-color-ink);
+}
+
+.lc-wizard-step.is-done {
+  color: var(--lc-color-ink-2);
+}
+
+.lc-wizard-step:focus-visible {
+  outline: none;
+  box-shadow: var(--lc-ring);
+}
+
+.lc-wizard-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--lc-color-line-strong);
+  border-radius: var(--lc-radius-full);
+  font-family: var(--lc-font-mono);
+  font-size: var(--lc-text-xs);
+}
+
+.lc-wizard-step.is-active .lc-wizard-step-num {
+  border-color: var(--lc-color-accent);
+  color: var(--lc-color-accent);
+}
+
+/* 步骤文案占满剩余宽度并允许换行，不被编号挤成窄列。 */
+.lc-wizard-step > span:last-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.lc-wizard-step strong {
+  display: block;
+  font-size: var(--lc-text-sm);
+  font-weight: var(--lc-weight-semibold);
+}
+
+.lc-wizard-step small {
+  display: block;
+  margin-top: 2px;
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-xs);
+  line-height: var(--lc-leading-base);
+}
+
+.lc-wizard-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: none;
+  border: 1px solid var(--lc-color-line);
+  border-radius: var(--lc-radius-lg);
+  background: var(--lc-color-surface);
+  box-shadow: var(--lc-shadow-sm);
+}
+
+.lc-wizard-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--lc-space-6);
+}
+
+.lc-wizard-head h2 {
+  margin: 0;
+  color: var(--lc-color-ink);
+  font-family: var(--lc-font-serif);
+  font-size: var(--lc-text-xl);
+  font-weight: var(--lc-weight-semibold);
+}
+
+.lc-wizard-head p {
+  margin: var(--lc-space-1) 0 var(--lc-space-5);
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-sm);
+  line-height: var(--lc-leading-relaxed);
+}
+
+.lc-wizard-panel > .lc-field + .lc-field,
+.lc-wizard-panel > .lc-field + .lc-wizard-options {
+  margin-top: var(--lc-space-5);
+}
+
+.lc-wizard-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--lc-space-4);
+}
+
+.lc-wizard-choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lc-space-2);
+}
+
+.lc-wizard-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--lc-space-3);
+  padding: var(--lc-space-3);
+  border: 1px solid var(--lc-color-line);
+  border-radius: var(--lc-radius-md);
+  background: var(--lc-color-surface);
+  cursor: pointer;
+}
+
+.lc-wizard-choice:hover {
+  border-color: var(--lc-color-line-strong);
+}
+
+.lc-wizard-choice.is-selected {
+  border-color: var(--lc-color-accent-line);
+  background: var(--lc-color-accent-soft);
+}
+
+.lc-wizard-choice input {
+  margin-top: 3px;
+  accent-color: var(--lc-color-accent);
+}
+
+.lc-wizard-choice > span:nth-child(2) {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.lc-wizard-choice strong {
+  display: block;
+  color: var(--lc-color-ink);
+  font-size: var(--lc-text-sm);
+  font-weight: var(--lc-weight-semibold);
+}
+
+.lc-wizard-choice small {
+  display: block;
+  margin-top: 2px;
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-xs);
+  line-height: var(--lc-leading-base);
+}
+
+.lc-wizard-pages {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 220px;
+  overflow: auto;
+  padding: var(--lc-space-2);
+  border: 1px solid var(--lc-color-line);
+  border-radius: var(--lc-radius-sm);
+  background: var(--lc-color-surface-2);
+}
+
+.lc-wizard-pages .lc-check {
+  padding: 4px var(--lc-space-2);
+}
+
+.lc-wizard-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lc-space-2);
+}
+
+.lc-wizard-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lc-space-4);
+  padding: var(--lc-space-3);
+  border: 1px solid var(--lc-color-line);
+  border-radius: var(--lc-radius-md);
+  background: var(--lc-color-surface);
+}
+
+/* 选项文案占满剩余宽度并允许换行，不能被开关挤成单字一行。 */
+.lc-wizard-option > span:first-child,
+.lc-wizard-option > div:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.lc-wizard-head,
+.lc-wizard-head p {
+  max-width: none;
+  min-width: 0;
+}
+
+.lc-wizard-option strong {
+  display: block;
+  color: var(--lc-color-ink);
+  font-size: var(--lc-text-sm);
+  font-weight: var(--lc-weight-semibold);
+}
+
+.lc-wizard-option small {
+  display: block;
+  margin-top: 2px;
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-xs);
+  line-height: var(--lc-leading-base);
+}
+
+.lc-wizard-option .lc-switch {
+  flex: 0 0 auto;
+}
+
+.lc-wizard-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--lc-space-2);
+  margin-bottom: var(--lc-space-4);
+}
+
+.lc-wizard-estimate {
+  margin-bottom: var(--lc-space-4);
+  padding: var(--lc-space-4);
+  border: 1px solid var(--lc-color-line);
+  border-radius: var(--lc-radius-md);
+  background: var(--lc-color-surface-2);
+}
+
+.lc-wizard-estimate-head,
+.lc-wizard-progress-head,
+.lc-wizard-result-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lc-space-3);
+}
+
+.lc-wizard-estimate-head strong,
+.lc-wizard-progress-head strong,
+.lc-wizard-result-head strong {
+  color: var(--lc-color-ink);
+  font-size: var(--lc-text-sm);
+  font-weight: var(--lc-weight-semibold);
+}
+
+.lc-wizard-breakdown {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--lc-space-2);
+  margin: var(--lc-space-3) 0;
+}
+
+.lc-wizard-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--lc-space-2) var(--lc-space-3);
+  border: 1px solid var(--lc-color-line);
+  border-radius: var(--lc-radius-sm);
+  background: var(--lc-color-surface);
+}
+
+.lc-wizard-metric span {
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-xs);
+}
+
+.lc-wizard-metric b {
+  color: var(--lc-color-ink);
+  font-family: var(--lc-font-mono);
+  font-size: var(--lc-text-sm);
+  font-weight: var(--lc-weight-medium);
+}
+
+.lc-wizard-details {
+  margin-top: var(--lc-space-2);
+}
+
+.lc-wizard-details summary {
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-xs);
+  cursor: pointer;
+}
+
+.lc-wizard-tables {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--lc-space-4);
+  margin-top: var(--lc-space-2);
+}
+
+.lc-wizard-tables h3 {
+  margin: 0 0 var(--lc-space-2);
+  color: var(--lc-color-ink-2);
+  font-size: var(--lc-text-xs);
+  font-weight: var(--lc-weight-semibold);
+}
+
+.lc-wizard-issues {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lc-space-2);
+  margin-top: var(--lc-space-3);
+}
+
+.lc-wizard-issue {
+  padding: var(--lc-space-2) var(--lc-space-3);
+  border-left: 3px solid var(--lc-color-warn);
+  border-radius: var(--lc-radius-sm);
+  background: var(--lc-color-warn-soft);
+  color: var(--lc-color-ink-2);
+  font-size: var(--lc-text-xs);
+  line-height: var(--lc-leading-base);
+}
+
+.lc-wizard-issue.is-fail {
+  border-left-color: var(--lc-color-danger);
+  background: var(--lc-color-danger-soft);
+}
+
+.lc-wizard-issue b {
+  display: block;
+  color: var(--lc-color-ink);
+  font-weight: var(--lc-weight-semibold);
+}
+
+.lc-wizard-issue em {
+  color: var(--lc-color-muted);
+  font-style: normal;
+  font-family: var(--lc-font-mono);
+}
+
+.lc-wizard-progress {
+  margin-bottom: var(--lc-space-4);
+  padding: var(--lc-space-4);
+  border: 1px solid var(--lc-color-line);
+  border-radius: var(--lc-radius-md);
+  background: var(--lc-color-surface-2);
+}
+
+.lc-wizard-progress .lc-progress {
+  margin: var(--lc-space-3) 0 var(--lc-space-2);
+}
+
+.lc-wizard-result {
+  padding: var(--lc-space-4);
+  border: 1px solid var(--lc-color-success-line);
+  border-radius: var(--lc-radius-md);
+  background: var(--lc-color-success-soft);
+}
+
+.lc-wizard-result-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--lc-space-2);
+  margin: var(--lc-space-3) 0 var(--lc-space-2);
+}
+
+.lc-wizard-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lc-space-3);
+  flex: 0 0 auto;
+  padding: var(--lc-space-3) var(--lc-space-6);
+  border-top: 1px solid var(--lc-color-line);
+}
+
+.lc-wizard-foot-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--lc-space-2);
+}
+
+.lc-wizard-foot .lc-hint {
+  margin: 0;
+}
+
+.lc-statusbar-item + .lc-statusbar-item {
+  margin-left: auto;
+}
+
+.lc-wizard-subhead {
+  margin: var(--lc-space-5) 0 var(--lc-space-3);
+}
+
+.lc-wizard-subhead h2 {
+  font-size: var(--lc-text-md);
+}
+
+.lc-wizard-grid[hidden] {
+  display: none;
+}
+
+.lc-wizard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--lc-space-3);
+  margin-bottom: var(--lc-space-3);
+}
+
+.lc-wizard-grid .lc-field {
+  margin: 0;
+}
+
+.lc-wizard-actions-tight {
+  margin-bottom: var(--lc-space-2);
+}
+
+.lc-wizard-nginx {
+  width: 100%;
+  min-height: 240px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: var(--lc-text-xs);
+  line-height: 1.5;
+  white-space: pre;
+  resize: vertical;
+}
+
+.lc-wizard-desktop,
+.lc-wizard-config {
+  display: block;
+}
+
+/* 配置加载门闩：字段禁用期间压暗，让“旧值暂时不可用”一眼可见。 */
+.lc-wizard-card.is-config-loading [data-tauri-fields],
+.lc-wizard-card.is-config-loading [data-config-panel] {
+  opacity: 0.55;
+}
+
+.lc-wizard-card.is-config-loading [data-config-loading] {
+  margin-bottom: var(--lc-space-4);
+}
+
+@media (max-width: 900px) {
+  .lc-wizard {
+    flex-direction: column;
+    overflow: auto;
+  }
+
+  .lc-wizard-rail {
+    flex: 0 0 auto;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .lc-wizard-step {
+    flex: 0 0 190px;
+  }
+
+  .lc-wizard-card {
+    max-width: none;
+  }
+}
+
+/* 390/窄屏：四步改成两列网格，全部可见可点，不用横向滚动找第 4 步。 */
+@media (max-width: 640px) {
+  .lc-wizard-rail {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--lc-space-2);
+    overflow: visible;
+  }
+
+  .lc-wizard-step {
+    flex: none;
+    width: auto;
+    padding: var(--lc-space-2);
+  }
+
+  .lc-wizard-step small {
+    display: none;
+  }
+}

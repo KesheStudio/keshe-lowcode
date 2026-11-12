@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lc-mode="light" data-lc-mode-pref="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>导出向导 · 低代码工作台</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="lc-token" content="__LC_TOKEN__">
+<link rel="icon" href="vendor/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/lc-tokens.css">
+<link rel="stylesheet" href="assets/css/lc-controls.css">
+<link rel="stylesheet" href="assets/css/lc-editor.css">
+<link rel="stylesheet" href="assets/css/lc-wizard.css">
+<link rel="stylesheet" href="assets/css/lc-responsive.css">
+</head>
+<body class="lc-shell">
+
+<header class="lc-topbar">
+  <a class="lc-brand lc-brand-link" href="home.html" title="返回工作台">
+    <span class="lc-brand-mark" aria-hidden="true"></span>
+    <span class="lc-brand-text">导出向导</span>
+    <span class="lc-brand-sub">Web 静态 · Tauri 桌面</span>
+  </a>
+
+  <div class="lc-topbar-side">
+    <a class="lc-btn lc-btn-sm" href="home.html">返回工作台</a>
+    <label class="lc-field lc-wizard-site-field">
+      <span class="lc-label">项目</span>
+      <select class="lc-select" data-site-select aria-label="选择要导出的项目"></select>
+    </label>
+    <a class="lc-btn lc-btn-sm" data-back-builder href="builder.html">返回 Builder</a>
+  </div>
+</header>
+
+<main class="lc-main lc-wizard-main">
+  <section class="lc-workspace lc-wizard-workspace">
+    <div class="lc-toolbar">
+      <span class="lc-toolbar-title" data-site-title>加载中…</span>
+      <span class="lc-toolbar-meta" data-site-meta></span>
+      <div class="lc-toolbar-actions">
+        <span class="lc-badge" data-target-badge>Web 静态</span>
+      </div>
+    </div>
+
+    <div class="lc-wizard">
+      <nav class="lc-wizard-rail" aria-label="导出步骤">
+        <button class="lc-wizard-step is-active" type="button" data-goto="1">
+          <span class="lc-wizard-step-num">1</span>
+          <span><strong>导出目标</strong><small>Web 静态 / Tauri 桌面</small></span>
+        </button>
+        <button class="lc-wizard-step" type="button" data-goto="2">
+          <span class="lc-wizard-step-num">2</span>
+          <span><strong>内容与压缩</strong><small>页面范围 · CSS/JS · HTML · 数据快照</small></span>
+        </button>
+        <button class="lc-wizard-step" type="button" data-goto="3">
+          <span class="lc-wizard-step-num">3</span>
+          <span><strong>运行环境</strong><small>后端 · 数据库 / Redis · nginx</small></span>
+        </button>
+        <button class="lc-wizard-step" type="button" data-goto="4">
+          <span class="lc-wizard-step-num">4</span>
+          <span><strong>体积与执行</strong><small>预估 · 进度 · 下载</small></span>
+        </button>
+      </nav>
+
+      <div class="lc-wizard-card" data-wizard-card>
+        <div class="lc-note lc-note-info" data-config-loading hidden role="status" aria-live="polite">
+          <strong>正在加载项目配置…</strong>
+          <p>配置到达前，桌面与运行环境字段不可编辑；这是为了避免异步返回的默认值覆盖你已经填写的内容。</p>
+        </div>
+        <div class="lc-note lc-note-warn" data-config-user-edit-note hidden role="alert">
+          <strong>已保留加载期间的输入</strong>
+          <p>配置到达前检测到这些字段已有内容，项目默认值没有覆盖它们；请确认后再保存或导出。</p>
+        </div>
+        <section class="lc-wizard-panel" data-step="1">
+          <header class="lc-wizard-head">
+            <h2>选择导出目标</h2>
+            <p>Web 静态产出需部署到服务器或本地静态服务后通过 http 访问；Tauri 桌面产出安装包工程，双击即可用。</p>
+          </header>
+
+          <div class="lc-wizard-choices" data-target-group>
+            <label class="lc-wizard-choice is-selected">
+              <input type="radio" name="export-target" value="web-static" checked data-target>
+              <span>
+                <strong>Web 静态</strong>
+                <small>HTML / CSS / JS 与资源，可选压缩、数据快照和后端模板。默认。</small>
+                <small>产物必须通过 http(s) 访问：部署到 nginx，或在本机用静态服务打开。直接双击 <code>index.html</code> 不可用（会看到说明页，不是正常站点）；想要双击直接用，请选 Tauri 桌面。</small>
+              </span>
+              <span class="lc-badge lc-badge-success">可用</span>
+            </label>
+            <label class="lc-wizard-choice">
+              <input type="radio" name="export-target" value="tauri-desktop" data-target data-tauri>
+              <span>
+                <strong>Tauri 桌面</strong>
+                <small>应用名、标识符、窗口尺寸、协议与 HTTPS、更新策略；产出可直接构建的桌面工程。</small>
+                <small>需要双击即用、离线分发或桌面安装包的场景选这个。</small>
+              </span>
+              <span class="lc-badge lc-badge-success">可用</span>
+            </label>
+          </div>
+
+          <div class="lc-note lc-note-info">
+            <strong>桌面工程与安装包</strong>
+            <p>导出的是可构建的 Tauri 工程（desktop/）。安装包需要你在本机用 Rust 工具链执行 <code>tauri build</code>；向导不会调用任何打包命令，也不会替你签名。</p>
+          </div>
+        </section>
+
+        <section class="lc-wizard-panel" data-step="2" hidden>
+          <header class="lc-wizard-head">
+            <h2>内容与压缩</h2>
+            <p>页面 JSON 是唯一真相；这里只决定导出时选取哪些页面、怎么压、要不要带数据快照。</p>
+          </header>
+
+          <div class="lc-field">
+            <span class="lc-label">站点内容范围</span>
+            <div class="lc-wizard-inline">
+              <label class="lc-radio"><input type="radio" name="export-scope" value="all" checked data-scope><span>全部页面</span></label>
+              <label class="lc-radio"><input type="radio" name="export-scope" value="selected" data-scope><span>选定页面</span></label>
+            </div>
+            <p class="lc-hint">选择「选定页面」后，未导出的页面导航链接可能指向不存在的地址，导出结果会给出提示。</p>
+          </div>
+
+          <div class="lc-field" data-page-picker hidden>
+            <span class="lc-label">要导出的页面</span>
+            <div class="lc-wizard-pages" data-page-list></div>
+          <p class="lc-hint" data-page-summary>还没有页面。</p>
+          </div>
+
+          <div class="lc-field is-medium">
+            <span class="lc-label">版本号 <small>可留空</small></span>
+            <input class="lc-input" type="text" data-version placeholder="v1.0.0" autocomplete="off">
+            <p class="lc-hint">写进产物清单与构建记录；留空时构建 ID 自带时间戳。</p>
+          </div>
+
+          <div class="lc-wizard-options">
+            <label class="lc-wizard-option">
+              <span>
+                <strong>压缩 CSS / JS</strong>
+                <small>默认开启。压缩后通常能省 10%–25%，产物仍可读。</small>
+              </span>
+              <span class="lc-switch"><input type="checkbox" checked data-minify-css><span class="lc-switch-track"></span><span>开</span></span>
+            </label>
+            <label class="lc-wizard-option">
+              <span>
+                <strong>压缩 HTML</strong>
+                <small>默认关闭：HTML 已被 zip 的 DEFLATE 压缩，再压一遍通常只会让 zip 变大。</small>
+              </span>
+              <span class="lc-switch"><input type="checkbox" data-minify-html><span class="lc-switch-track"></span><span>关</span></span>
+            </label>
+            <label class="lc-wizard-option">
+              <span>
+                <strong>快照数据源</strong>
+                <small>默认开启。把 data/sources.json、collections、mocks 原样打进 web/data/，导出后不实时请求。</small>
+              </span>
+              <span class="lc-switch"><input type="checkbox" checked data-snapshot><span class="lc-switch-track"></span><span>开</span></span>
+            </label>
+            <label class="lc-wizard-option">
+              <span>
+                <strong>带上集合数据（种子）</strong>
+                <small>默认开启。把集合当前数据写成种子迁移，新环境首次启动自动导入；关闭后只带集合定义。</small>
+              </span>
+              <span class="lc-switch"><input type="checkbox" checked data-include-data><span class="lc-switch-track"></span><span>开</span></span>
+            </label>
+          </div>
+
+          <div class="lc-wizard-desktop" data-tauri-fields hidden>
+            <header class="lc-wizard-head lc-wizard-subhead">
+              <h2>Tauri 应用配置</h2>
+              <p>这些值会写进 desktop/config/desktop.json 并渲染成 tauri.conf.json；标识符与版本格式不合法时会直接阻止导出。</p>
+            </header>
+
+            <div class="lc-wizard-grid">
+              <label class="lc-field">
+                <span class="lc-label">应用名</span>
+                <input class="lc-input" type="text" data-dt-product placeholder="例如 Builder 演练场" autocomplete="off">
+              </label>
+              <label class="lc-field">
+                <span class="lc-label">标识符</span>
+                <input class="lc-input" type="text" data-dt-identifier placeholder="com.example.desktop" autocomplete="off">
+                <small class="lc-hint">反向域名，不能含空格；Android 目标不能含连字符。</small>
+              </label>
+              <label class="lc-field">
+                <span class="lc-label">桌面版本号</span>
+                <input class="lc-input" type="text" data-dt-version placeholder="0.1.0" autocomplete="off">
+                <small class="lc-hint">semver，不能带 v 前缀。</small>
+              </label>
+              <label class="lc-field">
+                <span class="lc-label">目标平台</span>
+                <select class="lc-select" data-dt-platform>
+                  <option value="win32">Windows（msi / nsis）</option>
+                  <option value="linux">Linux（appimage / deb / rpm）</option>
+                  <option value="android">Android（apk / aab）</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="lc-wizard-grid" data-android-fields hidden>
+              <label class="lc-field">
+                <span class="lc-label">Android 签名</span>
+                <select class="lc-select" data-dt-android-signing>
+                  <option value="test">测试签名（脚本生成 keystore，只能自己装）</option>
+                  <option value="release">正式签名（自己的上传密钥，可上架）</option>
+                </select>
+              </label>
+              <label class="lc-field">
+                <span class="lc-label">keystore 路径（构建机）</span>
+                <input class="lc-input" type="text" data-dt-android-keystore placeholder="例如 C:\Users\你\.lc-signing\app.p12" autocomplete="off">
+                <small class="lc-hint">只写路径，密码不要写进配置；构建时用环境变量注入。</small>
+              </label>
+              <label class="lc-field is-short">
+                <span class="lc-label">密钥别名</span>
+                <input class="lc-input" type="text" data-dt-android-alias placeholder="upload" autocomplete="off">
+              </label>
+            </div>
+
+            <div class="lc-note lc-note-info" data-android-abi-note hidden>
+              <strong>手机装哪个 APK</strong>
+              <p>默认同时编译 arm64-v8a 与 x86_64，产出 universal APK，手机和模拟器都能装。发给用户优先用 universal（或 arm64）包：绝大多数真机（含 vivo / iQOO）只认 arm64-v8a，只含 x86_64 的包会提示「指令集与当前设备 ABI 均不匹配」。模拟器可用 x86_64 包，体积更小。</p>
+            </div>
+
+            <div class="lc-note lc-note-warn" data-android-note hidden>
+              <strong data-android-note-title>测试签名只能自己装，不能上架</strong>
+              <p data-android-note-text>测试 keystore 由 signing/android/gen-test-keystore 生成，文件名带 TEST-SIGNING-ONLY，适合真机调试与内测；Google Play 会拒绝测试签名包。正式上架请切到「正式签名」，用你自己的上传密钥并开启 Play App Signing。</p>
+            </div>
+
+            <div class="lc-wizard-grid">
+              <label class="lc-field">
+                <span class="lc-label">窗口宽 / 高</span>
+                <div class="lc-wizard-inline">
+                  <input class="lc-input" type="number" min="320" data-dt-width placeholder="1024">
+                  <input class="lc-input" type="number" min="240" data-dt-height placeholder="720">
+                </div>
+              </label>
+              <label class="lc-field">
+                <span class="lc-label">最小宽 / 高</span>
+                <div class="lc-wizard-inline">
+                  <input class="lc-input" type="number" min="320" data-dt-min-width placeholder="800">
+                  <input class="lc-input" type="number" min="240" data-dt-min-height placeholder="600">
+                </div>
+              </label>
+              <label class="lc-field">
+                <span class="lc-label">协议</span>
+                <select class="lc-select" data-dt-protocol>
+                  <option value="https">https（推荐，自定义协议走 https scheme）</option>
+                  <option value="http">http（仅回环地址）</option>
+                </select>
+              </label>
+              <label class="lc-field">
+                <span class="lc-label">HTTPS 模式</span>
+                <select class="lc-select" data-dt-https-mode>
+                  <option value="generated">生成测试证书（自签）</option>
+                  <option value="imported">导入已有证书</option>
+                  <option value="none">不使用 HTTPS</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="lc-note lc-note-warn" data-dt-https-note>
+              <strong>仅本地测试：生成的证书是自签的</strong>
+              <p>自签证书不会被系统信任。安装应用或打开页面时，系统与 WebView 会弹出证书警告；它<strong>不能用于真实用户</strong>，也不要在生产环境分发。正式发布请在构建机导入可信证书并完成签名。</p>
+            </div>
+            <div class="lc-note lc-note-info" data-dt-imported-note hidden>
+              <strong>导入证书不进导出包</strong>
+              <p>证书和私钥留在构建机，产物只带配置引用；私钥一旦打进压缩包，导出校验会直接失败。</p>
+            </div>
+            <div class="lc-note lc-note-warn" data-dt-http-note hidden>
+              <strong>http 协议不会使用证书</strong>
+              <p>选 http 时 HTTPS 模式会被重置为 none，导出包不会生成或写入证书。需要 TLS 请把协议改成 https，再按需生成测试证书或在构建机导入可信证书。</p>
+            </div>
+
+            <label class="lc-wizard-option">
+              <span>
+                <strong>启用自动更新</strong>
+                <small>默认关闭。开启时必须提供 https 更新地址与签名公钥，否则导出会被阻止。</small>
+              </span>
+              <span class="lc-switch"><input type="checkbox" data-dt-update><span class="lc-switch-track"></span><span>关</span></span>
+            </label>
+
+            <div class="lc-wizard-grid" data-dt-update-fields hidden>
+              <label class="lc-field">
+                <span class="lc-label">更新地址（https）</span>
+                <input class="lc-input" type="url" data-dt-endpoint placeholder="https://updates.example.com/{{target}}/{{arch}}/{{current_version}}" autocomplete="off">
+              </label>
+              <label class="lc-field">
+                <span class="lc-label">更新签名公钥</span>
+                <input class="lc-input" type="text" data-dt-pubkey placeholder="tauri signer 生成的公钥内容" autocomplete="off">
+              </label>
+            </div>
+
+          </div>
+        </section>
+
+        <section class="lc-wizard-panel" data-step="3" hidden>
+          <header class="lc-wizard-head">
+            <h2>运行环境</h2>
+            <p>选择随包的后端模板；Web 静态产物本身不依赖后端，选「无后端」也仍然可单独部署。</p>
+          </header>
+
+          <div class="lc-wizard-choices" data-backend-group>
+            <label class="lc-wizard-choice">
+              <input type="radio" name="export-backend" value="none" data-backend>
+              <span><strong>无后端</strong><small>只导出静态站点，不带服务端模板。</small></span>
+              <span class="lc-badge">仅静态</span>
+            </label>
+            <label class="lc-wizard-choice is-selected">
+              <input type="radio" name="export-backend" value="rust" checked data-backend>
+              <span><strong>Rust</strong><small>默认。随包生成 axum + sqlx 服务模板与配置。</small></span>
+              <span class="lc-badge lc-badge-success">稳定</span>
+            </label>
+            <label class="lc-wizard-choice">
+              <input type="radio" name="export-backend" value="node" data-backend>
+              <span><strong>Node</strong><small>随包生成 Node 服务模板，启动最快。</small></span>
+              <span class="lc-badge lc-badge-success">稳定</span>
+            </label>
+            <label class="lc-wizard-choice">
+              <input type="radio" name="export-backend" value="go" data-backend>
+              <span><strong>Go</strong><small>随包生成 Go 服务模板与配置。</small></span>
+              <span class="lc-badge lc-badge-success">稳定</span>
+            </label>
+          </div>
+
+          <div class="lc-wizard-config" data-config-panel>
+            <header class="lc-wizard-head lc-wizard-subhead">
+              <h2>数据库与 Redis</h2>
+              <p>留空 / 选「不使用」即不启用。这里只保存连接参数，向导不会连接、建库或改写任何数据库；密码不会写进导出包。</p>
+            </header>
+
+            <div class="lc-wizard-grid">
+              <label class="lc-field is-medium">
+                <span class="lc-label">数据库</span>
+                <select class="lc-select" data-db-driver>
+                  <option value="none">不使用</option>
+                  <option value="sqlite">SQLite（随包文件）</option>
+                  <option value="mysql">MySQL</option>
+                  <option value="postgres">PostgreSQL</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="lc-wizard-grid" data-db-fields hidden>
+              <label class="lc-field is-medium">
+                <span class="lc-label">主机</span>
+                <input class="lc-input" type="text" data-db-host placeholder="127.0.0.1" autocomplete="off">
+              </label>
+              <label class="lc-field is-short">
+                <span class="lc-label">端口</span>
+                <input class="lc-input" type="number" min="0" max="65535" data-db-port placeholder="自定义端口" autocomplete="off">
+              </label>
+              <label class="lc-field is-medium">
+                <span class="lc-label">库名 / 文件名</span>
+                <input class="lc-input" type="text" data-db-name placeholder="app" autocomplete="off">
+              </label>
+              <label class="lc-field is-medium">
+                <span class="lc-label">用户名</span>
+                <input class="lc-input" type="text" data-db-user autocomplete="off">
+              </label>
+              <label class="lc-field is-medium">
+                <span class="lc-label">密码 <small data-db-password-hint></small></span>
+                <input class="lc-input" type="password" data-db-password placeholder="留空表示不修改" autocomplete="new-password">
+              </label>
+            </div>
+
+            <header class="lc-wizard-head lc-wizard-subhead">
+              <h2>Redis 缓存</h2>
+              <p>默认关闭。示例端口刻意避开常用的 6379，避免误连本机已有实例。</p>
+            </header>
+
+            <label class="lc-wizard-option">
+              <span>
+                <strong>使用 Redis</strong>
+                <small>关闭时后端使用内存缓存；开启只写配置，不连接、不探测。</small>
+              </span>
+              <span class="lc-switch"><input type="checkbox" data-redis-enabled><span class="lc-switch-track"></span><span>关</span></span>
+            </label>
+
+            <div class="lc-wizard-grid" data-redis-fields hidden>
+              <label class="lc-field is-medium">
+                <span class="lc-label">主机</span>
+                <input class="lc-input" type="text" data-redis-host placeholder="127.0.0.1" autocomplete="off">
+              </label>
+              <label class="lc-field is-short">
+                <span class="lc-label">端口</span>
+                <input class="lc-input" type="number" min="0" max="65535" data-redis-port placeholder="16379" autocomplete="off">
+              </label>
+              <label class="lc-field is-short">
+                <span class="lc-label">库序号</span>
+                <input class="lc-input" type="number" min="0" max="15" data-redis-db placeholder="0" autocomplete="off">
+              </label>
+              <label class="lc-field is-medium">
+                <span class="lc-label">密码 <small data-redis-password-hint></small></span>
+                <input class="lc-input" type="password" data-redis-password placeholder="留空表示不修改" autocomplete="new-password">
+              </label>
+            </div>
+
+            <div class="lc-note lc-note-info">
+              <strong>密码的存放与使用</strong>
+              <p>密码只保存在本机站点配置里，界面不会回显已保存的明文；不修改输入框就保留原值。导出包里的 config.yaml 只写空密码，部署时通过 <code>LC_DB_PASSWORD</code> / <code>LC_REDIS_PASSWORD</code> 注入。</p>
+            </div>
+
+            <header class="lc-wizard-head lc-wizard-subhead">
+              <h2>站点域名与访问路径</h2>
+              <p>生成的 nginx 用该域名做 server_name，证书 SAN 与 CORS 允许来源跟着走。留空则回退 localhost，并在导出结果里提示「仅本机可用」。</p>
+            </header>
+
+            <div class="lc-wizard-grid">
+              <label class="lc-field is-medium">
+                <span class="lc-label">站点域名 <small>可带协议与端口</small></span>
+                <input class="lc-input" type="text" data-web-domain placeholder="https://example.com" autocomplete="off">
+              </label>
+              <label class="lc-field is-short">
+                <span class="lc-label">路径前缀</span>
+                <input class="lc-input" type="text" data-web-base-path placeholder="/" autocomplete="off">
+              </label>
+            </div>
+
+            <label class="lc-field">
+              <span class="lc-label">额外允许来源 <small>每行一个；本地预览地址加在这里</small></span>
+              <textarea class="lc-textarea" rows="3" data-cors-origins spellcheck="false" placeholder="http://localhost:5173"></textarea>
+            </label>
+            <p class="lc-hint" data-web-address>域名未配置，仅本机可用；公开基址：http://localhost</p>
+
+            <header class="lc-wizard-head lc-wizard-subhead">
+              <h2>nginx 配置</h2>
+              <p>启用后产物会带 deploy/nginx/nginx.conf。可直接编辑；「恢复默认」只替换编辑框内容，点「撤销恢复」能回到你手写的版本，保存前不会覆盖磁盘。</p>
+            </header>
+
+            <label class="lc-wizard-option">
+              <span>
+                <strong>启用 nginx 配置</strong>
+                <small>默认关闭；开启后可用下方配置替换模板默认值。</small>
+              </span>
+              <span class="lc-switch"><input type="checkbox" data-nginx-enabled><span class="lc-switch-track"></span><span>关</span></span>
+            </label>
+
+            <div class="lc-field" data-nginx-panel hidden>
+              <div class="lc-wizard-actions lc-wizard-actions-tight">
+                <button class="lc-btn lc-btn-sm" type="button" data-nginx-default>恢复默认</button>
+                <button class="lc-btn lc-btn-sm" type="button" data-nginx-undo hidden>撤销恢复</button>
+                <span class="lc-hint" data-nginx-state>当前使用模板默认配置。</span>
+              </div>
+              <textarea class="lc-textarea lc-wizard-nginx" data-nginx-text spellcheck="false" rows="14" aria-label="nginx 配置内容"></textarea>
+              <p class="lc-hint">保存后写入站点 config/nginx.conf，导出时覆盖 deploy/nginx/nginx.conf；不会启动、重载或探测任何 nginx 进程。</p>
+            </div>
+
+            <div class="lc-wizard-actions">
+              <button class="lc-btn lc-btn-primary" type="button" data-config-save>保存运行环境配置</button>
+              <span class="lc-hint" data-config-status></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="lc-wizard-panel" data-step="4" hidden>
+          <header class="lc-wizard-head">
+            <h2>体积预估与执行</h2>
+            <p>预估会真实跑一遍渲染与压缩，但不写构建记录；确认后再生成压缩包。</p>
+          </header>
+
+          <div class="lc-wizard-actions">
+            <button class="lc-btn" type="button" data-estimate-btn>预估体积</button>
+            <button class="lc-btn lc-btn-primary" type="button" data-start-btn>开始导出</button>
+          </div>
+
+          <div class="lc-wizard-estimate" data-estimate-panel hidden>
+            <div class="lc-wizard-estimate-head">
+              <strong>体积构成</strong>
+              <span class="lc-badge lc-badge-info" data-estimate-total>—</span>
+            </div>
+            <div class="lc-wizard-breakdown">
+              <div class="lc-wizard-metric"><span>压缩包 zip</span><b data-estimate-zip>—</b></div>
+              <div class="lc-wizard-metric"><span>解压后总量</span><b data-estimate-unpacked>—</b></div>
+              <div class="lc-wizard-metric"><span>页面 HTML</span><b data-estimate-html>—</b></div>
+              <div class="lc-wizard-metric"><span>站点 CSS / JS</span><b data-estimate-code>—</b></div>
+              <div class="lc-wizard-metric"><span>运行时与第三方库</span><b data-estimate-runtime>—</b></div>
+              <div class="lc-wizard-metric"><span>资源与部署文件</span><b data-estimate-other>—</b></div>
+            </div>
+            <div class="lc-note lc-note-info" data-mermaid-note>
+              <strong>其中 mermaid 图表库</strong>
+              <p data-mermaid-text>—</p>
+            </div>
+            <div class="lc-note lc-note-info" data-desktop-note hidden>
+              <strong>桌面工程目标</strong>
+              <p data-desktop-text>—</p>
+            </div>
+            <details class="lc-wizard-details">
+              <summary>按页面与最大文件看</summary>
+              <div class="lc-wizard-tables">
+                <div>
+                  <h3>页面</h3>
+                  <div class="lc-table-wrap"><table class="lc-table"><thead><tr><th>页面</th><th class="is-num">HTML</th></tr></thead><tbody data-estimate-pages></tbody></table></div>
+                </div>
+                <div>
+                  <h3>最大文件</h3>
+                  <div class="lc-table-wrap"><table class="lc-table"><thead><tr><th>文件</th><th class="is-num">体积</th></tr></thead><tbody data-estimate-files></tbody></table></div>
+                </div>
+              </div>
+            </details>
+            <div class="lc-wizard-issues" data-estimate-issues></div>
+          </div>
+
+          <div class="lc-wizard-progress" data-progress hidden>
+            <div class="lc-wizard-progress-head">
+              <strong data-progress-stage>准备导出</strong>
+              <span data-progress-percent>0%</span>
+            </div>
+            <div class="lc-progress"><div class="lc-progress-bar" data-progress-bar style="width:0%"></div></div>
+            <p class="lc-hint" data-progress-text>—</p>
+          </div>
+
+          <div class="lc-wizard-issues" data-failures hidden></div>
+
+          <div class="lc-wizard-result" data-result hidden>
+            <div class="lc-wizard-result-head">
+              <strong>导出完成</strong>
+              <span class="lc-badge lc-badge-success" data-result-badge>成功</span>
+            </div>
+            <p class="lc-hint" data-result-summary>—</p>
+            <div class="lc-wizard-result-actions">
+              <a class="lc-btn lc-btn-primary" data-download href="#" role="button">下载压缩包</a>
+              <a class="lc-btn" data-record-link href="#" role="button">查看构建记录</a>
+              <button class="lc-btn lc-btn-ghost" type="button" data-reset>再导一次</button>
+            </div>
+            <p class="lc-hint" data-result-path></p>
+          </div>
+        </section>
+
+        <footer class="lc-wizard-foot">
+          <span class="lc-hint" data-foot-hint>所有选项已有默认值，直接点「下一步」也能导出可运行的包。</span>
+          <div class="lc-wizard-foot-actions">
+            <button class="lc-btn" type="button" data-prev disabled>上一步</button>
+            <button class="lc-btn lc-btn-primary" type="button" data-next>下一步</button>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="lc-statusbar">
+  <span class="lc-statusbar-item" data-status-text>就绪</span>
+  <span class="lc-statusbar-item" data-status-rev></span>
+</footer>
+
+<script src="assets/export.js"></script>
+</body>
+</html>

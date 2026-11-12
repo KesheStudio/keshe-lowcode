@@ -1,0 +1,49 @@
+{
+  "productName": "科设低代码平台",
+  "version": "0.1.0",
+  "identifier": "com.keshestudio.lowcode",
+  "build": {
+    "frontendDist": "../web"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "科设低代码平台",
+        "width": 1024,
+        "height": 720,
+        "minWidth": 800,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "backgroundColor": "#f4f0e6",
+        "useHttpsScheme": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' asset: http://asset.localhost data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self' data:; media-src 'self' asset: http://asset.localhost; frame-src 'self'; connect-src 'self' ipc: http://ipc.localhost https://ipc.localhost"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "msi",
+      "nsis"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
+    "shortDescription": "由低代码平台导出的桌面应用",
+    "publisher": "KesheStudio",
+    "windows": {
+      "wix": {
+        "language": "zh-CN"
+      }
+    },
+    "createUpdaterArtifacts": false
+  }
+}

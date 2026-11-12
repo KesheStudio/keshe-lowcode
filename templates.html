@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="zh-CN" data-lc-mode="light" data-lc-mode-pref="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>模板库 · 低代码工作台</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="lc-token" content="__LC_TOKEN__">
+<link rel="icon" href="vendor/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/lc-tokens.css">
+<link rel="stylesheet" href="assets/css/lc-controls.css">
+<link rel="stylesheet" href="assets/css/lc-editor.css">
+<link rel="stylesheet" href="assets/css/lc-components.css">
+<link rel="stylesheet" href="assets/css/lc-templates.css">
+<link rel="stylesheet" href="assets/css/lc-responsive.css">
+</head>
+<body class="lc-shell">
+
+<header class="lc-topbar">
+  <a class="lc-brand lc-brand-link" href="home.html" title="返回工作台">
+    <span class="lc-brand-mark" aria-hidden="true"></span>
+    <span class="lc-brand-text">模板库</span>
+    <span class="lc-brand-sub">页面模板 · 站点模板</span>
+  </a>
+
+  <div class="lc-topbar-side">
+    <a class="lc-btn lc-btn-sm" href="home.html">返回工作台</a>
+    <label class="lc-field lc-comp-site-field">
+      <span class="lc-label">项目</span>
+      <select class="lc-select" data-site-select aria-label="选择项目"></select>
+    </label>
+    <a class="lc-btn lc-btn-sm" href="builder.html" data-back-builder>返回 Builder</a>
+    <a class="lc-btn lc-btn-sm" href="components.html" data-site-link="components.html">组件库</a>
+    <a class="lc-btn lc-btn-sm" href="data.html" data-site-link="data.html">数据源</a>
+    <a class="lc-btn lc-btn-sm" href="export.html" data-site-link="export.html">导出</a>
+  </div>
+</header>
+
+<main class="lc-main lc-comp-main">
+  <aside class="lc-sidebar lc-comp-sidebar" aria-label="模板列表">
+    <div class="lc-sidebar-head">
+      <h2>模板</h2>
+      <p>把页面存成模板复用；整站也能存成站点模板。</p>
+    </div>
+    <div class="lc-sidebar-body">
+      <div class="lc-comp-toolbar">
+        <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-create-page>页面存为模板</button>
+        <button class="lc-btn lc-btn-sm" type="button" data-create-site>整站存为模板</button>
+      </div>
+      <p class="lc-comp-section-note lc-tpl-count" data-template-count>0 个模板</p>
+
+      <div class="lc-comp-filters">
+        <input class="lc-input" type="search" placeholder="搜索名称 / 说明 / 标签" data-search autocomplete="off">
+        <div class="lc-comp-filter-row">
+          <select class="lc-select" data-kind-filter aria-label="按类型筛选">
+            <option value="">全部类型</option>
+            <option value="page">页面模板</option>
+            <option value="site">站点模板</option>
+          </select>
+          <select class="lc-select" data-category-filter aria-label="按分类筛选"></select>
+        </div>
+        <select class="lc-select" data-tag-filter aria-label="按标签筛选"></select>
+      </div>
+
+      <div class="lc-comp-list" data-template-list></div>
+
+      <div class="lc-comp-section-head">
+        <h2>回收站</h2>
+        <span class="lc-comp-count" data-trash-count>0 个</span>
+      </div>
+      <p class="lc-comp-section-note">删除的模板先进回收站，可随时恢复；恢复冲突时自动改名。</p>
+      <div class="lc-comp-list" data-trash-list></div>
+
+      <div class="lc-comp-toolbar lc-comp-import-row">
+        <button class="lc-btn lc-btn-sm" type="button" data-import-open>从 JSON 导入</button>
+        <input class="lc-comp-file" type="file" accept=".json,application/json" data-import-file hidden>
+      </div>
+    </div>
+    <div class="lc-sidebar-foot">
+      名称 ≤ <code data-limit-name>64</code> 字；标签 ≤ <code data-limit-tags>8</code> 个。
+    </div>
+  </aside>
+
+  <section class="lc-workspace lc-comp-workspace">
+    <div class="lc-toolbar">
+      <span class="lc-toolbar-title" data-editor-title>选择一个模板</span>
+      <span class="lc-toolbar-meta" data-editor-meta></span>
+      <div class="lc-toolbar-actions">
+        <span class="lc-badge" data-editor-state hidden></span>
+        <button class="lc-btn lc-btn-sm" type="button" data-export-template disabled>导出 JSON</button>
+        <button class="lc-btn lc-btn-sm" type="button" data-delete-template disabled>删除</button>
+        <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-save-meta disabled>保存模板信息</button>
+      </div>
+    </div>
+
+    <div class="lc-comp-scroll">
+      <section class="lc-comp-card lc-tpl-starters">
+        <header class="lc-comp-card-head">
+          <div>
+            <h3>起步模板</h3>
+            <p>四套完整骨架：文档站、落地页、仪表盘、认证中心。套用后页面即可预览、编辑与导出。</p>
+          </div>
+        </header>
+        <div class="lc-tpl-starter-grid" data-starter-list>读取中…</div>
+        <p class="lc-comp-section-note" data-starter-result hidden></p>
+      </section>
+
+      <div class="lc-comp-empty" data-empty>
+        <h3>还没有选中的模板</h3>
+        <p>左侧「页面存为模板」把某个页面固化为可复用内容；「整站存为模板」会把全部页面、组件与导航一起打包。</p>
+      </div>
+
+      <section class="lc-comp-card lc-tpl-create" data-create-panel hidden>
+        <header class="lc-comp-card-head">
+          <div>
+            <h3 data-create-title>把页面存为模板</h3>
+            <p data-create-note>模板只保存内容层，不含数据源、密钥与后端配置。</p>
+          </div>
+          <span class="lc-badge lc-badge-accent" data-create-kind-badge>页面模板</span>
+        </header>
+        <div class="lc-comp-grid lc-tpl-form">
+          <label class="lc-field" data-create-page-row>
+            <span class="lc-label">来源页面</span>
+            <select class="lc-select" data-create-source></select>
+          </label>
+          <label class="lc-field">
+            <span class="lc-label">模板名称</span>
+            <input class="lc-input" type="text" data-create-name maxlength="64" autocomplete="off" placeholder="例如：营销首页">
+          </label>
+          <label class="lc-field">
+            <span class="lc-label">分类</span>
+            <select class="lc-select" data-create-category></select>
+          </label>
+          <label class="lc-field">
+            <span class="lc-label">标签（逗号分隔）</span>
+            <input class="lc-input" type="text" data-create-tags autocomplete="off" placeholder="例如：营销, 首屏">
+          </label>
+          <label class="lc-field lc-tpl-span2">
+            <span class="lc-label">用途说明（一句话）</span>
+            <input class="lc-input" type="text" data-create-description maxlength="160" autocomplete="off" placeholder="例如：带英雄区与促销卡片的首屏">
+          </label>
+        </div>
+        <div class="lc-comp-actions lc-tpl-create-actions">
+          <button class="lc-btn lc-btn-primary" type="button" data-create-submit>创建模板</button>
+          <button class="lc-btn" type="button" data-create-cancel>取消</button>
+        </div>
+      </section>
+
+      <div data-editor hidden>
+        <div class="lc-comp-editor-grid">
+          <div class="lc-comp-editor-main">
+            <section class="lc-comp-card">
+              <header class="lc-comp-card-head">
+                <div>
+                  <h3>基本信息</h3>
+                  <p>名称、分类、标签与用途说明都可以再调整；模板内容不会因此改变。</p>
+                </div>
+                <span class="lc-badge lc-badge-accent" data-kind-badge>页面模板</span>
+              </header>
+              <div class="lc-comp-grid">
+                <label class="lc-field">
+                  <span class="lc-label">名称</span>
+                  <input class="lc-input" type="text" data-meta-name maxlength="64" autocomplete="off">
+                </label>
+                <label class="lc-field">
+                  <span class="lc-label">模板 ID</span>
+                  <input class="lc-input lc-comp-mono" type="text" data-meta-id readonly>
+                </label>
+                <label class="lc-field">
+                  <span class="lc-label">分类</span>
+                  <select class="lc-select" data-meta-category></select>
+                </label>
+                <label class="lc-field">
+                  <span class="lc-label">标签（逗号分隔）</span>
+                  <input class="lc-input" type="text" data-meta-tags autocomplete="off">
+                </label>
+                <label class="lc-field lc-tpl-span2">
+                  <span class="lc-label">用途说明（一句话）</span>
+                  <input class="lc-input" type="text" data-meta-description maxlength="160" autocomplete="off">
+                </label>
+              </div>
+              <p class="lc-comp-section-note" data-source-info></p>
+            </section>
+
+            <section class="lc-comp-card">
+              <header class="lc-comp-card-head">
+                <div>
+                  <h3>内容结构</h3>
+                  <p>模板会带走这些页面与它们引用的自定义组件。</p>
+                </div>
+              </header>
+              <div class="lc-tpl-structure" data-structure></div>
+            </section>
+
+            <section class="lc-comp-card lc-tpl-danger" data-danger-panel hidden>
+              <header class="lc-comp-card-head">
+                <div>
+                  <h3>确认删除模板</h3>
+                  <p>删除后模板会进入回收站，不会一次点击永久消失。</p>
+                </div>
+              </header>
+              <p class="lc-tpl-danger-text" data-danger-text></p>
+              <div class="lc-comp-actions">
+                <button class="lc-btn lc-btn-primary" type="button" data-confirm-delete>移入回收站</button>
+                <button class="lc-btn" type="button" data-confirm-cancel>取消</button>
+              </div>
+            </section>
+          </div>
+
+          <aside class="lc-comp-editor-aside">
+            <section class="lc-comp-card">
+              <header class="lc-comp-card-head">
+                <div>
+                  <h3>套用模板</h3>
+                  <p>新建页面，或覆盖现有页面（会先确认并备份）。</p>
+                </div>
+              </header>
+
+              <div class="lc-comp-mode lc-tpl-modes" role="group" aria-label="套用方式">
+                <button class="lc-btn lc-btn-sm is-active" type="button" data-apply-mode="new" aria-pressed="true">新建页面</button>
+                <button class="lc-btn lc-btn-sm" type="button" data-apply-mode="overwrite" aria-pressed="false">覆盖现有页面</button>
+              </div>
+
+              <div class="lc-comp-grid lc-tpl-form" data-apply-new>
+                <label class="lc-field lc-tpl-span2">
+                  <span class="lc-label">页面标题</span>
+                  <input class="lc-input" type="text" data-apply-title autocomplete="off" placeholder="默认沿用模板标题">
+                </label>
+                <label class="lc-field">
+                  <span class="lc-label">页面 ID / Slug</span>
+                  <input class="lc-input lc-comp-mono" type="text" data-apply-slug autocomplete="off" placeholder="默认沿用模板">
+                </label>
+                <label class="lc-field">
+                  <span class="lc-label">输出路径</span>
+                  <input class="lc-input lc-comp-mono" type="text" data-apply-path autocomplete="off" placeholder="默认沿用模板">
+                </label>
+              </div>
+
+              <div class="lc-tpl-overwrite" data-apply-overwrite hidden>
+                <label class="lc-field">
+                  <span class="lc-label">覆盖到页面</span>
+                  <select class="lc-select" data-apply-page></select>
+                </label>
+                <p class="lc-tpl-warn-text">覆盖会把目标页面的区块与布局替换成模板内容，原内容先备份；页面 ID、路径保持不变。</p>
+              </div>
+
+              <label class="lc-tpl-check" data-apply-config-row hidden>
+                <input type="checkbox" data-apply-config>
+                <span>同时套用导航与页脚（会覆盖当前站点的导航与页脚）</span>
+              </label>
+
+              <div class="lc-comp-actions lc-tpl-apply-actions">
+                <button class="lc-btn lc-btn-primary" type="button" data-apply-submit>套用模板</button>
+              </div>
+
+              <div class="lc-tpl-overwrite-confirm" data-overwrite-confirm hidden>
+                <p data-overwrite-message></p>
+                <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-apply-confirm>确认覆盖</button>
+                <button class="lc-btn lc-btn-sm" type="button" data-overwrite-cancel>取消</button>
+              </div>
+
+              <div class="lc-tpl-apply-result" data-apply-result hidden></div>
+            </section>
+
+            <section class="lc-comp-card">
+              <header class="lc-comp-card-head">
+                <div>
+                  <h3>模板边界</h3>
+                </div>
+              </header>
+              <ul class="lc-tpl-notes">
+                <li>页面模板带走单个页面的区块、布局与引用到的自定义组件。</li>
+                <li>站点模板带走全部页面、组件、主题、导航与页脚。</li>
+                <li>数据源、接口密钥、导出配置与后端配置一律不进模板。</li>
+                <li>套用缺组件时只会补齐缺失项，不会覆盖已有同名组件。</li>
+              </ul>
+            </section>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="assets/templates.js"></script>
+</body>
+</html>

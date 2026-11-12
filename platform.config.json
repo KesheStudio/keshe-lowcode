@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "platform": {
+    "name": "低代码工作台",
+    "host": "127.0.0.1",
+    "port": 9780,
+    "openBrowser": true
+  },
+  "paths": {
+    "dataDir": "data",
+    "exportsDir": "exports",
+    "logsDir": "logs"
+  },
+  "server": {
+    "bodyLimitBytes": 67108864,
+    "requestTimeoutMs": 30000,
+    "tokenTtlHours": 24
+  },
+  "storage": {
+    "backupKeepCount": 10,
+    "backupKeepDays": 30,
+    "versionKeepCount": 100,
+    "versionKeepDays": 30,
+    "buildKeepPerTarget": 10,
+    "siteQuotaBytes": 5368709120,
+    "lockStaleMs": 60000,
+    "tmpMaxAgeMs": 3600000
+  },
+  "draftCache": {
+    "enabled": false
+  },
+  "logging": {
+    "level": "info"
+  }
+}

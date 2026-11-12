@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lc-mode="light" data-lc-mode-pref="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数据源管理 · 低代码工作台</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="lc-token" content="__LC_TOKEN__">
+<link rel="icon" href="vendor/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/lc-tokens.css">
+<link rel="stylesheet" href="assets/css/lc-controls.css">
+<link rel="stylesheet" href="assets/css/lc-editor.css">
+<link rel="stylesheet" href="assets/css/lc-data.css">
+<link rel="stylesheet" href="assets/css/lc-responsive.css">
+</head>
+<body class="lc-shell">
+
+<header class="lc-topbar">
+  <a class="lc-brand lc-brand-link" href="home.html" title="返回工作台">
+    <span class="lc-brand-mark" aria-hidden="true"></span>
+    <span class="lc-brand-text">数据源管理</span>
+    <span class="lc-brand-sub">集合 · 导入 · 接口</span>
+  </a>
+
+  <div class="lc-topbar-side">
+    <a class="lc-btn lc-btn-sm" href="home.html">返回工作台</a>
+    <label class="lc-field lc-data-site-field">
+      <span class="lc-label">项目</span>
+      <select class="lc-select" data-site-select aria-label="选择项目"></select>
+    </label>
+    <a class="lc-btn lc-btn-sm" data-back-builder href="builder.html">返回 Builder</a>
+    <a class="lc-btn lc-btn-sm" href="export.html" data-site-link="export.html">导出</a>
+  </div>
+</header>
+
+<main class="lc-main lc-data-main">
+  <aside class="lc-sidebar lc-data-sidebar" aria-label="集合列表">
+    <div class="lc-sidebar-head">
+      <h2>集合</h2>
+      <p>集合是表单、表格、图表共用的数据结构。</p>
+    </div>
+    <div class="lc-sidebar-body">
+      <p class="lc-data-section-note" data-project-type-note hidden></p>
+      <div class="lc-data-toolbar">
+        <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-new-collection>新建集合</button>
+        <span class="lc-data-count" data-collection-count>0 个</span>
+      </div>
+      <div class="lc-data-list" data-collection-list></div>
+
+      <div class="lc-data-toolbar lc-data-section-head">
+        <h2>接口</h2>
+        <span class="lc-data-count" data-source-count>0 个</span>
+      </div>
+      <p class="lc-data-section-note">自定义 HTTP 接口，可映射到集合或组件数据。</p>
+      <div class="lc-data-toolbar">
+        <button class="lc-btn lc-btn-sm" type="button" data-new-source>新建接口</button>
+      </div>
+      <div class="lc-data-list" data-source-list></div>
+
+      <div class="lc-data-toolbar lc-data-section-head">
+        <h2>站点设置</h2>
+      </div>
+      <p class="lc-data-section-note">上传组件默认继承这里的目标；组件属性单独填写时以组件为准。</p>
+      <div class="lc-data-toolbar">
+        <button class="lc-btn lc-btn-sm" type="button" data-open-upload>上传目标</button>
+        <span class="lc-data-count" data-upload-badge>未配置</span>
+      </div>
+    </div>
+    <div class="lc-sidebar-foot">
+      单集合最多 <code data-limit-rows>50000</code> 行；导入单文件 ≤ <code data-limit-import>5 MB</code>。
+    </div>
+  </aside>
+
+  <section class="lc-workspace lc-data-workspace">
+    <div class="lc-toolbar">
+      <span class="lc-toolbar-title" data-editor-title>选择一个集合</span>
+      <span class="lc-toolbar-meta" data-editor-meta></span>
+      <div class="lc-toolbar-actions">
+        <span class="lc-badge" data-editor-state hidden></span>
+        <button class="lc-btn lc-btn-sm" type="button" data-open-import disabled>导入数据</button>
+        <button class="lc-btn lc-btn-sm" type="button" data-collection-delete disabled>删除集合</button>
+        <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-collection-save disabled>保存字段与索引</button>
+      </div>
+    </div>
+
+    <div class="lc-data-scroll">
+      <div class="lc-data-empty" data-empty>
+        <h3>还没有选中的集合</h3>
+        <p>左侧「新建集合」定义字段，随后可以导入 CSV / JSON 或手动添加示例数据。</p>
+      </div>
+
+      <div data-editor hidden>
+        <section class="lc-data-card">
+          <header class="lc-data-card-head">
+            <h3>基本信息</h3>
+            <p>集合 ID 会写进页面绑定与导出快照，所以创建后不可修改，避免断掉已有引用。</p>
+          </header>
+          <div class="lc-data-grid">
+            <label class="lc-field">
+              <span class="lc-label">名称</span>
+              <input class="lc-input" type="text" data-meta-name maxlength="64" autocomplete="off">
+            </label>
+            <label class="lc-field">
+              <span class="lc-label">集合 ID</span>
+              <input class="lc-input lc-data-mono" type="text" data-meta-id maxlength="64" autocomplete="off" readonly>
+              <p class="lc-hint">创建后固定不可改：页面绑定与导出快照都用它，改名会让已有引用失效。</p>
+            </label>
+            <label class="lc-field lc-data-span-2">
+              <span class="lc-label">说明 <small>可留空</small></span>
+              <input class="lc-input" type="text" data-meta-description maxlength="512" autocomplete="off">
+            </label>
+          </div>
+        </section>
+
+        <section class="lc-data-card">
+          <header class="lc-data-card-head">
+            <h3>字段</h3>
+            <p>类型一旦被页面组件引用，改类型前会先列出受影响位置，确认后才保存。</p>
+            <button class="lc-btn lc-btn-sm" type="button" data-add-field>添加字段</button>
+          </header>
+          <div class="lc-data-fields" data-field-list></div>
+        </section>
+
+        <section class="lc-data-card">
+          <header class="lc-data-card-head">
+            <h3>索引与唯一约束</h3>
+            <p>字段级「唯一」等同于单列唯一索引；这里可加多列组合索引。</p>
+            <button class="lc-btn lc-btn-sm" type="button" data-add-index>添加索引</button>
+          </header>
+          <div class="lc-data-indexes" data-index-list></div>
+        </section>
+
+        <section class="lc-data-card">
+          <header class="lc-data-card-head lc-data-rows-head">
+            <div>
+              <h3>数据行</h3>
+              <p><span data-row-count>0</span> 行 · 每页 <span data-row-page-size>100</span> 行</p>
+            </div>
+            <div class="lc-data-row-actions">
+              <label class="lc-field lc-data-search">
+                <input class="lc-input" type="search" placeholder="搜索任意字段" data-row-search autocomplete="off">
+              </label>
+              <label class="lc-field lc-data-sample">
+                <span class="lc-label">示例条数</span>
+                <input class="lc-input lc-data-number" type="number" min="1" max="100" value="10" data-sample-count>
+              </label>
+              <button class="lc-btn lc-btn-sm" type="button" data-generate-sample>生成示例数据</button>
+              <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-add-row>新增一行</button>
+            </div>
+          </header>
+          <div class="lc-data-note" data-row-note hidden></div>
+          <div class="lc-table-wrap lc-data-table-wrap">
+            <table class="lc-table" data-row-table></table>
+          </div>
+          <div class="lc-data-pager" data-row-pager></div>
+          <div class="lc-data-row-form" data-row-form hidden></div>
+        </section>
+
+        <section class="lc-data-note lc-data-note-warn" data-usage-panel hidden></section>
+      </div>
+
+      <div data-import hidden>
+        <section class="lc-data-card">
+          <header class="lc-data-card-head">
+            <div>
+              <h3>导入到 <span data-import-target></span></h3>
+              <p>支持 CSV / JSON。单文件上限 <strong>5 MB</strong>，单次上限 <strong>2 万行</strong>，超过会明确拒绝并给出实际大小。</p>
+            </div>
+            <button class="lc-btn lc-btn-sm" type="button" data-import-back>返回数据</button>
+          </header>
+          <div class="lc-data-grid">
+            <label class="lc-field lc-data-span-2">
+              <span class="lc-label">选择文件</span>
+              <input class="lc-input" type="file" accept=".csv,.json,text/csv,application/json" data-import-file>
+              <p class="lc-hint">文件在浏览器内读取后发给本机服务，不经过网络；类型按扩展名判断，未知扩展名会自动识别。</p>
+            </label>
+            <label class="lc-field">
+              <span class="lc-label">格式</span>
+              <select class="lc-select" data-import-format>
+                <option value="auto">自动识别</option>
+                <option value="csv">CSV</option>
+                <option value="json">JSON</option>
+              </select>
+            </label>
+          </div>
+          <div class="lc-data-note lc-data-note-warn" data-import-error hidden></div>
+        </section>
+
+        <section class="lc-data-card" data-import-preview hidden>
+          <header class="lc-data-card-head">
+            <div>
+              <h3>列映射与预览</h3>
+              <p data-import-summary></p>
+            </div>
+          </header>
+          <div class="lc-data-note" data-import-warnings hidden></div>
+          <div class="lc-table-wrap lc-data-table-wrap">
+            <table class="lc-table" data-import-mapping></table>
+          </div>
+          <div class="lc-data-note" style="margin-top:var(--lc-space-3)">
+            <strong>冲突策略</strong>
+            <div class="lc-data-modes" data-import-modes></div>
+          </div>
+          <div class="lc-table-wrap lc-data-table-wrap" style="margin-top:var(--lc-space-3)">
+            <table class="lc-table" data-import-rows></table>
+          </div>
+          <div class="lc-data-note-foot">
+            <span class="lc-data-status" data-import-progress></span>
+            <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-import-run>执行导入</button>
+          </div>
+        </section>
+
+        <section class="lc-data-card" data-import-result hidden>
+          <header class="lc-data-card-head">
+            <div>
+              <h3>导入结果</h3>
+              <p data-import-result-summary></p>
+            </div>
+            <button class="lc-btn lc-btn-sm" type="button" data-import-again>再导入一个文件</button>
+          </header>
+          <div class="lc-data-note" data-import-issues hidden></div>
+        </section>
+      </div>
+
+      <div data-source-editor hidden>
+        <section class="lc-data-card">
+          <header class="lc-data-card-head">
+            <div>
+              <h3>接口基本信息</h3>
+              <p>密钥（令牌 / 密码）不回显、不写进 sources.json、不进导出包与日志。</p>
+            </div>
+            <span class="lc-badge" data-source-state hidden></span>
+          </header>
+          <div class="lc-data-grid">
+            <label class="lc-field">
+              <span class="lc-label">名称</span>
+              <input class="lc-input" type="text" data-source-name maxlength="64" autocomplete="off">
+            </label>
+            <label class="lc-field">
+              <span class="lc-label">接口 ID</span>
+              <input class="lc-input lc-data-mono" type="text" data-source-id readonly>
+            </label>
+            <label class="lc-field lc-data-span-2">
+              <span class="lc-label">说明 <small>可留空</small></span>
+              <input class="lc-input" type="text" data-source-description maxlength="512" autocomplete="off">
+            </label>
+          </div>
+        </section>
+
+        <section class="lc-data-card">
+          <header class="lc-data-card-head">
+            <div>
+              <h3>请求</h3>
+              <p>只支持 http / https；URL 里不能带账号密码；本机数据库常见端口（3306 / 6379 等）一律拒绝。</p>
+            </div>
+            <button class="lc-btn lc-btn-sm" type="button" data-add-header>添加请求头</button>
+          </header>
+          <div class="lc-data-grid">
+            <label class="lc-field is-short">
+              <span class="lc-label">方法</span>
+              <select class="lc-select" data-source-method></select>
+            </label>
+            <label class="lc-field lc-data-span-2">
+              <span class="lc-label">地址</span>
+              <input class="lc-input lc-data-mono" type="text" data-source-url placeholder="https://api.example.com/items" autocomplete="off">
+            </label>
+            <label class="lc-field is-short">
+              <span class="lc-label">超时（毫秒）</span>
+              <input class="lc-input" type="number" data-source-timeout>
+            </label>
+            <label class="lc-field is-medium">
+              <span class="lc-label">响应上限（字节）</span>
+              <input class="lc-input" type="number" data-source-maxbytes>
+            </label>
+            <label class="lc-field is-medium">
+              <span class="lc-label">Content-Type <small>可留空</small></span>
+              <input class="lc-input" type="text" data-source-content-type placeholder="application/json" autocomplete="off">
+            </label>
+          </div>
+          <div class="lc-data-entries" data-header-list></div>
+        </section>
+
+        <section class="lc-data-card">
+          <header class="lc-data-card-head">
+            <div>
+              <h3>查询参数</h3>
+              <p>勾选「密钥」的参数值只存本地密钥文件，界面上不回显。</p>
+            </div>
+            <button class="lc-btn lc-btn-sm" type="button" data-add-query>添加参数</button>
+          </header>
+          <div class="lc-data-entries" data-query-list></div>
+        </section>
+
+        <section class="lc-data-card">
+          <header class="lc-data-card-head">
+            <div>
+              <h3>请求体模板</h3>
+              <p>GET / HEAD 不带请求体；其它方法可填 JSON 模板。</p>
+            </div>
+          </header>
+          <textarea class="lc-input lc-data-json" data-source-body placeholder='{"page": 1}'></textarea>
+        </section>
+
+        <section class="lc-data-card">
+          <header class="lc-data-card-head">
+            <div>
+              <h3>响应映射</h3>
+              <p>rowsPath 指定数组所在位置；字段映射把响应字段改成集合字段或组件需要的字段结构。</p>
+            </div>
+            <button class="lc-btn lc-btn-sm" type="button" data-add-mapping>添加映射</button>
+          </header>
+          <div class="lc-data-modes" data-source-target></div>
+          <div class="lc-data-grid">
+            <label class="lc-field is-medium">
+              <span class="lc-label">映射到集合</span>
+              <select class="lc-select" data-source-collection></select>
+            </label>
+            <label class="lc-field is-medium">
+              <span class="lc-label">或映射到组件</span>
+              <input class="lc-input" type="text" data-source-component placeholder="table / chart" autocomplete="off">
+            </label>
+            <label class="lc-field lc-data-span-2">
+              <span class="lc-label">响应数组路径 <small>可留空，自动识别 data / rows / items</small></span>
+              <input class="lc-input lc-data-mono" type="text" data-source-rows-path placeholder="data.items" autocomplete="off">
+            </label>
+          </div>
+          <div class="lc-data-entries" data-mapping-list></div>
+        </section>
+
+        <section class="lc-data-card">
+          <header class="lc-data-card-head">
+            <div>
+              <h3>连接测试</h3>
+              <p>返回状态码、耗时、失败分类与字段结构；失败会说明是网络、认证还是格式问题。</p>
+            </div>
+            <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-source-test>测试连接</button>
+          </header>
+          <div class="lc-data-note" data-source-test-result hidden></div>
+        </section>
+
+        <div class="lc-data-note-foot lc-data-source-foot">
+          <span class="lc-data-status" data-source-status></span>
+          <button class="lc-btn lc-btn-sm lc-btn-danger" type="button" data-source-delete>删除接口</button>
+          <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-source-save>保存接口</button>
+        </div>
+      </div>
+
+      <div data-upload-view hidden>
+        <section class="lc-data-card">
+          <header class="lc-data-card-head">
+            <div>
+              <h3>站点上传目标</h3>
+              <p>所有拖拽上传组件默认继承这里的地址、请求头与限制；在组件属性里单独填写即可覆盖。</p>
+            </div>
+            <button class="lc-btn lc-btn-sm" type="button" data-upload-back>返回数据</button>
+          </header>
+          <div class="lc-data-grid">
+            <label class="lc-field">
+              <span class="lc-label">启用</span>
+              <select class="lc-select" data-upload-enabled>
+                <option value="true">启用</option>
+                <option value="false">停用</option>
+              </select>
+              <p class="lc-hint">停用后组件不再继承这里的配置。</p>
+            </label>
+            <label class="lc-field">
+              <span class="lc-label">请求方法</span>
+              <select class="lc-select" data-upload-method>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="PATCH">PATCH</option>
+              </select>
+            </label>
+            <label class="lc-field lc-data-span-2">
+              <span class="lc-label">上传地址</span>
+              <input class="lc-input lc-data-mono" type="text" maxlength="512" data-upload-target placeholder="/api/upload 或 https://example.com/upload" autocomplete="off">
+              <p class="lc-hint">以 / 开头的相对路径会拼在站点根下；也可以填 http(s) 绝对地址。</p>
+            </label>
+            <label class="lc-field">
+              <span class="lc-label">文件字段名</span>
+              <input class="lc-input" type="text" maxlength="64" data-upload-field placeholder="file" autocomplete="off">
+            </label>
+            <label class="lc-field">
+              <span class="lc-label">允许的文件类型 <small>逗号分隔，可留空</small></span>
+              <input class="lc-input" type="text" maxlength="512" data-upload-accept placeholder="image/*,.pdf,application/json" autocomplete="off">
+            </label>
+            <label class="lc-field">
+              <span class="lc-label">单文件大小上限 <small>字节，0 为不限</small></span>
+              <input class="lc-input lc-data-number" type="number" min="0" step="1024" data-upload-max placeholder="0">
+            </label>
+            <label class="lc-field lc-data-span-2">
+              <span class="lc-label">请求头 <small>JSON 对象，可留空</small></span>
+              <textarea class="lc-input lc-data-json" rows="4" data-upload-headers placeholder='{"Authorization":"Bearer <token>"}'></textarea>
+            </label>
+          </div>
+          <div class="lc-data-note" data-upload-note hidden></div>
+          <div class="lc-data-note-foot">
+            <span class="lc-data-status" data-upload-status></span>
+            <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-upload-save>保存上传目标</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="assets/data.js"></script>
+</body>
+</html>

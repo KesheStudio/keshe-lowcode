@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lc-theme="ink-green" data-lc-mode="light" data-lc-storage-key="lc-switcher-demo">
+<head>
+  <meta charset="utf-8" />
+  <script>
+/* 防白闪：必须在 <head> 里、样式表之前同步执行。由 src/theme/theme-boot.mjs 生成。 */
+(function () {
+  'use strict';
+  var root = document.documentElement;
+  var saved = null;
+  try { saved = JSON.parse(window.localStorage.getItem("lc-switcher-demo") || 'null'); } catch (error) { saved = null; }
+  var allowed = ["auth-clean","blueprint-amber","dashboard-calm","docs-quiet","ink-graphite","ink-green","ink-navy","ink-ochre","night-contrast","portfolio-bold"];
+  var theme = saved && typeof saved.theme === 'string' ? saved.theme : null;
+  if (allowed && theme && allowed.indexOf(theme) === -1) theme = null;
+  if (!theme) theme = root.getAttribute('data-lc-theme') || "ink-green";
+  var mode = saved && saved.mode;
+  if (mode !== 'light' && mode !== 'dark') {
+    mode = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  }
+  root.setAttribute('data-lc-theme', theme);
+  root.setAttribute('data-lc-mode', mode);
+  root.style.colorScheme = mode;
+})();
+</script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>主题切换器演示 · 低代码平台</title>
+  <link rel="stylesheet" href="../../assets/css/lc-tokens.css" />
+  <link rel="stylesheet" href="../../assets/css/lc-themes.css" />
+  <link rel="stylesheet" href="../../assets/css/lc-icons.css" />
+  <link rel="stylesheet" href="../../assets/css/lc-controls.css" />
+  <link rel="stylesheet" href="../../assets/css/lc-editor.css" />
+  <link rel="stylesheet" href="../../assets/css/lc-responsive.css" />
+  <link rel="stylesheet" href="../../assets/css/lc-a11y.css" />
+  <link rel="stylesheet" href="../../assets/css/lc-print.css" media="print" />
+  <link rel="stylesheet" href="../../assets/css/lc-theme-switch.css" />
+  <style>
+    html, body { margin: 0; min-height: 100%; background: var(--lc-color-bg); color: var(--lc-color-ink); }
+    body { font-family: var(--lc-font-sans); font-size: var(--lc-text-base); line-height: var(--lc-leading-base); }
+    .demo-top {
+      position: sticky; top: 0; z-index: var(--lc-z-sticky);
+      display: flex; align-items: center; gap: var(--lc-space-3); flex-wrap: wrap;
+      padding: var(--lc-space-2) var(--lc-space-5);
+      border-bottom: 1px solid var(--lc-color-line);
+      background: var(--lc-color-surface);
+    }
+    .demo-brand { margin-right: auto; font-family: var(--lc-font-serif); font-size: var(--lc-text-lg); font-weight: var(--lc-weight-semibold); }
+    .demo-brand small { display: block; color: var(--lc-color-muted); font-family: var(--lc-font-mono); font-size: 10px; font-weight: var(--lc-weight-normal); }
+    .demo-doc { max-width: 860px; margin: 0 auto; padding: var(--lc-space-7) var(--lc-space-5) var(--lc-space-8); }
+    .demo-doc h1 { margin: 0 0 var(--lc-space-3); font-family: var(--lc-font-serif); font-size: var(--lc-text-3xl); line-height: var(--lc-leading-tight); }
+    .demo-doc h2 { margin: var(--lc-space-6) 0 var(--lc-space-2); font-family: var(--lc-font-serif); font-size: var(--lc-text-xl); }
+    .demo-doc p { margin: 0 0 var(--lc-space-3); color: var(--lc-color-ink-2); }
+    .demo-lead { color: var(--lc-color-muted); font-size: var(--lc-text-sm); }
+    .demo-actions { display: flex; gap: var(--lc-space-2); flex-wrap: wrap; margin: var(--lc-space-4) 0; }
+    .demo-card { padding: var(--lc-space-4); border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-md); background: var(--lc-color-surface); }
+    .demo-card + .demo-card { margin-top: var(--lc-space-3); }
+    .demo-table { width: 100%; border-collapse: collapse; font-size: var(--lc-text-sm); }
+    .demo-table th, .demo-table td { padding: var(--lc-space-2); border-bottom: 1px solid var(--lc-color-line); text-align: left; }
+    .demo-table th { color: var(--lc-color-muted); font-weight: var(--lc-weight-semibold); }
+    .demo-bars { display: flex; align-items: flex-end; gap: var(--lc-space-2); height: 120px; margin-top: var(--lc-space-3); }
+    .demo-bars span { flex: 1 1 0; border-radius: var(--lc-radius-xs) var(--lc-radius-xs) 0 0; background: var(--lc-color-accent); }
+    .demo-bars span:nth-child(2) { background: var(--lc-color-accent-2); }
+    .demo-bars span:nth-child(4) { background: var(--lc-color-warn); }
+    .demo-bars span:nth-child(5) { background: var(--lc-color-success); }
+    .demo-foot { color: var(--lc-color-muted); font-size: var(--lc-text-xs); }
+  </style>
+</head>
+<body>
+<svg class="lc-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="lc-icon-add" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
+  <symbol id="lc-icon-remove" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="lc-icon-delete" viewBox="0 0 24 24"><path d="M4.5 7h15"/><path d="M9 7V5.5h6V7"/><path d="M6.5 7l.9 12.5h9.2L17.5 7"/><path d="M10 10.5v5.5"/><path d="M14 10.5v5.5"/></symbol>
+  <symbol id="lc-icon-edit" viewBox="0 0 24 24"><path d="M12.5 5H5.5a1 1 0 0 0-1 1v12.5a1 1 0 0 0 1 1H18a1 1 0 0 0 1-1V12"/><path d="M17 4.2l2.8 2.8-8.4 8.4-3.8 1 1-3.8 8.4-8.4z"/></symbol>
+  <symbol id="lc-icon-copy" viewBox="0 0 24 24"><path d="M9 8V6.5A1.5 1.5 0 0 1 10.5 5H19A1.5 1.5 0 0 1 20.5 6.5V15A1.5 1.5 0 0 1 19 16.5h-1.8"/><path d="M5 9.5A1.5 1.5 0 0 1 6.5 8H15a1.5 1.5 0 0 1 1.5 1.5v8.5A1.5 1.5 0 0 1 15 19.5H6.5A1.5 1.5 0 0 1 5 18V9.5z"/></symbol>
+  <symbol id="lc-icon-undo" viewBox="0 0 24 24"><path d="M9.5 14.5L4.5 9.5l5-5"/><path d="M4.5 9.5h9.5a5.5 5.5 0 0 1 0 11H10"/></symbol>
+  <symbol id="lc-icon-redo" viewBox="0 0 24 24"><path d="M14.5 14.5l5-5-5-5"/><path d="M19.5 9.5H10a5.5 5.5 0 0 0 0 11h4"/></symbol>
+  <symbol id="lc-icon-save" viewBox="0 0 24 24"><path d="M5.5 5.5a1 1 0 0 1 1-1h8l4 4v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-13z"/><path d="M8.5 4.5v3.5h5.5V4.5"/><rect x="8.5" y="13" width="7" height="6.5" rx="1"/></symbol>
+  <symbol id="lc-icon-export" viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7.5 7.5L12 3l4.5 4.5"/><path d="M4.5 15v3.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V15"/></symbol>
+  <symbol id="lc-icon-download" viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4.5 15v3.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V15"/></symbol>
+  <symbol id="lc-icon-upload" viewBox="0 0 24 24"><path d="M12 15V4"/><path d="M7.5 8.5L12 4l4.5 4.5"/><path d="M4.5 15v3.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V15"/></symbol>
+  <symbol id="lc-icon-run" viewBox="0 0 24 24"><path d="M8 5.5v13L19 12z"/></symbol>
+  <symbol id="lc-icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6l-12 12"/></symbol>
+  <symbol id="lc-icon-more" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="18" cy="12" r="1.5" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-more-vertical" viewBox="0 0 24 24"><circle cx="12" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="18" r="1.5" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-grip" viewBox="0 0 24 24"><circle cx="9" cy="7" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="7" r="1.3" fill="currentColor" stroke="none"/><circle cx="9" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="9" cy="17" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="17" r="1.3" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-chevron-down" viewBox="0 0 24 24"><path d="M6 9.5l6 5.5 6-5.5"/></symbol>
+  <symbol id="lc-icon-chevron-right" viewBox="0 0 24 24"><path d="M9 5.5l6.5 6.5-6.5 6.5"/></symbol>
+  <symbol id="lc-icon-chevron-up" viewBox="0 0 24 24"><path d="M6 14.5l6-5.5 6 5.5"/></symbol>
+  <symbol id="lc-icon-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="lc-icon-eye-off" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></symbol>
+  <symbol id="lc-icon-lock" viewBox="0 0 24 24"><path d="M6 11.5h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M8.5 11.5V8a3.5 3.5 0 0 1 7 0v3.5"/><circle cx="12" cy="16" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-unlock" viewBox="0 0 24 24"><path d="M6 11.5h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M8.5 11.5V8a3.5 3.5 0 0 1 6.6-1.6"/><circle cx="12" cy="16" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="lc-icon-warning" viewBox="0 0 24 24"><path d="M12 4.5l8 14.5h-16z"/><path d="M12 9.5v4.5"/><circle cx="12" cy="17.2" r="1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5"/><circle cx="12" cy="7.8" r="1.1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.4 9.2a2.7 2.7 0 0 1 5.3 1c0 1.9-2.5 2.2-2.5 3.6"/><circle cx="12" cy="17" r="1.1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+  <symbol id="lc-icon-filter" viewBox="0 0 24 24"><path d="M4 5.5h16l-6.2 7.2v6l-3.6 2v-8z"/></symbol>
+  <symbol id="lc-icon-sort" viewBox="0 0 24 24"><path d="M8 19V5"/><path d="M4.5 8.5L8 5l3.5 3.5"/><path d="M16 5v14"/><path d="M12.5 15.5L16 19l3.5-3.5"/></symbol>
+  <symbol id="lc-icon-grid" viewBox="0 0 24 24"><rect x="4.5" y="4.5" width="6" height="6" rx="1"/><rect x="13.5" y="4.5" width="6" height="6" rx="1"/><rect x="4.5" y="13.5" width="6" height="6" rx="1"/><rect x="13.5" y="13.5" width="6" height="6" rx="1"/></symbol>
+  <symbol id="lc-icon-layers" viewBox="0 0 24 24"><path d="M12 3.5l8.5 4.8-8.5 4.8-8.5-4.8 8.5-4.8z"/><path d="M3.5 12.2l8.5 4.8 8.5-4.8"/><path d="M3.5 16.2l8.5 4.8 8.5-4.8"/></symbol>
+  <symbol id="lc-icon-settings" viewBox="0 0 24 24"><path d="M4.5 6.5h9"/><path d="M18 6.5h2"/><circle cx="15.8" cy="6.5" r="2"/><path d="M4.5 12h2"/><path d="M10.5 12h9.5"/><circle cx="8.5" cy="12" r="2"/><path d="M4.5 17.5h10.5"/><path d="M19 17.5h.5"/><circle cx="17" cy="17.5" r="2"/></symbol>
+  <symbol id="lc-icon-palette" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="9.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="9.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="10" cy="15.5" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-text" viewBox="0 0 24 24"><path d="M5.5 6.5V4.5h13v2"/><path d="M12 4.5v15"/><path d="M8.5 19.5h7"/></symbol>
+  <symbol id="lc-icon-image" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="13" rx="1.5"/><circle cx="9" cy="10.2" r="1.4" fill="currentColor" stroke="none"/><path d="M5.5 16.5l4.3-4.6 3.7 3.7 2.6-2.6 4.4 4.4"/></symbol>
+  <symbol id="lc-icon-link" viewBox="0 0 24 24"><path d="M10.2 14a3.4 3.4 0 0 1 0-4.9l2.9-2.9a3.4 3.4 0 0 1 4.9 4.9l-1.5 1.5"/><path d="M13.8 10a3.4 3.4 0 0 1 0 4.9l-2.9 2.9a3.4 3.4 0 0 1-4.9-4.9l1.5-1.5"/></symbol>
+  <symbol id="lc-icon-external" viewBox="0 0 24 24"><path d="M14 4.5h6v6"/><path d="M20 4.5l-8.5 8.5"/><path d="M18 14v5.5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6.5a1 1 0 0 1 1-1h5.5"/></symbol>
+</svg>
+<header class="demo-top">
+  <div class="demo-brand">科设笔记<small>theme switcher demo</small></div>
+  <div class="lc-theme-switch" data-lc-theme-switch data-storage-key="lc-switcher-demo" data-default-theme="ink-green">
+    <span class="lc-theme-switch-label">外观</span>
+    <button class="lc-tab is-active" type="button" data-lc-theme-mode="system" aria-pressed="true">跟随系统</button>
+    <button class="lc-tab" type="button" data-lc-theme-mode="light" aria-pressed="false">亮</button>
+    <button class="lc-tab" type="button" data-lc-theme-mode="dark" aria-pressed="false">暗</button>
+    <select class="lc-select" data-lc-theme-select aria-label="主题">
+          <option value="auth-clean">认证 · 净白</option>
+          <option value="blueprint-amber">蓝图 · 琥珀</option>
+          <option value="dashboard-calm">仪表盘 · 石青</option>
+          <option value="docs-quiet">文档 · 素白</option>
+          <option value="ink-graphite">纸墨 · 石墨</option>
+          <option value="ink-green" selected>纸墨 · 松绿</option>
+          <option value="ink-navy">纸墨 · 藏青</option>
+          <option value="ink-ochre">纸墨 · 赭石</option>
+          <option value="night-contrast">夜航 · 高对比</option>
+          <option value="portfolio-bold">作品集 · 赤霞</option>
+    </select>
+  </div>
+</header>
+<main class="demo-doc">
+  <h1>把主题切换交给读者</h1>
+  <p class="demo-lead">这一页不写死任何颜色：按钮、表格、图表全部引用 CSS 变量。右上角切换器只改 html 上的 data-lc-theme 与 data-lc-mode。</p>
+
+  <div class="demo-actions">
+    <button class="lc-btn lc-btn-primary" type="button"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-save"></use></svg><span class="lc-btn-label">保存</span></button>
+    <button class="lc-btn" type="button"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-eye"></use></svg><span class="lc-btn-label">预览</span></button>
+    <button class="lc-btn lc-btn-ghost" type="button"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-more"></use></svg><span class="lc-btn-label">更多</span></button>
+    <span class="lc-badge lc-badge-success">已同步</span>
+  </div>
+
+  <div class="demo-card">
+    <p>正文、次要文字、占位符和禁用态都在这一屏里。切换主题后，注意看输入框描边和按钮悬停色。</p>
+    <div class="lc-field" style="max-width:320px">
+      <label class="lc-label" for="demoName">订阅邮箱</label>
+      <input class="lc-input" id="demoName" placeholder="you@example.com" />
+    </div>
+    <div class="lc-check" style="margin-top:12px"><input id="demoCheck" type="checkbox" checked /> <span><label for="demoCheck">接收每周摘要</label></span></div>
+  </div>
+
+  <h2>表格与图表</h2>
+  <div class="demo-card">
+    <table class="demo-table">
+      <thead><tr><th>页面</th><th>状态</th><th>更新时间</th></tr></thead>
+      <tbody>
+        <tr><td>主题与令牌</td><td>已发布</td><td>今天</td></tr>
+        <tr><td>组件库</td><td>草稿</td><td>昨天</td></tr>
+        <tr><td>导出设置</td><td>待审</td><td>3 天前</td></tr>
+      </tbody>
+    </table>
+    <div class="demo-bars" role="img" aria-label="示例柱状图">
+      <span style="height:52%"></span><span style="height:74%"></span><span style="height:100%"></span><span style="height:40%"></span><span style="height:63%"></span>
+    </div>
+  </div>
+
+  <p class="demo-foot">切换结果会存在 localStorage（key: lc-switcher-demo）。刷新后保持；选「跟随系统」时监听系统深浅变化。</p>
+</main>
+<script src="theme-switch.js"></script>
+</body>
+</html>

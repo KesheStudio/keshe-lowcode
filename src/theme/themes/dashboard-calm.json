@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 3,
+  "id": "dashboard-calm",
+  "name": "仪表盘 · 石青",
+  "tone": "cool",
+  "description": "仪表盘默认。冷灰蓝底配低饱和数据色，长时间盯盘不刺眼，状态色仍分得清。",
+  "modes": {
+    "light": {
+      "seeds": {
+        "bg": "#f2f5f7",
+        "surface": "#ffffff",
+        "ink": "#16202a",
+        "muted": "#55636f",
+        "line": "#d5dee5",
+        "accent": "#2c6e8f",
+        "codeBg": "#e9f0f3",
+        "success": "#2b6b4f",
+        "warn": "#7c530f",
+        "danger": "#a03a34",
+        "info": "#3a5f9e"
+      }
+    },
+    "dark": {
+      "seeds": {
+        "bg": "#0d1419",
+        "surface": "#131c24",
+        "ink": "#e5eef3",
+        "muted": "#9fb0bd",
+        "line": "#263440",
+        "accent": "#7fc0dd",
+        "accentFill": "#245b78",
+        "onAccent": "#f2fbff",
+        "codeBg": "#0f181e",
+        "success": "#7fc9aa",
+        "warn": "#d3a86a",
+        "danger": "#e08d85",
+        "info": "#8fb8ea"
+      }
+    }
+  }
+}

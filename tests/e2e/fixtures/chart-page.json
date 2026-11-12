@@ -1,0 +1,29 @@
+{
+  "format": "lowcode-page",
+  "schemaVersion": 1,
+  "page": {
+    "schemaVersion": 2,
+    "id": "e2e-chart",
+    "title": "E2E 图表页",
+    "slug": "chart",
+    "path": "chart.html",
+    "nav": true,
+    "layout": { "mode": "flow" },
+    "blocks": [
+      {
+        "id": "chart-heading",
+        "type": "heading",
+        "level": 2,
+        "text": "图表页"
+      },
+      {
+        "id": "chart-bar",
+        "type": "ui-chart-bar",
+        "title": "季度访问量",
+        "labels": ["Q1", "Q2", "Q3", "Q4"],
+        "series": [{ "name": "访问量", "values": [120, 260, 180, 320] }],
+        "caption": "图表由渲染层直接输出 SVG，不依赖任何图表库。"
+      }
+    ]
+  }
+}

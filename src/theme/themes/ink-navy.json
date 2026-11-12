@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 3,
+  "id": "ink-navy",
+  "name": "纸墨 · 藏青",
+  "tone": "cool",
+  "description": "冷调纸感。藏青强调色偏克制，适合技术文档、运维手册这类需要长期盯着看的场景。",
+  "modes": {
+    "light": {
+      "seeds": {
+        "bg": "#f2f1ec",
+        "surface": "#fdfcf7",
+        "ink": "#1f252c",
+        "muted": "#5b6670",
+        "line": "#d9d7cc",
+        "accent": "#35577f",
+        "codeBg": "#eae9e0",
+        "success": "#2f5f4b",
+        "warn": "#7d4a1a",
+        "danger": "#a3342c",
+        "info": "#35577f"
+      }
+    },
+    "dark": {
+      "seeds": {
+        "bg": "#121820",
+        "surface": "#19222c",
+        "ink": "#e3e5e8",
+        "muted": "#a3aeb9",
+        "line": "#28343f",
+        "accent": "#93b3d6",
+        "accentFill": "#2b4a6b",
+        "onAccent": "#f4f7fb",
+        "codeBg": "#131c24",
+        "success": "#8fc7a9",
+        "warn": "#d6a177",
+        "danger": "#e08a7d",
+        "info": "#93b3d6"
+      }
+    }
+  }
+}

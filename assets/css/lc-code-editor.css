@@ -1,0 +1,588 @@
+/* 低代码平台 · 独立代码编辑器（第一步）
+ *
+ * 结构：行号栏 + 高亮层 + 当前行背景 + 透明 textarea + 状态栏。
+ * 颜色只用 --lc-color-* / --lc-* 变量，不写死色值，跟随 data-lc-mode 与主题包。
+ * 尺寸类变量可以覆盖，但行高与字号要和 textarea 保持一致，否则高亮会错位。
+ */
+
+.lc-code-editor {
+  --lce-font-size: var(--lc-text-sm);
+  --lce-line-height: 20px;
+  --lce-pad-y: 10px;
+  --lce-pad-x: 12px;
+  --lce-tab-size: 4;
+
+  box-sizing: border-box;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 220px;
+  overflow: hidden;
+  border: var(--lc-border);
+  border-radius: var(--lc-radius-md);
+  background: var(--lc-color-code-bg);
+  color: var(--lc-color-code-text);
+  font-family: var(--lc-font-sans);
+  font-size: var(--lc-text-base);
+  line-height: var(--lc-leading-base);
+}
+
+.lc-code-editor *,
+.lc-code-editor *::before,
+.lc-code-editor *::after {
+  box-sizing: border-box;
+}
+
+.lc-code-editor:focus-within {
+  border-color: var(--lc-color-focus);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--lc-color-focus) 28%, transparent);
+}
+
+.lce-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  border: 0;
+  white-space: nowrap;
+}
+
+.lce-body {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ---------------- 大文件降级 ---------------- */
+
+.lce-degrade {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--lc-space-2);
+  flex: 0 0 auto;
+  padding: var(--lc-space-2) var(--lc-space-2-5);
+  border-bottom: var(--lc-border);
+  background: var(--lc-color-warn-soft);
+  color: var(--lc-color-warn);
+  font-family: var(--lc-font-sans);
+  font-size: var(--lc-text-xs);
+  line-height: var(--lc-leading-base);
+}
+
+.lce-degrade[hidden] {
+  display: none;
+}
+
+.lce-degrade strong {
+  flex: 0 0 auto;
+  color: var(--lc-color-warn);
+}
+
+.lce-degrade-text {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+/* ---------------- 查找替换 ---------------- */
+
+.lce-find {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 0 0 auto;
+  padding: var(--lc-space-2) var(--lc-space-2-5);
+  border-bottom: var(--lc-border);
+  background: var(--lc-color-surface-2);
+  font-family: var(--lc-font-sans);
+  font-size: var(--lc-text-xs);
+}
+
+.lce-find[hidden] {
+  display: none;
+}
+
+.lc-code-editor[data-find-mode="find"] .lce-find-replace-row {
+  display: none;
+}
+
+.lce-find-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.lce-find-input,
+.lce-replace-input {
+  flex: 1 1 180px;
+  min-width: 120px;
+  min-height: 28px;
+  padding: 0 8px;
+  border: var(--lc-border);
+  border-radius: var(--lc-radius-xs);
+  background: var(--lc-color-surface);
+  color: var(--lc-color-ink);
+  font-family: var(--lc-font-mono);
+  font-size: var(--lc-text-xs);
+}
+
+.lce-find-input:focus-visible,
+.lce-replace-input:focus-visible {
+  outline: 2px solid var(--lc-color-focus);
+  outline-offset: -1px;
+}
+
+.lce-find-input[aria-invalid="true"] {
+  border-color: var(--lc-color-danger);
+}
+
+.lce-find-count {
+  min-width: 56px;
+  color: var(--lc-color-muted-2);
+  font-family: var(--lc-font-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.lce-find-count.is-empty,
+.lce-find-msg.is-empty {
+  color: var(--lc-color-warn);
+}
+
+.lce-find-count.is-invalid,
+.lce-find-msg.is-invalid {
+  color: var(--lc-color-danger);
+}
+
+.lce-find-msg.is-ok {
+  color: var(--lc-color-success);
+}
+
+.lce-find-btn,
+.lce-find-close {
+  min-height: 28px;
+  padding: 0 10px;
+  border: var(--lc-border);
+  border-radius: var(--lc-radius-xs);
+  background: var(--lc-color-surface);
+  color: var(--lc-color-ink-2);
+  font: inherit;
+  font-size: var(--lc-text-xs);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.lce-find-btn:hover,
+.lce-find-close:hover {
+  border-color: var(--lc-color-accent-line);
+  background: var(--lc-color-accent-soft);
+  color: var(--lc-color-accent);
+}
+
+.lce-find-btn:focus-visible,
+.lce-find-close:focus-visible {
+  outline: 2px solid var(--lc-color-focus);
+  outline-offset: 1px;
+}
+
+.lce-find-close {
+  width: 28px;
+  padding: 0;
+  font-size: var(--lc-text-sm);
+}
+
+.lce-find-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--lc-color-muted);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.lce-find-opt input:focus-visible {
+  outline: 2px solid var(--lc-color-focus);
+  outline-offset: 2px;
+}
+
+.lce-find-msg {
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-xs);
+  white-space: nowrap;
+}
+
+/* ---------------- 行号 ---------------- */
+
+.lce-gutter {
+  position: relative;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-right: var(--lc-border-width) var(--lc-border-style) var(--lc-color-code-line);
+  background: var(--lc-color-code-bg);
+  font-family: var(--lc-font-mono);
+  font-size: var(--lc-text-xs);
+  user-select: none;
+}
+
+.lce-gutter-inner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  padding: var(--lce-pad-y) 0;
+  will-change: transform;
+}
+
+.lce-line-number {
+  height: var(--lce-line-height);
+  padding-right: var(--lc-space-2-5);
+  color: var(--lc-color-code-line);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--lce-line-height);
+  text-align: right;
+}
+
+.lce-line-number.is-current {
+  color: var(--lc-color-code-text);
+  font-weight: var(--lc-weight-semibold);
+}
+
+/* 大文件模式：行号只渲染可见窗口，用绝对定位按行号放置。 */
+.lc-code-editor.is-degraded .lce-gutter-inner {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.lce-gutter-line {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: var(--lce-line-height);
+  padding-right: var(--lc-space-2-5);
+  color: var(--lc-color-code-line);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--lce-line-height);
+  text-align: right;
+}
+
+.lce-gutter-line.is-current {
+  color: var(--lc-color-code-text);
+  font-weight: var(--lc-weight-semibold);
+}
+
+/* ---------------- 代码区 ---------------- */
+
+.lce-code {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--lc-color-code-bg);
+}
+
+.lce-activeline {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 0;
+  height: var(--lce-line-height);
+  background: var(--lc-color-accent-soft);
+  background: color-mix(in srgb, var(--lc-color-accent-soft) 45%, transparent);
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* 查找命中层：只画底色，文字仍由高亮层负责。 */
+.lce-matchlayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.lce-matchlayer-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: var(--lce-pad-y) var(--lce-pad-x);
+  color: transparent;
+  font-family: var(--lc-font-mono);
+  font-size: var(--lce-font-size);
+  line-height: var(--lce-line-height);
+  letter-spacing: 0;
+  tab-size: var(--lce-tab-size);
+  white-space: pre;
+  font-variant-ligatures: none;
+  will-change: transform;
+}
+
+.lce-match {
+  border-radius: 2px;
+  background: var(--lc-color-accent-soft);
+  background: color-mix(in srgb, var(--lc-color-accent) 24%, transparent);
+}
+
+.lce-match.is-active {
+  background: var(--lc-color-accent-soft);
+  background: color-mix(in srgb, var(--lc-color-accent) 48%, transparent);
+}
+
+/* 括号匹配层：只渲染涉及的两行，整行文字透明，只给括号画底。 */
+.lce-bracketlayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.lce-bracketlayer-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: var(--lce-pad-y) var(--lce-pad-x);
+  color: transparent;
+  font-family: var(--lc-font-mono);
+  font-size: var(--lce-font-size);
+  line-height: var(--lce-line-height);
+  letter-spacing: 0;
+  tab-size: var(--lce-tab-size);
+  white-space: pre;
+  font-variant-ligatures: none;
+  will-change: transform;
+}
+
+.lce-bracket-line {
+  position: absolute;
+  left: var(--lce-pad-x);
+  color: transparent;
+  line-height: var(--lce-line-height);
+  white-space: pre;
+}
+
+.lce-bracket {
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--lc-color-accent) 34%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--lc-color-accent) 55%, transparent);
+}
+
+.lce-bracket.is-unmatched {
+  background: color-mix(in srgb, var(--lc-color-danger) 30%, transparent);
+  box-shadow: 0 0 0 1px var(--lc-color-danger-line);
+}
+
+.lce-highlight {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.lce-highlight-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: var(--lce-pad-y) var(--lce-pad-x);
+  color: var(--lc-color-code-text);
+  font-family: var(--lc-font-mono);
+  font-size: var(--lce-font-size);
+  line-height: var(--lce-line-height);
+  letter-spacing: 0;
+  tab-size: var(--lce-tab-size);
+  white-space: pre;
+  font-variant-ligatures: none;
+  will-change: transform;
+}
+
+.lce-line {
+  height: var(--lce-line-height);
+  line-height: var(--lce-line-height);
+  white-space: pre;
+}
+
+.lce-input {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: var(--lce-pad-y) var(--lce-pad-x);
+  border: 0;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  caret-color: var(--lc-color-code-text);
+  font-family: var(--lc-font-mono);
+  font-size: var(--lce-font-size);
+  font-weight: var(--lc-weight-normal);
+  line-height: var(--lce-line-height);
+  letter-spacing: 0;
+  tab-size: var(--lce-tab-size);
+  white-space: pre;
+  overflow: auto;
+  overflow-wrap: normal;
+  word-break: normal;
+  scrollbar-width: thin;
+  scrollbar-color: var(--lc-color-line-strong) var(--lc-color-code-bg);
+  font-variant-ligatures: none;
+}
+
+.lce-input::selection {
+  background: var(--lc-color-selection-bg);
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 支持 color-mix 的浏览器让选区半透明，底下的语法颜色仍可见。 */
+@supports (background: color-mix(in srgb, red 50%, transparent)) {
+  .lce-input::selection {
+    background: color-mix(in srgb, var(--lc-color-selection-bg) 55%, transparent);
+  }
+}
+
+/* 输入法组合期间把文字交还给 textarea，避免候选字看不见。 */
+.lc-code-editor.is-composing .lce-highlight {
+  visibility: hidden;
+}
+
+.lc-code-editor.is-composing .lce-input {
+  color: var(--lc-color-code-text);
+  -webkit-text-fill-color: var(--lc-color-code-text);
+}
+
+/* 大文件模式没有高亮层，文字必须由 textarea 自己显示。 */
+.lc-code-editor.is-degraded .lce-input {
+  color: var(--lc-color-code-text);
+  -webkit-text-fill-color: var(--lc-color-code-text);
+}
+
+.lc-code-editor.is-degraded .lce-input::selection {
+  color: var(--lc-color-selection-ink);
+  -webkit-text-fill-color: var(--lc-color-selection-ink);
+}
+
+.lce-input:focus-visible {
+  outline: 2px solid var(--lc-color-focus);
+  outline-offset: -2px;
+}
+
+/* ---------------- 语法着色 ---------------- */
+
+.lce-tok-keyword {
+  color: var(--lc-color-code-keyword);
+}
+
+.lce-tok-string {
+  color: var(--lc-color-code-string);
+}
+
+.lce-tok-comment {
+  color: var(--lc-color-code-comment);
+  font-style: italic;
+}
+
+.lce-tok-number {
+  color: var(--lc-color-code-number);
+}
+
+.lce-tok-constant {
+  color: var(--lc-color-code-number);
+}
+
+.lce-tok-function {
+  color: var(--lc-color-code-function);
+}
+
+.lce-tok-tag {
+  color: var(--lc-color-code-tag);
+}
+
+.lce-tok-attr {
+  color: var(--lc-color-code-attr);
+}
+
+.lce-tok-prop {
+  color: var(--lc-color-code-prop);
+}
+
+.lce-tok-type {
+  color: var(--lc-color-code-tag);
+}
+
+.lce-tok-heading {
+  color: var(--lc-color-code-keyword);
+}
+
+.lce-tok-emphasis {
+  color: var(--lc-color-code-function);
+}
+
+.lce-tok-code {
+  color: var(--lc-color-code-string);
+}
+
+.lce-tok-link {
+  color: var(--lc-color-code-function);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ---------------- 状态栏 ---------------- */
+
+.lce-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lc-space-3);
+  flex: 0 0 auto;
+  min-height: var(--lc-size-statusbar);
+  padding: 0 var(--lc-space-2-5);
+  overflow: hidden;
+  border-top: var(--lc-border);
+  background: var(--lc-color-surface-2);
+  color: var(--lc-color-muted);
+  font-family: var(--lc-font-sans);
+  font-size: var(--lc-text-xs);
+  line-height: var(--lc-size-statusbar);
+  white-space: nowrap;
+}
+
+.lce-status-left,
+.lce-status-right {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lce-status-notice {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--lc-color-warn);
+  font-weight: var(--lc-weight-semibold);
+  text-align: center;
+  text-overflow: ellipsis;
+}
+
+.lce-status-notice:empty {
+  display: none;
+}
+
+.lce-status-right {
+  color: var(--lc-color-muted-2);
+  text-align: right;
+}

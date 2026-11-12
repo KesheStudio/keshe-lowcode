@@ -1,0 +1,15 @@
+// [LC-GENERATED] 平台生成区：重新生成会整块替换，不要在这里手改。
+pub mod auth;
+pub mod builtin;
+pub mod cache;
+pub mod config;
+pub mod config_center;
+pub mod data;
+pub mod db;
+pub mod error;
+pub mod http;
+pub mod middleware;
+pub mod migrate;
+pub mod models;
+pub mod routes;
+pub mod state;

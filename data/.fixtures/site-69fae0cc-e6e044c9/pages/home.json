@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 2,
+  "id": "home",
+  "title": "首页",
+  "slug": "home",
+  "path": "index.html",
+  "nav": false,
+  "blocks": [
+    {
+      "type": "heading",
+      "text": "资源"
+    }
+  ]
+}

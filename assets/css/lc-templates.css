@@ -1,0 +1,269 @@
+/* 模板库管理页：只补组件库样式没有的模板专用块，视觉仍走 lc-* 令牌。 */
+
+/* 本页有多个用 hidden 切换的块，其中部分自带 display，必须显式覆盖。 */
+[hidden] {
+  display: none !important;
+}
+
+/* 起步模板 */
+.lc-tpl-starters {
+  margin-bottom: var(--lc-space-4);
+}
+
+.lc-tpl-starter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--lc-space-3);
+}
+
+.lc-tpl-starter-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lc-space-2);
+  padding: var(--lc-space-3-5);
+  border: 1px solid var(--lc-color-line);
+  border-radius: var(--lc-radius-md);
+  background: var(--lc-color-surface-2);
+}
+
+.lc-tpl-starter-card h4 {
+  margin: 0;
+  font-size: var(--lc-text-md);
+}
+
+.lc-tpl-starter-card p {
+  margin: 0;
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-sm);
+  line-height: 1.55;
+}
+
+.lc-tpl-starter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.lc-tpl-starter-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lc-space-2);
+  margin-top: auto;
+}
+
+.lc-tpl-count {
+  margin-bottom: var(--lc-space-2);
+  font-family: var(--lc-font-mono);
+  font-size: var(--lc-text-xs);
+}
+
+.lc-tpl-span2 {
+  grid-column: span 2;
+}
+
+.lc-tpl-form {
+  margin-bottom: var(--lc-space-3);
+}
+
+.lc-tpl-create-actions {
+  display: flex;
+  gap: var(--lc-space-2);
+}
+
+.lc-comp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lc-space-2);
+}
+
+/* 左侧列表里的类型/页面数标记 */
+.lc-tpl-item-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.lc-tpl-item-badges .lc-badge {
+  font-size: 10px;
+  padding: 0 6px;
+}
+
+/* 内容结构 */
+.lc-tpl-structure {
+  display: grid;
+  gap: var(--lc-space-2);
+}
+
+.lc-tpl-structure-group + .lc-tpl-structure-group {
+  padding-top: var(--lc-space-2);
+  border-top: 1px solid var(--lc-color-line);
+}
+
+.lc-tpl-structure-group h4 {
+  margin: 0 0 var(--lc-space-1);
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-xs);
+  font-weight: var(--lc-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.lc-tpl-page-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--lc-space-3);
+  padding: var(--lc-space-2) var(--lc-space-3);
+  border: 1px solid var(--lc-color-line);
+  border-radius: var(--lc-radius-sm);
+  background: var(--lc-color-surface-2);
+}
+
+.lc-tpl-page-row + .lc-tpl-page-row {
+  margin-top: var(--lc-space-1);
+}
+
+.lc-tpl-page-row strong {
+  font-size: var(--lc-text-sm);
+  font-weight: var(--lc-weight-medium);
+}
+
+.lc-tpl-page-row span {
+  color: var(--lc-color-muted);
+  font-family: var(--lc-font-mono);
+  font-size: var(--lc-text-xs);
+  white-space: nowrap;
+}
+
+.lc-tpl-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lc-space-1);
+}
+
+.lc-tpl-chip {
+  padding: 2px var(--lc-space-2);
+  border: 1px solid var(--lc-color-line);
+  border-radius: 999px;
+  background: var(--lc-color-surface);
+  color: var(--lc-color-ink-2);
+  font-family: var(--lc-font-mono);
+  font-size: 10px;
+}
+
+.lc-tpl-empty-line {
+  margin: 0;
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-xs);
+}
+
+/* 套用面板 */
+.lc-tpl-modes {
+  margin-bottom: var(--lc-space-3);
+}
+
+.lc-tpl-overwrite {
+  display: grid;
+  gap: var(--lc-space-2);
+  margin-bottom: var(--lc-space-3);
+}
+
+.lc-tpl-warn-text {
+  margin: 0;
+  padding: var(--lc-space-2) var(--lc-space-3);
+  border-left: 3px solid var(--lc-color-warn);
+  border-radius: var(--lc-radius-sm);
+  background: var(--lc-color-surface-2);
+  color: var(--lc-color-ink-2);
+  font-size: var(--lc-text-xs);
+  line-height: var(--lc-leading-base);
+}
+
+.lc-tpl-check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--lc-space-2);
+  margin-bottom: var(--lc-space-3);
+  color: var(--lc-color-ink-2);
+  font-size: var(--lc-text-xs);
+  line-height: var(--lc-leading-base);
+}
+
+.lc-tpl-check input {
+  margin-top: 2px;
+}
+
+.lc-tpl-apply-actions {
+  margin-top: var(--lc-space-2);
+}
+
+.lc-tpl-overwrite-confirm {
+  margin-top: var(--lc-space-3);
+  padding: var(--lc-space-3);
+  border: 1px solid var(--lc-color-warn);
+  border-radius: var(--lc-radius-sm);
+  background: var(--lc-color-surface-2);
+}
+
+.lc-tpl-overwrite-confirm p {
+  margin: 0 0 var(--lc-space-2);
+  color: var(--lc-color-ink-2);
+  font-size: var(--lc-text-xs);
+  line-height: var(--lc-leading-base);
+}
+
+.lc-tpl-apply-result {
+  margin-top: var(--lc-space-3);
+  padding: var(--lc-space-3);
+  border-left: 3px solid var(--lc-color-accent);
+  border-radius: var(--lc-radius-sm);
+  background: var(--lc-color-surface-2);
+  font-size: var(--lc-text-xs);
+  line-height: var(--lc-leading-base);
+}
+
+.lc-tpl-apply-result strong {
+  display: block;
+  margin-bottom: var(--lc-space-1);
+  font-size: var(--lc-text-sm);
+}
+
+.lc-tpl-apply-result ul {
+  margin: 0;
+  padding-left: var(--lc-space-4);
+}
+
+.lc-tpl-apply-result li + li {
+  margin-top: 2px;
+}
+
+.lc-tpl-danger {
+  border-left: 3px solid var(--lc-color-danger);
+}
+
+.lc-tpl-danger-text {
+  margin: 0 0 var(--lc-space-3);
+  color: var(--lc-color-ink-2);
+  font-size: var(--lc-text-sm);
+  line-height: var(--lc-leading-base);
+}
+
+.lc-tpl-notes {
+  margin: 0;
+  padding-left: var(--lc-space-4);
+  color: var(--lc-color-ink-2);
+  font-size: var(--lc-text-xs);
+  line-height: var(--lc-leading-base);
+}
+
+.lc-tpl-notes li + li {
+  margin-top: var(--lc-space-1);
+}
+
+@media (max-width: 860px) {
+  .lc-tpl-span2 {
+    grid-column: span 1;
+  }
+}

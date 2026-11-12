@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180" role="img" aria-label="示例图">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#dfe8e2"/>
+      <stop offset="1" stop-color="#b9cdc2"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="180" fill="url(#g)"/>
+  <circle cx="86" cy="66" r="30" fill="#f7f5ef" opacity="0.85"/>
+  <path d="M0 180 L110 84 L190 150 L246 108 L320 180 Z" fill="#5d7d6e" opacity="0.55"/>
+  <text x="160" y="164" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#33463c">lazy image sample</text>
+</svg>

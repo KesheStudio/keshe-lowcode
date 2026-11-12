@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 3,
+  "id": "ink-graphite",
+  "name": "纸墨 · 石墨",
+  "tone": "neutral",
+  "description": "低饱和中性色，界面几乎只剩黑白灰。适合把编辑器当工具用、不想被颜色打扰的人。",
+  "modes": {
+    "light": {
+      "seeds": {
+        "bg": "#f3f3f0",
+        "surface": "#fcfcf9",
+        "ink": "#1f2224",
+        "muted": "#5a6064",
+        "line": "#d8d8d1",
+        "accent": "#4a555c",
+        "codeBg": "#eaeae4",
+        "success": "#3f6349",
+        "warn": "#77501f",
+        "danger": "#9c3f36",
+        "info": "#3f5b76"
+      }
+    },
+    "dark": {
+      "seeds": {
+        "bg": "#151719",
+        "surface": "#1c2023",
+        "ink": "#e4e5e3",
+        "muted": "#a6abab",
+        "line": "#2c3134",
+        "accent": "#a6b0b8",
+        "accentFill": "#3a464e",
+        "onAccent": "#f2f5f7",
+        "codeBg": "#171b1e",
+        "success": "#9bc4a1",
+        "warn": "#d3a878",
+        "danger": "#e0958b",
+        "info": "#9db8cf"
+      }
+    }
+  }
+}

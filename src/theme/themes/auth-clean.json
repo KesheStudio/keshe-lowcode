@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 3,
+  "id": "auth-clean",
+  "name": "认证 · 净白",
+  "tone": "neutral",
+  "description": "认证中心默认。接近纯白的干净底色和单一蓝强调，视觉焦点留给表单和状态提示。",
+  "modes": {
+    "light": {
+      "seeds": {
+        "bg": "#f7f9fb",
+        "surface": "#ffffff",
+        "ink": "#1a2430",
+        "muted": "#5a6672",
+        "line": "#dbe3ea",
+        "accent": "#1f5f9e",
+        "codeBg": "#eef3f7",
+        "success": "#2a6b4d",
+        "warn": "#7d500c",
+        "danger": "#a3332c",
+        "info": "#1f6f82"
+      }
+    },
+    "dark": {
+      "seeds": {
+        "bg": "#0b1117",
+        "surface": "#111923",
+        "ink": "#e6edf4",
+        "muted": "#9dabb8",
+        "line": "#223041",
+        "accent": "#7fb6e8",
+        "accentFill": "#1b4a75",
+        "onAccent": "#f2f8fe",
+        "codeBg": "#0d151d",
+        "success": "#84c6a5",
+        "warn": "#d6ac6b",
+        "danger": "#e58e85",
+        "info": "#86c9d9"
+      }
+    }
+  }
+}

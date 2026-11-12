@@ -1,0 +1,5 @@
+# E2E 运行产物：报告、失败产物、隔离运行目录都不入库
+.report/
+.artifacts/
+.artifacts-*/
+.runtime/

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "productName": "科设低代码平台",
+  "identifier": "com.keshestudio.lowcode",
+  "version": "0.1.0",
+  "description": "由低代码平台导出的桌面应用",
+  "window": {
+    "title": "科设低代码平台",
+    "width": 1024,
+    "height": 720,
+    "minWidth": 800,
+    "minHeight": 600,
+    "resizable": true,
+    "fullscreen": false,
+    "center": true
+  },
+  "icon": {
+    "source": "builtin",
+    "path": ""
+  },
+  "protocol": "https",
+  "delivery": {
+    "mode": "static",
+    "webDir": "../web"
+  },
+  "https": {
+    "mode": "generated",
+    "host": "localhost",
+    "port": 1420
+  },
+  "backend": {
+    "enabled": false,
+    "baseUrl": "http://127.0.0.1:8080"
+  },
+  "runtime": {
+    "singleInstance": true,
+    "autostart": false
+  },
+  "sidecar": {
+    "enabled": false,
+    "name": "lc-sidecar",
+    "args": [],
+    "readinessPath": "/health",
+    "readinessTimeoutMs": 10000,
+    "versionCheck": true,
+    "env": {}
+  },
+  "update": {
+    "active": false,
+    "endpoint": "",
+    "pubkey": "",
+    "checkOnStartup": true
+  },
+  "bundle": {
+    "targets": ["msi", "nsis", "appimage"],
+    "createUpdaterArtifacts": false,
+    "windows": {
+      "installMode": "passive"
+    }
+  },
+  "android": {
+    "signing": "test",
+    "keystorePath": "",
+    "keyAlias": "upload"
+  },
+  "dev": {
+    "url": "http://127.0.0.1:1420",
+    "beforeDevCommand": "",
+    "beforeBuildCommand": ""
+  }
+}

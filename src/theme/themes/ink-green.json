@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 3,
+  "id": "ink-green",
+  "name": "纸墨 · 松绿",
+  "tone": "paper",
+  "description": "默认主题。米色纸面配墨绿，正文偏黑不偏灰，长时间读文档不累。",
+  "modes": {
+    "light": {
+      "seeds": {
+        "bg": "#f4f0e6",
+        "surface": "#fffcf5",
+        "ink": "#20242a",
+        "muted": "#5f656b",
+        "line": "#ded6c5",
+        "accent": "#3e6a56",
+        "codeBg": "#efeade",
+        "success": "#2f5f4b",
+        "warn": "#7d4a1a",
+        "danger": "#a3342c",
+        "info": "#35577f"
+      }
+    },
+    "dark": {
+      "seeds": {
+        "bg": "#141a1f",
+        "surface": "#1a2229",
+        "ink": "#e6e2d8",
+        "muted": "#a0a8ae",
+        "line": "#2a343c",
+        "accent": "#8fb9a1",
+        "accentFill": "#2f5545",
+        "onAccent": "#f3f7f2",
+        "codeBg": "#151d23",
+        "success": "#8fc7a9",
+        "warn": "#d6a177",
+        "danger": "#e08a7d",
+        "info": "#93b3d6"
+      }
+    }
+  }
+}

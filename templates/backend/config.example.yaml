@@ -1,0 +1,198 @@
+# 低代码平台生成的后端配置样例
+# 复制到 deploy/backend/config.yaml 后直接改值即可，Rust / Node / Go 三套后端读的是同一份结构。
+# 只支持这个 YAML 子集：映射、- 列表、列表块映射、行内列表、引号字符串、布尔、整数、null、# 注释。
+# 需要更复杂的结构时改用 JSON（文件内容以 { 开头会被按 JSON 解析）。
+#
+# 覆盖链：内置默认 < config.generated.yaml < 本文件 < 环境变量 LC_* < 启动参数
+# 每个键的最终来源可以在 /api/meta 的 configSources / middlewareBuiltin / configCenter 里查到。
+
+schemaVersion: 1          # 固定为 1，不匹配直接报错
+
+language: rust            # rust / node / go；与模板自身不一致时只告警，行为以模板为准
+maturity: full            # full / usable / minimal，仅供展示，运行时不据此降级
+strict: true              # true = 未知键报错并退出；false = 只告警
+override: false           # true = 忽略 config.generated.yaml，本文件整体覆盖生成配置
+
+host: 127.0.0.1           # 监听地址；对外暴露时改成 0.0.0.0，并自行评估网络边界
+port: 8080                # 建议使用 1024 以上高位端口；本地/内网使用无需额外端口权限
+logLevel: info            # debug / info / warn / error
+
+cors:
+  enabled: true           # 关闭后不返回任何 CORS 头，跨域请求会被浏览器拦截（服务端不会报错）
+  origins: []             # [] = 不放开跨域；["*"] = 任意来源（此时 credentials 必须为 false）
+  methods: [GET, POST, PUT, DELETE, OPTIONS]
+  headers: [content-type, authorization, x-request-id]
+  credentials: false      # 带 Cookie 的跨域必须为 true，且 origins 不能是 ["*"]
+  maxAge: 600             # 预检结果缓存秒数；0 表示不缓存
+
+database:
+  driver: sqlite          # sqlite / mysql / postgres（未启用内置数据库组时使用，兼容模式）
+  url: "sqlite://data/app.db"   # 非空时优先，scheme 决定驱动；切 MySQL/PG 时留空或写成对应 DSN
+  host: 127.0.0.1         # mysql/postgres 用；sqlite 忽略
+  port: 0                 # 0 = 默认 3306 / 5432；sqlite 忽略
+  name: app               # 库名；sqlite 下 url 留空时作为 data/<name>.db
+  user: ""                # mysql/postgres 用；sqlite 忽略
+  password: ""            # 强烈建议留空，改用环境变量 LC_DB_PASSWORD
+  sslMode: disable        # disable / require；require 加密连接但不校验证书
+  maxOpenConns: 10        # 连接池上限，1-100
+  connectTimeoutSeconds: 5   # 连接超时，1-60；超时会给出排查提示，不抛原始异常
+
+cache:
+  enabled: true           # false = 关闭缓存；按 fallback 回退，并在启动日志写明已回退
+  fallback: memory        # memory（进程内存，多实例不共享）/ none（直读数据库）
+  driver: memory          # none / memory / redis；redis 不可用时按 fallback 回退
+  url: "redis://127.0.0.1:16379/0"   # 仅 redis 用；示例端口避开 6379；不支持 rediss://（TLS）
+  ttlSeconds: 30          # 缓存过期秒数，1-86400
+  keyPrefix: "lc:"        # key 前缀，避免与其他应用冲突
+
+auth:
+  tokenMode: jwt          # jwt（默认，无状态 access + 可撤销 refresh）/ session（服务端会话，可即时撤销）
+  jwtSecret: ""           # 必须从环境变量 LC_AUTH_JWT_SECRET 注入；留空时启动生成进程内一次性密钥并 warn
+  accessTokenTtlSeconds: 900      # access JWT 有效期，60-86400
+  refreshTokenTtlSeconds: 604800  # refresh token 有效期，3600-2592000
+  sessionTtlSeconds: 28800        # session 模式会话有效期，60-2592000
+  maxLoginFailures: 5     # 同一用户名窗口内允许的失败次数，1-100
+  failureWindowSeconds: 300   # 失败计数窗口，10-86400
+  lockSeconds: 900        # 达到失败上限后的锁定时间，10-86400
+  bootstrap:              # 首次启动可自动创建管理员；生产建议只用环境变量注入
+    username: ""
+    password: ""
+    role: admin
+
+# ---------------------------------------------------------------- 服务自身能力中间件
+# 这些是后端内置能力，不属于用户可自定义的业务配置。关闭项会在启动日志里打印
+# 「受影响接口 + 关闭后的默认行为 + 恢复提示」，不会等到请求时才 500。
+middleware:
+  requestId: true         # 生成 x-request-id；关闭后日志无法关联同一次请求
+  logging: true           # 访问日志；关闭后仅保留启动/错误日志，不会崩
+  bodyLimit:
+    enabled: true         # 关闭后写接口可接收任意大小请求体（不推荐）
+    maxBytes: 1048576     # 请求体上限，1024-268435456；超限返回 413 LC_E_PAYLOAD_TOO_LARGE
+  timeout:
+    enabled: true         # 关闭后慢请求会长期占用连接与数据库池
+    seconds: 30           # 请求处理上限，1-600；超时返回 503 LC_E_TIMEOUT
+  concurrency:
+    enabled: false        # 默认关闭；开启后限制在途请求数
+    maxInFlight: 64       # 在途请求上限，1-10000；超限返回 503 LC_E_CONCURRENCY_LIMITED
+  compression:
+    enabled: true         # 关闭后响应不压缩（可交给 nginx 代压）
+    gzip: true            # gzip 算法开关
+    brotli: true          # br 算法开关；Rust/Node 支持，Go 模板仅 gzip（启动日志会写明）
+    minBytes: 1024        # 小于该字节数不压缩，0-1048576
+  rateLimit:
+    enabled: false        # 默认关闭；开启后按客户端 IP 每秒固定窗口计数
+    rps: 20               # 每秒允许的请求数，1-10000；超限返回 429 LC_E_RATE_LIMITED
+  staticCache:
+    enabled: true         # 静态资源 Cache-Control；关闭后不主动设置缓存头
+    maxAgeSeconds: 3600            # 普通静态资源 max-age
+    immutableMaxAgeSeconds: 31536000   # 带内容指纹的文件使用 immutable 长缓存
+  health:
+    enabled: true         # 关闭后 /api/health 与 /api/ready 返回 503 并说明恢复方式，不会静默 404
+    readinessRequiresDatabase: true    # 就绪检查是否要求数据库可用
+    readinessRequiresCache: false      # 就绪检查是否要求缓存可用（仅 redis 驱动时生效）
+  securityHeaders:
+    enabled: true         # 关闭后不返回任何安全头
+    hsts:
+      enabled: false      # 默认关闭：纯 HTTP 部署开启会把浏览器锁死；HTTPS 站点建议开启
+      maxAgeSeconds: 31536000
+      includeSubdomains: true
+      preload: false
+    contentTypeOptions: nosniff                  # 留空 = 不发送该头
+    frameOptions: SAMEORIGIN
+    referrerPolicy: strict-origin-when-cross-origin
+    permissionsPolicy: "geolocation=(), microphone=(), camera=()"
+    crossOriginOpenerPolicy: same-origin
+
+  # -------------------------------------------------------------- 内置中间件预设组
+  # 每组 enabled: false 时完全不加载：不连接、不读取字段，导出产物里也不会出现该组配置键。
+  # 数据库组 postgres / mysql / sqlite 三选一；都不启用时退回上面顶层 database（兼容模式）。
+  builtin:
+    postgres:
+      enabled: false
+      config:
+        host: 127.0.0.1
+        port: 5432
+        database: app
+        user: lc
+        password: ""      # 密钥只读环境变量 LC_CFG_POSTGRES_PASSWORD
+        sslMode: disable
+        maxOpenConns: 10
+        connectTimeoutSeconds: 5
+    mysql:
+      enabled: false
+      config:
+        host: 127.0.0.1
+        port: 3306
+        database: app
+        user: lc
+        password: ""      # 密钥只读环境变量 LC_CFG_MYSQL_PASSWORD
+        maxOpenConns: 10
+        connectTimeoutSeconds: 5
+    sqlite:
+      enabled: true
+      config:
+        file: "data/app.db"
+    redis:
+      enabled: false      # 启用后接管缓存；关闭时按 cache.fallback 回退并写明
+      config:
+        url: "redis://127.0.0.1:16379/0"
+        ttlSeconds: 30
+        keyPrefix: "lc:"
+        password: ""      # 密钥只读环境变量 LC_CFG_REDIS_PASSWORD
+    objectStorage:        # 本模板不内置厂商 SDK：启用即注入配置，连接由用户代码负责
+      enabled: false
+      config:
+        driver: s3
+        endpoint: ""
+        bucket: ""
+        region: ""
+        accessKey: ""     # 密钥只读环境变量 LC_CFG_OBJECT_STORAGE_ACCESS_KEY
+        secretKey: ""     # 密钥只读环境变量 LC_CFG_OBJECT_STORAGE_SECRET_KEY
+    messageQueue:         # 同上：启用即注入配置
+      enabled: false
+      config:
+        driver: redis
+        url: ""
+        queue: lc
+    search:               # 同上：启用即注入配置
+      enabled: false
+      config:
+        driver: opensearch
+        url: ""
+        index: lc
+    reverseProxy:         # 供部署脚本渲染 nginx 使用
+      enabled: false
+      config:
+        upstream: "http://127.0.0.1:8080"
+        clientMaxBodySize: "1m"
+
+# ---------------------------------------------------------------- 自定义配置项
+# 平台侧「统一配置中心」生成 definitions（键名、类型、默认值、是否密钥），
+# 用户文件只写 values。骨架只做类型转换与缺省值，不做业务判断。
+# 任意键都可以被用户代码通过配置中心读取；来源可在 /api/meta.configCenter 查到。
+# 密钥项只从环境变量 LC_CFG_<KEY> 读取，配置文件里留空；缺失时启动报错并提示变量名。
+configCenter:
+  definitions:
+    - key: APP_MODE
+      type: enum
+      default: standard
+      enum: [standard, strict]
+      secret: false
+      description: 运行模式
+    - key: FEATURE_NEW_UI
+      type: bool
+      default: false
+      secret: false
+      description: 新界面开关
+    - key: PAYMENT_API_KEY
+      type: string
+      default: ""
+      secret: true
+      description: 支付密钥（只从环境变量 LC_CFG_PAYMENT_API_KEY 读取）
+  values:
+    APP_MODE: standard
+    FEATURE_NEW_UI: false
+
+static:
+  enabled: false          # backend+nginx 形态保持 false；只跑后端时改为 true
+  root: "../web"          # 静态站根目录，相对启动目录；越出站点根会被拒绝

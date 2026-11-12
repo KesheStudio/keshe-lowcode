@@ -1,0 +1,211 @@
+{
+  "generatedBy": "src/theme/build.mjs",
+  "gzip": "zlib level 6",
+  "base": {
+    "file": "assets/css/lc-tokens.css",
+    "bytes": 8912,
+    "gzipBytes": 2500
+  },
+  "merged": {
+    "file": "assets/css/lc-themes.css",
+    "themes": 10,
+    "bytes": 44432,
+    "gzipBytes": 7174
+  },
+  "themes": [
+    {
+      "id": "auth-clean",
+      "name": "认证 · 净白",
+      "bytes": 4523,
+      "gzipBytes": 1202
+    },
+    {
+      "id": "blueprint-amber",
+      "name": "蓝图 · 琥珀",
+      "bytes": 4533,
+      "gzipBytes": 1217
+    },
+    {
+      "id": "dashboard-calm",
+      "name": "仪表盘 · 石青",
+      "bytes": 4537,
+      "gzipBytes": 1217
+    },
+    {
+      "id": "docs-quiet",
+      "name": "文档 · 素白",
+      "bytes": 4523,
+      "gzipBytes": 1212
+    },
+    {
+      "id": "ink-graphite",
+      "name": "纸墨 · 石墨",
+      "bytes": 4527,
+      "gzipBytes": 1205
+    },
+    {
+      "id": "ink-green",
+      "name": "纸墨 · 松绿",
+      "bytes": 4521,
+      "gzipBytes": 1216
+    },
+    {
+      "id": "ink-navy",
+      "name": "纸墨 · 藏青",
+      "bytes": 4519,
+      "gzipBytes": 1164
+    },
+    {
+      "id": "ink-ochre",
+      "name": "纸墨 · 赭石",
+      "bytes": 4521,
+      "gzipBytes": 1208
+    },
+    {
+      "id": "night-contrast",
+      "name": "夜航 · 高对比",
+      "bytes": 4537,
+      "gzipBytes": 1185
+    },
+    {
+      "id": "portfolio-bold",
+      "name": "作品集 · 赤霞",
+      "bytes": 4537,
+      "gzipBytes": 1212
+    }
+  ],
+  "cumulative": [
+    {
+      "count": 1,
+      "lastThemeId": "auth-clean",
+      "bytes": 4523,
+      "gzipBytes": 1202,
+      "addedBytes": 4523,
+      "addedGzipBytes": 1202
+    },
+    {
+      "count": 2,
+      "lastThemeId": "blueprint-amber",
+      "bytes": 8962,
+      "gzipBytes": 1926,
+      "addedBytes": 4439,
+      "addedGzipBytes": 724
+    },
+    {
+      "count": 3,
+      "lastThemeId": "dashboard-calm",
+      "bytes": 13405,
+      "gzipBytes": 2607,
+      "addedBytes": 4443,
+      "addedGzipBytes": 681
+    },
+    {
+      "count": 4,
+      "lastThemeId": "docs-quiet",
+      "bytes": 17834,
+      "gzipBytes": 3267,
+      "addedBytes": 4429,
+      "addedGzipBytes": 660
+    },
+    {
+      "count": 5,
+      "lastThemeId": "ink-graphite",
+      "bytes": 22267,
+      "gzipBytes": 3931,
+      "addedBytes": 4433,
+      "addedGzipBytes": 664
+    },
+    {
+      "count": 6,
+      "lastThemeId": "ink-green",
+      "bytes": 26694,
+      "gzipBytes": 4577,
+      "addedBytes": 4427,
+      "addedGzipBytes": 646
+    },
+    {
+      "count": 7,
+      "lastThemeId": "ink-navy",
+      "bytes": 31119,
+      "gzipBytes": 5147,
+      "addedBytes": 4425,
+      "addedGzipBytes": 570
+    },
+    {
+      "count": 8,
+      "lastThemeId": "ink-ochre",
+      "bytes": 35546,
+      "gzipBytes": 5806,
+      "addedBytes": 4427,
+      "addedGzipBytes": 659
+    },
+    {
+      "count": 9,
+      "lastThemeId": "night-contrast",
+      "bytes": 39989,
+      "gzipBytes": 6486,
+      "addedBytes": 4443,
+      "addedGzipBytes": 680
+    },
+    {
+      "count": 10,
+      "lastThemeId": "portfolio-bold",
+      "bytes": 44432,
+      "gzipBytes": 7174,
+      "addedBytes": 4443,
+      "addedGzipBytes": 688
+    }
+  ],
+  "presets": [
+    {
+      "id": "docs",
+      "themeIds": [
+        "docs-quiet",
+        "ink-green",
+        "ink-navy",
+        "ink-graphite"
+      ],
+      "bytes": 17808,
+      "gzipBytes": 3165,
+      "bundleBytes": 26721,
+      "bundleGzipBytes": 4720
+    },
+    {
+      "id": "portfolio",
+      "themeIds": [
+        "portfolio-bold",
+        "ink-ochre",
+        "blueprint-amber"
+      ],
+      "bytes": 13403,
+      "gzipBytes": 2661,
+      "bundleBytes": 22316,
+      "bundleGzipBytes": 4759
+    },
+    {
+      "id": "dashboard",
+      "themeIds": [
+        "dashboard-calm",
+        "ink-navy",
+        "ink-graphite",
+        "blueprint-amber"
+      ],
+      "bytes": 17834,
+      "gzipBytes": 3255,
+      "bundleBytes": 26747,
+      "bundleGzipBytes": 5316
+    },
+    {
+      "id": "auth",
+      "themeIds": [
+        "auth-clean",
+        "docs-quiet",
+        "ink-green"
+      ],
+      "bytes": 13379,
+      "gzipBytes": 2604,
+      "bundleBytes": 22292,
+      "bundleGzipBytes": 4167
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+target/
+data/
+logs/
+lowcode-server
+lowcode-server.exe
+.env
+.env.local

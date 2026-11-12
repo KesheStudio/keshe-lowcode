@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "productName": "科设低代码平台",
+  "version": "0.1.0",
+  "singleInstance": true,
+  "autostart": false,
+  "updateActive": false,
+  "checkOnStartup": true,
+  "backend": {
+    "enabled": false,
+    "baseUrl": "http://127.0.0.1:8080"
+  },
+  "delivery": {
+    "mode": "static",
+    "protocol": "https"
+  },
+  "sidecar": {
+    "enabled": false,
+    "name": "lc-sidecar",
+    "args": [],
+    "readinessPath": "/health",
+    "readinessTimeoutMs": 10000,
+    "versionCheck": true,
+    "env": {}
+  }
+}

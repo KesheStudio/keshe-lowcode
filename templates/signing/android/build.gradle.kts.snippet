@@ -1,0 +1,33 @@
+// 贴到 src-tauri/gen/android/app/build.gradle.kts
+// 顶部加一行 import；signingConfigs 放在 buildTypes 之前。
+// 属性文件只存路径与别名；密码从 LC_KEYSTORE_PASS 环境变量读取，不落盘明文。
+
+import java.io.FileInputStream
+
+android {
+    // ...
+
+    signingConfigs {
+        create("release") {
+            val keystorePropertiesFile = rootProject.file("keystore.properties")
+            val keystoreProperties = Properties()
+            if (keystorePropertiesFile.exists()) {
+                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+            }
+            val password = System.getenv("LC_KEYSTORE_PASS")
+            require(!password.isNullOrBlank()) {
+                "缺少环境变量 LC_KEYSTORE_PASS；签名口令不写进 keystore.properties。"
+            }
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = password
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = password
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
+}

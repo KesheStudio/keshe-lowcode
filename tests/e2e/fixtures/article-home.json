@@ -1,0 +1,42 @@
+{
+  "format": "lowcode-page",
+  "schemaVersion": 1,
+  "page": {
+    "schemaVersion": 2,
+    "id": "e2e-home",
+    "title": "E2E 离线首页",
+    "slug": "home",
+    "path": "index.html",
+    "nav": true,
+    "layout": { "mode": "flow" },
+    "blocks": [
+      {
+        "id": "home-heading",
+        "type": "heading",
+        "level": 2,
+        "text": "离线首页"
+      },
+      {
+        "id": "home-intro",
+        "type": "paragraph",
+        "md": "这个页面从导出的 Web 静态包里通过本地静态服务打开，用来确认样式、交互与图表在真实部署方式下仍然生效。"
+      },
+      {
+        "id": "home-field",
+        "type": "ui-textfield",
+        "label": "订阅邮箱",
+        "name": "email",
+        "placeholder": "you@example.com",
+        "floating": true,
+        "maxLength": 24,
+        "showCount": true,
+        "help": "离线页面里的浮动标签与字数统计也应可用。"
+      },
+      {
+        "id": "home-articles",
+        "type": "articleList",
+        "limit": 0
+      }
+    ]
+  }
+}

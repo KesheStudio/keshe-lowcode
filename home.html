@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lc-mode="light" data-lc-mode-pref="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>项目 · 低代码工作台</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="lc-token" content="__LC_TOKEN__">
+<link rel="icon" href="vendor/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/lc-tokens.css">
+<link rel="stylesheet" href="assets/css/lc-controls.css">
+<link rel="stylesheet" href="assets/css/lc-editor.css">
+<link rel="stylesheet" href="assets/css/lc-home.css">
+<link rel="stylesheet" href="assets/css/lc-responsive.css">
+</head>
+<body class="lc-shell">
+
+<header class="lc-topbar">
+  <div class="lc-brand">
+    <span class="lc-brand-mark" aria-hidden="true"></span>
+    <span class="lc-brand-text">低代码工作台</span>
+    <span class="lc-brand-sub">项目 · 模板 · 导出</span>
+  </div>
+
+  <div class="lc-topbar-side">
+    <a class="lc-btn lc-btn-sm" href="templates.html" data-site-nav>模板库</a>
+    <a class="lc-btn lc-btn-sm" href="components.html" data-site-nav>组件库</a>
+    <a class="lc-btn lc-btn-sm" href="page-import.html" data-site-nav>页面导入</a>
+    <a class="lc-btn lc-btn-sm" href="data.html" data-site-nav>数据源</a>
+    <a class="lc-btn lc-btn-sm" href="middleware.html" data-site-nav>中间件</a>
+    <a class="lc-btn lc-btn-sm" href="config-center.html" data-site-nav>配置中心</a>
+    <a class="lc-btn lc-btn-sm" href="backend-flow.html" data-site-nav data-backend-only hidden>后端积木</a>
+    <a class="lc-btn lc-btn-sm" href="export.html" data-site-nav>导出向导</a>
+    <a class="lc-btn lc-btn-sm" href="builds.html" data-site-nav>构建记录</a>
+    <a class="lc-btn lc-btn-sm" href="theme/editor.html" data-site-nav title="主题编辑器：改项目主题令牌并保存">主题</a>
+  </div>
+</header>
+
+<main class="lc-main lc-home-main">
+  <section class="lc-home-head">
+    <div>
+      <h1>我的项目</h1>
+      <p>单机自用，打开即用；不需要登录或账号。点进项目直接进入建站编辑器。</p>
+    </div>
+    <div class="lc-home-head-actions">
+      <button class="lc-btn lc-btn-primary" type="button" data-new-project>新建项目</button>
+      <button class="lc-btn lc-btn-sm" type="button" data-refresh>刷新</button>
+    </div>
+  </section>
+
+  <section class="lc-home-list" data-project-list aria-live="polite">
+    <p class="lc-home-empty" data-empty>正在加载项目…</p>
+  </section>
+
+  <section class="lc-home-trash" data-trash-section>
+    <header class="lc-home-section-head">
+      <div>
+        <h2>回收站</h2>
+        <p>删除的站点会先移到这里，不会立即从磁盘消失。</p>
+      </div>
+      <span class="lc-home-badge" data-trash-count></span>
+    </header>
+    <div class="lc-home-trash-list" data-trash-list aria-live="polite">
+      <p class="lc-home-empty">正在加载回收站…</p>
+    </div>
+  </section>
+</main>
+
+<div class="lc-home-dialog" data-new-dialog hidden>
+  <div class="lc-home-dialog-card" role="dialog" aria-modal="true" aria-labelledby="new-project-title">
+    <header class="lc-home-dialog-head">
+      <h2 id="new-project-title">新建项目</h2>
+      <button class="lc-btn lc-btn-sm" type="button" data-close-dialog>关闭</button>
+    </header>
+
+    <form data-new-form>
+      <label class="lc-field">
+        <span class="lc-label">项目名称</span>
+        <input class="lc-input" type="text" name="name" maxlength="80" placeholder="例如：产品官网" required autofocus>
+      </label>
+
+      <fieldset class="lc-home-types">
+        <legend class="lc-label">项目类型</legend>
+        <label class="lc-home-type">
+          <input type="radio" name="type" value="static" checked>
+          <span>
+            <strong>纯静态</strong>
+            <small>只有页面、样式和脚本；编辑器里不出现后端、中间件、数据库入口。</small>
+          </span>
+        </label>
+        <label class="lc-home-type">
+          <input type="radio" name="type" value="backend">
+          <span>
+            <strong>带后端</strong>
+            <small>页面之外还能写后端用户区代码，导出时生成服务工程。</small>
+          </span>
+        </label>
+      </fieldset>
+
+      <label class="lc-field" data-backend-field hidden>
+        <span class="lc-label">后端语言</span>
+        <select class="lc-select" name="backendLanguage">
+          <option value="rust" selected>Rust（默认，axum + sqlx）</option>
+          <option value="node">Node</option>
+          <option value="go">Go</option>
+        </select>
+      </label>
+
+      <label class="lc-field">
+        <span class="lc-label">起步模板</span>
+        <select class="lc-select" name="starter" data-starter-select>
+          <option value="">空白站点</option>
+        </select>
+        <small class="lc-home-hint">套用后会生成完整页面，可直接编辑和导出。</small>
+      </label>
+
+      <p class="lc-home-error" data-form-error hidden></p>
+
+      <footer class="lc-home-dialog-foot">
+        <button class="lc-btn lc-btn-sm" type="button" data-close-dialog>取消</button>
+        <button class="lc-btn lc-btn-primary" type="submit" data-submit>创建并进入编辑器</button>
+      </footer>
+    </form>
+  </div>
+</div>
+
+<div class="lc-home-dialog" data-restore-dialog hidden>
+  <div class="lc-home-dialog-card" role="dialog" aria-modal="true" aria-labelledby="restore-title">
+    <header class="lc-home-dialog-head">
+      <h2 id="restore-title">恢复站点</h2>
+      <button class="lc-btn lc-btn-sm" type="button" data-close-restore>关闭</button>
+    </header>
+    <p class="lc-home-dialog-text" data-restore-message></p>
+    <p class="lc-home-dialog-note">覆盖会把当前同名站点整体移入回收站，仍可再次恢复；不会静默删除。</p>
+    <footer class="lc-home-dialog-foot">
+      <button class="lc-btn lc-btn-sm" type="button" data-close-restore>取消</button>
+      <button class="lc-btn lc-btn-sm" type="button" data-restore-overwrite>覆盖同名站点</button>
+      <button class="lc-btn lc-btn-primary" type="button" data-restore-rename>改名恢复</button>
+    </footer>
+  </div>
+</div>
+
+<div class="lc-home-dialog" data-backup-dialog hidden>
+  <div class="lc-home-dialog-card lc-home-dialog-wide" role="dialog" aria-modal="true" aria-labelledby="backup-title">
+    <header class="lc-home-dialog-head">
+      <h2 id="backup-title">备份 · <span data-backup-site-name></span></h2>
+      <button class="lc-btn lc-btn-sm" type="button" data-close-backup>关闭</button>
+    </header>
+    <p class="lc-home-dialog-text">从备份列表直接恢复；恢复前会自动备份当前状态，失败会自动退回。</p>
+    <div class="lc-home-backup-toolbar">
+      <button class="lc-btn lc-btn-sm" type="button" data-create-backup>立即备份</button>
+      <span class="lc-home-backup-status" data-backup-status></span>
+    </div>
+    <div class="lc-home-backup-list" data-backup-list></div>
+    <div class="lc-home-backup-confirm" data-backup-confirm hidden>
+      <p data-backup-confirm-message></p>
+      <footer class="lc-home-dialog-foot">
+        <button class="lc-btn lc-btn-sm" type="button" data-cancel-backup-restore>取消</button>
+        <button class="lc-btn lc-btn-primary" type="button" data-confirm-backup-restore>确认恢复</button>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<script src="assets/home.js"></script>
+</body>
+</html>

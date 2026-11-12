@@ -1,0 +1,82 @@
+# 科设低代码平台（KesheStudio/keshe-lowcode）
+# 仓库根目录就是本文件所在目录（lowcode/），规则按本仓库真实产物编写。
+
+# ---------- 依赖 ----------
+node_modules/
+
+# ---------- 运行数据与站点数据 ----------
+/data/*
+# 回归测试样本必须入库（见 data/.fixtures/README.md）
+!/data/.fixtures/
+!/data/.fixtures/**
+# 站点目录内的运行时痕迹：锁、事务临时区、数据源密钥
+.lowcode/
+# 平台回收站（删除区）
+/data/.trash/
+
+# ---------- 导出产物与构建记录 ----------
+/exports/
+# 演示解包后的运行时导出目录不入库
+/demo/ticket-demo/
+/demo/ticket-demo-new/
+/demo/ticket-runtime/
+
+# ---------- 日志 ----------
+/logs/
+*.log
+
+# ---------- 临时目录与测试运行时 ----------
+.tmp*
+*.tmp
+*.tmp.*
+/tests/e2e/.report/
+/tests/e2e/.artifacts/
+/tests/e2e/.runtime/
+/.status/
+
+# ---------- 环境变量与密钥 ----------
+.env
+.env.*
+!*.env.example
+!*.env.sample
+data-secrets.json
+
+# ---------- 证书与私钥 ----------
+/certs/
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.crt
+*.cer
+*.der
+keystore.properties
+!*.sample
+
+# ---------- IDE 与系统垃圾 ----------
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------- 必须入库（显式保留） ----------
+# 源码、模板、共享资源、文档、测试用例与回归样本
+!/src/
+!/server/
+!/shared/
+!/scripts/
+!/templates/
+!/vendor/
+!/assets/
+!/docs/
+!/tests/
+!/data/.fixtures/
+# 随仓库发布的安装包（GitHub Release 附件来源）
+!/dist/
+!/dist/**

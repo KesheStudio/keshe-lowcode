@@ -1,0 +1,13 @@
+node_modules/
+src-tauri/target/
+src-tauri/gen/
+src-tauri/binaries/
+src-tauri/desktop.runtime.json.bak
+*.sig
+certs/
+!certs/README.md
+*.p12
+*.pfx
+*.jks
+*.keystore
+keystore.properties

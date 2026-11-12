@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 2,
+  "id": "a1",
+  "title": "带图文章",
+  "body": "<img src=\"assets/sample.png\" alt=\"\">"
+}

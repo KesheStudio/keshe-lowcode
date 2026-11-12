@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "note": "随包分发的非敏感配置。密码/令牌一律不写在这里：首次启动时由用户输入，或从系统凭据读取，运行时以环境变量交给后端。",
+  "listen": "127.0.0.1",
+  "database": {
+    "host": "127.0.0.1",
+    "port": 5432,
+    "name": "app",
+    "user": "app",
+    "passwordEnv": "LC_DB_PASSWORD"
+  }
+}

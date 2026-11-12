@@ -1,0 +1,263 @@
+/* 低代码平台 · 响应式断点与折叠规则
+ *
+ * 断点数值来自 src/theme/tokens.mjs 的 BREAKPOINTS（--lc-bp-sm/md/lg）。
+ * CSS 自定义属性不能出现在 @media 条件里，所以媒体查询写固定数值；
+ * check.mjs 会核对这里的三组数值和令牌是否一致，改断点两处一起改。
+ *
+ *   1180px  小桌面：侧栏、检查器收窄，工作区优先
+ *    900px  平板：检查器变右侧覆盖层；工具栏收起次要信息
+ *    640px  窄屏：侧栏变左侧覆盖层；工具栏只留图标
+ *
+ * 折叠由容器上的 data 属性控制，渲染层只管改属性，不用碰样式：
+ *   <div class="lc-shell" data-lc-sidebar="open|closed|hidden"
+ *                        data-lc-inspector="open|closed|hidden">
+ * 也可以给 .lc-sidebar / .lc-inspector 加 .is-open（覆盖层打开时）。
+ *
+ * 通用工具类：
+ *   .lc-hide-below-lg / -md / -sm   到对应断点及以下隐藏
+ *   .lc-show-below-md / -sm         只在对应断点及以下显示（默认给图标按钮用）
+ */
+
+/* ---------------- 基础：折叠开关与抽屉动画 ---------------- */
+
+/* 顶栏在空间不足时换行，而不是把文档横向撑宽（HOME-01）。 */
+.lc-topbar {
+  flex-wrap: wrap;
+  row-gap: var(--lc-space-1);
+  padding-top: var(--lc-space-1);
+  padding-bottom: var(--lc-space-1);
+}
+
+/* 品牌不被压缩到只剩省略号（HOME-01）；文字不换行，超宽由顶栏换行处理。 */
+.lc-brand {
+  flex: 0 0 auto;
+}
+
+.lc-brand-text,
+.lc-brand-sub {
+  white-space: nowrap;
+}
+
+.lc-sidebar,
+.lc-inspector {
+  transition:
+    transform var(--lc-motion-base) var(--lc-ease-standard),
+    width var(--lc-motion-base) var(--lc-ease-standard);
+}
+
+/* hidden 是「用户明确要求隐藏」，任何宽度都生效；
+   open / closed 只在窄屏的覆盖层里起作用，宽屏回到默认布局。 */
+.lc-shell[data-lc-sidebar="hidden"] .lc-sidebar,
+.lc-shell[data-lc-inspector="hidden"] .lc-inspector {
+  display: none;
+}
+
+.lc-show-below-md,
+.lc-show-below-sm {
+  display: none;
+}
+
+/* ---------------- 1180px：小桌面 ---------------- */
+
+@media (max-width: 1180px) {
+  .lc-sidebar { width: 224px; }
+  .lc-inspector { width: 276px; }
+  .lc-nav-item { padding: 0 var(--lc-space-2); }
+  .lc-hide-below-lg { display: none !important; }
+}
+
+/* ---------------- 900px：平板 ---------------- */
+
+@media (max-width: 900px) {
+  .lc-sidebar { width: 208px; }
+
+  /* 检查器改成右侧覆盖层。默认滑出屏幕，加 data-lc-inspector="open" 才进来。 */
+  .lc-inspector {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--lc-z-dropdown);
+    width: min(320px, 88vw);
+    visibility: hidden;
+    transform: translateX(100%);
+    box-shadow: var(--lc-shadow-lg);
+  }
+
+  .lc-shell[data-lc-inspector="open"] .lc-inspector,
+  .lc-inspector.is-open {
+    visibility: visible;
+    transform: none;
+  }
+
+  /* 覆盖层打开时，工作区盖一层遮罩；z-index 比抽屉低一层。 */
+  .lc-shell[data-lc-inspector="open"] .lc-main::after,
+  .lc-shell[data-lc-sidebar="open"] .lc-main::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: calc(var(--lc-z-dropdown) - 1);
+    background: var(--lc-color-overlay);
+  }
+
+  .lc-toolbar-meta,
+  .lc-hide-below-md { display: none !important; }
+  .lc-show-below-md { display: inline-flex; }
+
+  /* 顶栏右侧入口在窄屏换行，保证中间件/配置中心等按钮不被裁掉。
+     占满一行并允许收缩，避免内容撑出视口（390 下实测 topbar 宽 808）。 */
+  .lc-topbar-side {
+    width: 100%;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  /* 代码弹窗在窄屏分栏收起：文件列表在上、编辑区在下，头部按钮换行。
+     否则 390 下 260px 文件栏会把编辑区压到 ~100px（BLD-01）。
+     这两条用 .lc-code-dialog 前缀提高优先级，压过页面内联样式。 */
+  .lc-code-dialog-card {
+    width: min(1080px, 96vw);
+    height: 92vh;
+  }
+
+  .lc-code-dialog-head {
+    flex-wrap: wrap;
+    row-gap: var(--lc-space-1);
+    padding: var(--lc-space-2) var(--lc-space-3);
+  }
+
+  .lc-code-dialog-head .is-right {
+    margin-left: 0;
+    flex-wrap: wrap;
+  }
+
+  .lc-code-dialog .lc-code-dialog-body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(96px, 26%) minmax(0, 1fr);
+  }
+
+  .lc-code-dialog .lc-code-files {
+    border-right: 0;
+    border-bottom: var(--lc-border);
+  }
+
+  /* 侧栏/检查器在窄屏是覆盖层，关闭时仍平移在视口外；裁剪横向溢出，
+     避免隐藏的抽屉把整页撑出横向滚动条。 */
+  .lc-main {
+    overflow-x: clip;
+  }
+
+  /* 管理页（数据源 / 组件库 / 模板库）窄屏改为上下堆叠：
+     列表在上（固定高度、内部滚动），编辑区在下占满剩余空间（DATA-01、CMP-02、TPL-02）。 */
+  .lc-comp-main,
+  .lc-data-main {
+    flex-direction: column;
+  }
+
+  .lc-comp-main > .lc-sidebar,
+  .lc-data-main > .lc-sidebar {
+    width: 100%;
+    max-width: none;
+    height: min(38vh, 320px);
+    border-right: 0;
+    border-bottom: 1px solid var(--lc-color-line);
+  }
+
+  /* 管理页的工具栏按钮在窄屏换行，避免压成竖排。 */
+  .lc-comp-main .lc-toolbar,
+  .lc-data-main .lc-toolbar {
+    flex-wrap: wrap;
+    row-gap: var(--lc-space-1);
+    height: auto;
+  }
+
+  .lc-comp-main .lc-toolbar-actions,
+  .lc-data-main .lc-toolbar-actions {
+    flex-wrap: wrap;
+    margin-left: 0;
+  }
+}
+
+/* ---------------- 640px：窄屏 ---------------- */
+
+@media (max-width: 640px) {
+  /* 侧栏也改覆盖层，默认收起。 */
+  .lc-sidebar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: var(--lc-z-dropdown);
+    width: min(280px, 86vw);
+    visibility: hidden;
+    transform: translateX(-100%);
+    box-shadow: var(--lc-shadow-lg);
+  }
+
+  .lc-shell[data-lc-sidebar="open"] .lc-sidebar,
+  .lc-sidebar.is-open {
+    visibility: visible;
+    transform: none;
+  }
+
+  .lc-shell[data-lc-sidebar="open"] .lc-sidebar,
+  .lc-shell[data-lc-inspector="open"] .lc-inspector {
+    /* 抽屉在全屏高度内滚动，底部留出状态栏。 */
+    max-height: 100%;
+  }
+
+  .lc-topbar {
+    gap: var(--lc-space-2);
+    padding: 0 var(--lc-space-2);
+  }
+
+  .lc-brand-sub,
+  .lc-nav,
+  .lc-toolbar-title,
+  .lc-statusbar .is-secondary { display: none; }
+
+  /* 按钮文字收起，只留图标；图标按钮改用 lc-icon-btn 或内联 svg + .lc-btn-label 组合。 */
+  .lc-btn-label { display: none; }
+  .lc-topbar-side .lc-btn { padding: 0 var(--lc-space-2); }
+
+  /* 项目标签与下拉作为一个整体换行，避免标签被挤成逐字竖排。 */
+  .lc-topbar .lc-label { white-space: nowrap; }
+  .lc-topbar .lc-field { flex: 0 0 auto; }
+  .lc-topbar .lc-select { flex: 1 1 auto; }
+  .lc-config-nav button > span:first-child { white-space: nowrap; }
+  /* 窄屏空间有限，隐藏“正在编辑”固定文案，把宽度让给页面标题输入。 */
+  .lc-toolbar .lc-toolbar-title { display: none; }
+
+  /* 状态栏里的页面标题可能很长，单行截断，避免把状态栏撑高。 */
+  .lc-statusbar { overflow: hidden; }
+  .lc-statusbar > * { white-space: nowrap; }
+  .lc-builder-statusbar-state { min-width: 0; }
+  .lc-statusbar [data-status-text] { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .lc-toolbar { padding: var(--lc-space-1) var(--lc-space-2); }
+  .lc-canvas-scroll { padding: var(--lc-space-3) var(--lc-space-2); }
+  .lc-canvas { padding: var(--lc-space-3); }
+
+  .lc-hide-below-sm { display: none !important; }
+  .lc-show-below-sm { display: inline-flex; }
+
+  /* 管理页的列表不是抽屉：始终在文档流里，保持上下堆叠（DATA-01、CMP-02、TPL-02）。 */
+  .lc-comp-main > .lc-sidebar,
+  .lc-data-main > .lc-sidebar {
+    position: static;
+    width: 100%;
+    max-width: none;
+    height: min(34vh, 300px);
+    visibility: visible;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* ---------------- 动效降级 ---------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .lc-sidebar,
+  .lc-inspector {
+    transition-duration: 0ms !important;
+  }
+}

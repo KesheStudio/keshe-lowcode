@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 3,
+  "id": "blueprint-amber",
+  "name": "蓝图 · 琥珀",
+  "tone": "blueprint",
+  "description": "冷灰蓝底配琥珀强调，工程图纸的调子。适合贴命令和配置的工程文档。",
+  "modes": {
+    "light": {
+      "seeds": {
+        "bg": "#eef2f6",
+        "surface": "#fbfcfe",
+        "ink": "#13202b",
+        "muted": "#4d6070",
+        "line": "#ccd6e0",
+        "accent": "#8f5208",
+        "codeBg": "#e3e9ef",
+        "success": "#2d6b4f",
+        "warn": "#7a4708",
+        "danger": "#a32f2f",
+        "info": "#1f5f8b"
+      }
+    },
+    "dark": {
+      "seeds": {
+        "bg": "#0d151c",
+        "surface": "#141f29",
+        "ink": "#e6edf3",
+        "muted": "#9fb0be",
+        "line": "#24323f",
+        "accent": "#e2ae6a",
+        "accentFill": "#6b3f0a",
+        "onAccent": "#fdf6ea",
+        "codeBg": "#0f1922",
+        "success": "#7cc7a0",
+        "warn": "#e0b06a",
+        "danger": "#ef8f86",
+        "info": "#6fb3d9"
+      }
+    }
+  }
+}

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lc-mode="light" data-lc-mode-pref="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>后端积木编排 · 低代码平台</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="lc-token" content="__LC_TOKEN__">
+<link rel="icon" href="vendor/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/lc-tokens.css">
+<link rel="stylesheet" href="assets/css/lc-controls.css">
+<link rel="stylesheet" href="assets/css/lc-editor.css">
+<link rel="stylesheet" href="assets/css/lc-code-editor.css">
+<link rel="stylesheet" href="assets/css/lc-backend-flow.css">
+<link rel="stylesheet" href="assets/css/lc-responsive.css">
+</head>
+<body class="lc-shell">
+
+<header class="lc-topbar">
+  <a class="lc-brand lc-brand-link" href="home.html" title="返回工作台">
+    <span class="lc-brand-mark" aria-hidden="true"></span>
+    <span class="lc-brand-text">后端积木</span>
+    <span class="lc-brand-sub">节点树编排 · 生成区代码</span>
+  </a>
+
+  <div class="lc-topbar-side">
+    <a class="lc-btn lc-btn-sm" data-back-builder href="builder.html" title="回到当前项目的 Builder">返回编辑器</a>
+    <button class="lc-btn lc-btn-sm lc-show-below-md" type="button" data-toggle-sidebar title="显示 / 隐藏节点库">资源</button>
+    <button class="lc-btn lc-btn-sm lc-show-below-md" type="button" data-toggle-inspector title="显示 / 隐藏属性面板">属性</button>
+    <label class="lc-field is-short" style="margin:0;">
+      <span class="lc-label">项目</span>
+      <select class="lc-select" data-site-select aria-label="选择项目"></select>
+    </label>
+    <label class="lc-field is-short" style="margin:0;">
+      <span class="lc-label">目标语言</span>
+      <select class="lc-select" data-target aria-label="目标代码语言">
+        <option value="node">Node</option>
+        <option value="rust">Rust</option>
+        <option value="go">Go</option>
+      </select>
+    </label>
+    <span class="lc-badge" data-save-state>已保存</span>
+    <button class="lc-btn lc-btn-sm" type="button" data-load-sample title="载入内置示例流程">载入示例</button>
+    <button class="lc-btn lc-btn-sm" type="button" data-save title="保存（Ctrl+S）">保存</button>
+    <button class="lc-btn lc-btn-sm" type="button" data-validate>校验</button>
+    <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-compile>生成</button>
+    <button class="lc-btn lc-btn-sm" type="button" data-preview-start>启动预览</button>
+    <button class="lc-btn lc-btn-sm" type="button" data-preview-stop disabled>停止预览</button>
+  </div>
+</header>
+
+<main class="lc-main">
+
+  <aside class="lc-sidebar" aria-label="节点库">
+    <div class="lc-sidebar-head">
+      <h2>节点库</h2>
+      <p>拖进中间节点树；拖到容器中间会嵌套进去。</p>
+    </div>
+    <div class="lc-sidebar-body">
+      <input class="lc-input lc-bf-search" type="search" data-node-search placeholder="搜索节点…" aria-label="搜索节点">
+      <div data-node-library></div>
+    </div>
+    <p class="lc-sidebar-foot">
+      节点 id 稳定不变；参数 schema 与生成器共用同一份定义。<br>
+      代码节点写入 <code>src/custom/handlers/</code>；组件实现写入 <code>src/custom/components/</code>。
+    </p>
+  </aside>
+
+  <section class="lc-workspace" aria-label="节点树">
+    <div class="lc-toolbar">
+      <span class="lc-toolbar-title" data-flow-name>流程</span>
+      <span class="lc-toolbar-meta" data-flow-meta>v0</span>
+      <div class="lc-toolbar-actions">
+        <span class="lc-badge" data-tree-count>0 个节点</span>
+        <button class="lc-btn lc-btn-sm" type="button" data-expand-all>展开全部</button>
+        <button class="lc-btn lc-btn-sm" type="button" data-collapse-all>收起容器</button>
+      </div>
+    </div>
+
+    <div class="lc-bf-scroll">
+      <section class="lc-bf-card">
+        <header class="lc-bf-card-head">
+          <h3>流程</h3>
+          <p>入口节点决定方法与路径，后续节点按树顺序执行。</p>
+        </header>
+        <div class="lc-bf-flow-head">
+          <label class="lc-field is-medium">
+            <span class="lc-label">流程名称</span>
+            <input class="lc-input" type="text" maxlength="64" data-flow-title autocomplete="off">
+          </label>
+          <div class="lc-field is-short">
+            <span class="lc-label">节点树版本</span>
+            <code data-flow-version>v0</code>
+          </div>
+          <div class="lc-field is-short">
+            <span class="lc-label">上次生成哈希</span>
+            <code data-flow-hash>—</code>
+          </div>
+        </div>
+      </section>
+
+      <section class="lc-bf-card">
+        <header class="lc-bf-card-head">
+          <h3>节点树</h3>
+          <p>拖拽排序；条件分支与循环有两棵子树。开关可临时禁用节点。</p>
+          <span class="is-right"><span class="lc-badge" data-dirty-badge hidden>未保存</span></span>
+        </header>
+        <div class="lc-tree lc-bf-tree" data-tree role="tree" aria-label="后端流程节点树"></div>
+        <div class="lc-bf-tree-empty" data-tree-empty>还没有节点。从左侧拖入「HTTP 入口」开始。</div>
+      </section>
+
+      <section class="lc-bf-card">
+        <header class="lc-bf-card-head">
+          <h3>校验结果</h3>
+          <p>必填参数、重复 id、环引用、悬空引用都会指到具体节点。</p>
+          <span class="is-right"><span class="lc-badge" data-issue-count>0</span></span>
+        </header>
+        <div data-issues></div>
+      </section>
+
+      <section class="lc-bf-card">
+        <header class="lc-bf-card-head">
+          <h3>隔离预览</h3>
+          <p>127.0.0.1 随机端口 + 临时 SQLite 文件；不连接本机既有数据库，停止后删除。</p>
+          <span class="is-right"><span class="lc-badge" data-preview-state>未启动</span></span>
+        </header>
+        <div class="lc-bf-preview-row">
+          <code data-preview-url>—</code>
+          <button class="lc-btn lc-btn-sm" type="button" data-preview-start>重新启动</button>
+        </div>
+        <div class="lc-bf-request">
+          <select class="lc-select" data-req-method aria-label="请求方法">
+            <option>GET</option>
+            <option>POST</option>
+            <option>PUT</option>
+            <option>PATCH</option>
+            <option>DELETE</option>
+          </select>
+          <input class="lc-input" type="text" data-req-path value="/api/items" aria-label="请求路径">
+          <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-req-send>发送</button>
+        </div>
+        <label class="lc-field lc-bf-full" style="margin-top: var(--lc-space-2);">
+          <span class="lc-label">请求体 <small>仅非 GET 使用，JSON</small></span>
+          <textarea class="lc-textarea" rows="3" data-req-body placeholder='{"name": "示例"}'></textarea>
+        </label>
+        <div class="lc-bf-response-head" data-req-meta hidden></div>
+        <pre class="lc-bf-response" data-req-result hidden></pre>
+      </section>
+
+      <section class="lc-bf-card" data-generation hidden>
+        <header class="lc-bf-card-head">
+          <h3>生成结果</h3>
+          <p data-generation-meta></p>
+          <span class="is-right"><button class="lc-btn lc-btn-sm" type="button" data-generation-close>关闭</button></span>
+        </header>
+        <div data-generation-files></div>
+      </section>
+    </div>
+  </section>
+
+  <aside class="lc-inspector" aria-label="属性与设置">
+    <div class="lc-inspector-head">
+      <div class="lc-bf-tabs" role="tablist" aria-label="面板">
+        <button class="lc-bf-tab is-active" type="button" role="tab" aria-selected="true" data-tab="node">节点属性</button>
+        <button class="lc-bf-tab" type="button" role="tab" aria-selected="false" data-tab="middleware">中间件</button>
+        <button class="lc-bf-tab" type="button" role="tab" aria-selected="false" data-tab="config">配置中心</button>
+        <button class="lc-bf-tab" type="button" role="tab" aria-selected="false" data-tab="components">组件库</button>
+      </div>
+      <p data-tab-hint>选中节点后，字段按节点类型 schema 生成。</p>
+    </div>
+    <div class="lc-inspector-body" data-panel="node"></div>
+    <div class="lc-inspector-body" data-panel="middleware" hidden></div>
+    <div class="lc-inspector-body" data-panel="config" hidden></div>
+    <div class="lc-inspector-body" data-panel="components" hidden></div>
+  </aside>
+
+</main>
+
+<footer class="lc-statusbar">
+  <span class="lc-builder-statusbar-state">
+    <span class="lc-status-dot" data-status-dot></span>
+    <span data-status-text>等待加载</span>
+  </span>
+  <span data-status-site>—</span>
+  <span class="is-right" data-status-right>Node 后端 · 生成区与用户区分离</span>
+</footer>
+
+<div class="lc-bf-dialog" data-code-dialog hidden role="dialog" aria-modal="true" aria-labelledby="lc-bf-code-title">
+  <div class="lc-bf-dialog-card">
+    <header class="lc-bf-dialog-head">
+      <h2 id="lc-bf-code-title">用户代码节点</h2>
+      <span class="lc-badge lc-badge-success">用户代码，不会被生成过程改写</span>
+      <span class="is-right">
+        <code data-code-path>—</code>
+        <button class="lc-btn lc-btn-sm" type="button" data-code-check>检查</button>
+        <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-code-save>保存代码</button>
+        <button class="lc-btn lc-btn-sm lc-btn-ghost" type="button" data-code-cancel>取消</button>
+        <button class="lc-btn lc-btn-sm" type="button" data-code-close>关闭</button>
+      </span>
+    </header>
+    <div class="lc-bf-dialog-body">
+      <p class="lc-hint" style="margin:0;">文件位于站点用户区 <code>src/custom/</code>，重新生成节点树只会更新生成区，不会覆盖这里的代码。</p>
+      <div class="lc-code-editor-host" data-code-editor></div>
+      <div class="lc-code-result" data-code-result></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/code-editor.js"></script>
+<script src="assets/backend-flow.js"></script>
+</body>
+</html>

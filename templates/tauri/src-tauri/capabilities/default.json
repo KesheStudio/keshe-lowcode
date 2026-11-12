@@ -1,0 +1,6 @@
+{
+  "identifier": "default",
+  "description": "主窗口只给核心 API；不开放文件系统、shell 与任意命令，前端拿到的能力尽量小",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

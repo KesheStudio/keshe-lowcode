@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lc-mode="light" data-lc-mode-pref="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>组件库 · 低代码工作台</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="lc-token" content="__LC_TOKEN__">
+<link rel="icon" href="vendor/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/lc-tokens.css">
+<link rel="stylesheet" href="assets/css/lc-controls.css">
+<link rel="stylesheet" href="assets/css/lc-editor.css">
+<link rel="stylesheet" href="assets/css/lc-components.css">
+<link rel="stylesheet" href="assets/css/lc-responsive.css">
+</head>
+<body class="lc-shell">
+
+<header class="lc-topbar">
+  <a class="lc-brand lc-brand-link" href="home.html" title="返回工作台">
+    <span class="lc-brand-mark" aria-hidden="true"></span>
+    <span class="lc-brand-text">组件库</span>
+    <span class="lc-brand-sub">字段 · 三件套 · 实时预览</span>
+  </a>
+
+  <div class="lc-topbar-side">
+    <a class="lc-btn lc-btn-sm" href="home.html">返回工作台</a>
+    <label class="lc-field lc-comp-site-field">
+      <span class="lc-label">项目</span>
+      <select class="lc-select" data-site-select aria-label="选择项目"></select>
+    </label>
+    <a class="lc-btn lc-btn-sm" href="builder.html" data-back-builder>返回 Builder</a>
+    <a class="lc-btn lc-btn-sm" href="templates.html" data-site-link="templates.html">模板库</a>
+    <a class="lc-btn lc-btn-sm" href="data.html" data-site-link="data.html">数据源</a>
+    <a class="lc-btn lc-btn-sm" href="export.html" data-site-link="export.html">导出</a>
+  </div>
+</header>
+
+<main class="lc-main lc-comp-main">
+  <aside class="lc-sidebar lc-comp-sidebar" aria-label="组件列表">
+    <div class="lc-sidebar-head">
+      <h2>组件</h2>
+      <p>内置组件只读；自定义组件可改、可复制、可导出。</p>
+    </div>
+    <div class="lc-sidebar-body">
+      <div class="lc-comp-toolbar">
+        <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-new-component>新建组件</button>
+        <span class="lc-comp-count" data-component-count>0 个</span>
+      </div>
+
+      <div class="lc-comp-filters">
+        <input class="lc-input" type="search" placeholder="搜索名称 / ID / 标签" data-search autocomplete="off">
+        <div class="lc-comp-filter-row">
+          <select class="lc-select" data-category-filter aria-label="按类别筛选"></select>
+          <select class="lc-select" data-tag-filter aria-label="按标签筛选"></select>
+        </div>
+      </div>
+
+      <div class="lc-comp-list" data-component-list></div>
+
+      <div class="lc-comp-section-head">
+        <h2>回收站</h2>
+        <span class="lc-comp-count" data-trash-count>0 个</span>
+      </div>
+      <p class="lc-comp-section-note">删除的组件会先进回收站，可随时恢复；不会一次点击永久消失。</p>
+      <div class="lc-comp-list" data-trash-list></div>
+
+      <div class="lc-comp-toolbar lc-comp-import-row">
+        <button class="lc-btn lc-btn-sm" type="button" data-import-open>从 JSON 导入</button>
+        <input class="lc-comp-file" type="file" accept=".json,application/json" data-import-file hidden>
+      </div>
+    </div>
+    <div class="lc-sidebar-foot">
+      单组件最多 <code data-limit-fields>40</code> 个字段；HTML ≤ <code data-limit-template>256 KB</code>。
+    </div>
+  </aside>
+
+  <section class="lc-workspace lc-comp-workspace">
+    <div class="lc-toolbar">
+      <span class="lc-toolbar-title" data-editor-title>选择一个组件</span>
+      <span class="lc-toolbar-meta" data-editor-meta></span>
+      <div class="lc-toolbar-actions">
+        <span class="lc-badge" data-editor-state hidden></span>
+        <button class="lc-btn lc-btn-sm" type="button" data-copy-component disabled>复制为自定义</button>
+        <button class="lc-btn lc-btn-sm" type="button" data-duplicate-component disabled>复制一份</button>
+        <button class="lc-btn lc-btn-sm" type="button" data-export-component disabled>导出 JSON</button>
+        <button class="lc-btn lc-btn-sm" type="button" data-delete-component disabled>删除</button>
+        <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-save-component disabled>保存组件</button>
+      </div>
+    </div>
+
+    <div class="lc-comp-scroll">
+      <div class="lc-comp-empty" data-empty>
+        <h3>还没有选中的组件</h3>
+        <p>左侧「新建组件」定义字段与 HTML / CSS / JS，右侧会即时渲染样例数据。</p>
+      </div>
+
+      <div data-editor hidden>
+        <div class="lc-comp-editor-grid">
+          <div class="lc-comp-editor-main">
+            <section class="lc-comp-card">
+              <header class="lc-comp-card-head">
+                <div>
+                  <h3>基本信息</h3>
+                  <p>组件 ID 会写进页面引用与导出包，创建后不可修改。</p>
+                </div>
+                <span class="lc-badge lc-badge-accent" data-builtin-badge hidden>内置 · 只读</span>
+              </header>
+              <div class="lc-comp-grid">
+                <label class="lc-field">
+                  <span class="lc-label">名称</span>
+                  <input class="lc-input" type="text" data-meta-name maxlength="64" autocomplete="off">
+                </label>
+                <label class="lc-field">
+                  <span class="lc-label">组件 ID</span>
+                  <input class="lc-input lc-comp-mono" type="text" data-meta-id readonly>
+                </label>
+                <label class="lc-field">
+                  <span class="lc-label">类别</span>
+                  <select class="lc-select" data-meta-category></select>
+                </label>
+                <label class="lc-field">
+                  <span class="lc-label">图标</span>
+                  <select class="lc-select" data-meta-icon></select>
+                </label>
+                <label class="lc-field lc-comp-span-2">
+                  <span class="lc-label">标签 <small>逗号分隔，最多 8 个</small></span>
+                  <input class="lc-input" type="text" data-meta-tags maxlength="200" autocomplete="off" placeholder="卡片, 内容">
+                </label>
+                <label class="lc-field lc-comp-span-2">
+                  <span class="lc-label">说明 <small>可留空</small></span>
+                  <input class="lc-input" type="text" data-meta-description maxlength="512" autocomplete="off">
+                </label>
+              </div>
+            </section>
+
+            <section class="lc-comp-card">
+              <header class="lc-comp-card-head">
+                <div>
+                  <h3>字段</h3>
+                  <p>字段改动会先列出受影响的页面，确认后才保存；HTML 里用 <code>{{字段 ID}}</code> 取值。</p>
+                </div>
+                <button class="lc-btn lc-btn-sm" type="button" data-add-field>添加字段</button>
+              </header>
+              <div class="lc-comp-fields" data-field-list></div>
+            </section>
+
+            <section class="lc-comp-card">
+              <header class="lc-comp-card-head">
+                <div>
+                  <h3>三件套</h3>
+                  <p>HTML 模板取字段值；CSS 自动加组件前缀；JS 每个实例独立作用域。</p>
+                </div>
+                <span class="lc-comp-status" data-code-status></span>
+              </header>
+              <div class="lc-comp-tabs" role="tablist">
+                <button class="lc-comp-tab is-active" type="button" role="tab" data-tab="html" aria-selected="true">HTML</button>
+                <button class="lc-comp-tab" type="button" role="tab" data-tab="css" aria-selected="false">CSS</button>
+                <button class="lc-comp-tab" type="button" role="tab" data-tab="js" aria-selected="false">JS</button>
+              </div>
+              <label class="lc-field" data-code-panel="html">
+                <span class="lc-label">HTML 模板 <small>占位符 {{field}}，值自动 HTML 转义</small></span>
+                <textarea class="lc-input lc-comp-code" data-code-html spellcheck="false" placeholder="&lt;div class=&quot;my-card&quot;&gt;{{title}}&lt;/div&gt;"></textarea>
+              </label>
+              <label class="lc-field" data-code-panel="css" hidden>
+                <span class="lc-label">CSS <small>自动作用域到当前组件</small></span>
+                <textarea class="lc-input lc-comp-code" data-code-css spellcheck="false" placeholder=".my-card { padding: var(--lc-space-4); }"></textarea>
+              </label>
+              <label class="lc-field" data-code-panel="js" hidden>
+                <span class="lc-label">JS <small>每实例独立 IIFE；禁止 document.write 与 innerHTML 拼接</small></span>
+                <textarea class="lc-input lc-comp-code" data-code-js spellcheck="false" placeholder="root.addEventListener('click', function () { root.classList.toggle('is-open'); });"></textarea>
+              </label>
+              <div class="lc-comp-code-error" data-code-error hidden></div>
+            </section>
+
+            <section class="lc-comp-card lc-comp-scope-card">
+              <header class="lc-comp-card-head">
+                <div>
+                  <h3>作用域说明</h3>
+                  <p>保存与导出都不会改动你的源码；隔离由渲染层统一施加。</p>
+                </div>
+              </header>
+              <div class="lc-comp-scope">
+                <div>
+                  <strong>CSS</strong>
+                  <p>所有选择器自动加前缀：<code data-scope-prefix>[data-lc-comp="my-card"]</code></p>
+                  <ul data-scope-css></ul>
+                </div>
+                <div>
+                  <strong>JS</strong>
+                  <p>每段脚本包在独立 IIFE 中，<code>root</code> 指向 <code data-scope-js>[data-lc-instance="blockId"]</code></p>
+                  <ul data-scope-js-notes></ul>
+                </div>
+              </div>
+            </section>
+
+            <section class="lc-comp-note lc-comp-usage" data-usage-panel hidden></section>
+            <section class="lc-comp-note lc-comp-danger" data-danger-panel hidden></section>
+          </div>
+
+          <aside class="lc-comp-preview" aria-label="实时预览">
+            <div class="lc-comp-preview-head">
+              <div>
+                <h3>实时预览 <span class="lc-comp-preview-status" data-preview-status hidden>脚本错误</span></h3>
+                <p>样例数据渲染；改一行即更新。</p>
+              </div>
+              <div class="lc-comp-mode" role="group" aria-label="预览明暗">
+                <button class="lc-btn lc-btn-sm is-active" type="button" data-preview-mode="light">亮</button>
+                <button class="lc-btn lc-btn-sm" type="button" data-preview-mode="dark">暗</button>
+              </div>
+            </div>
+            <div class="lc-comp-preview-errors" data-preview-errors hidden></div>
+            <div class="lc-comp-preview-frame">
+              <iframe data-preview-frame title="组件实时预览" sandbox="allow-scripts allow-forms"></iframe>
+            </div>
+            <div class="lc-comp-sample">
+              <h4>样例数据</h4>
+              <div class="lc-comp-sample-fields" data-sample-fields></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <section class="lc-comp-card" data-trash-panel hidden>
+        <header class="lc-comp-card-head">
+          <div>
+            <h3>回收站</h3>
+            <p>恢复时如果 ID 或名称冲突，会自动生成新的副本。</p>
+          </div>
+          <button class="lc-btn lc-btn-sm" type="button" data-trash-back>返回组件</button>
+        </header>
+        <div class="lc-comp-trash-list" data-trash-detail></div>
+      </section>
+    </div>
+  </section>
+</main>
+
+<script src="assets/components.js"></script>
+</body>
+</html>

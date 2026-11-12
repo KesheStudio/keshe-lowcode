@@ -1,0 +1,16 @@
+{
+  "format": "lowcode-component",
+  "schemaVersion": 1,
+  "component": {
+    "id": "e2e-callout",
+    "name": "E2E 提示条",
+    "description": "自动化测试用的提示条组件",
+    "template": "<aside class=\"e2e-callout\"><strong>{{title}}</strong><p>{{body}}</p></aside>",
+    "css": ".e2e-callout { padding: 14px 16px; border: 1px solid #d8d2c3; border-radius: 6px; background: #f7f4ec; } .e2e-callout strong { display: block; margin-bottom: 6px; }",
+    "js": "",
+    "fields": [
+      { "id": "title", "label": "标题文字", "type": "text", "defaultValue": "提示条标题" },
+      { "id": "body", "label": "正文文字", "type": "text", "defaultValue": "提示条正文" }
+    ]
+  }
+}

@@ -1,0 +1,338 @@
+/* 站内检索 · 样式
+ *
+ * 只使用 lc-tokens 里的变量，不引外部字体/图标/图片。
+ * 亮暗两套颜色由 [data-lc-mode] 切换，这里不重复定义色值。
+ * 组件结构由 assets/lc-search-runtime.js 生成，类名以 lc-search- 开头。
+ */
+
+.lc-search {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+}
+
+/* ---------- 输入框 ---------- */
+
+.lc-search-field {
+  display: flex;
+  align-items: center;
+  gap: var(--lc-space-2);
+  min-height: 44px;
+  padding: 0 var(--lc-space-3);
+  background: var(--lc-color-surface);
+  border: var(--lc-border-width) solid var(--lc-color-line-strong);
+  border-radius: var(--lc-radius-md);
+  box-shadow: var(--lc-shadow-xs);
+  transition: border-color var(--lc-motion-fast) var(--lc-ease-standard),
+    box-shadow var(--lc-motion-fast) var(--lc-ease-standard);
+}
+
+.lc-search-field:focus-within {
+  border-color: var(--lc-color-accent);
+  box-shadow: var(--lc-ring);
+}
+
+.lc-search-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: var(--lc-color-muted);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lc-search-field:focus-within .lc-search-icon {
+  color: var(--lc-color-accent);
+}
+
+.lc-search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 42px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--lc-color-ink);
+  font-family: var(--lc-font-sans);
+  font-size: var(--lc-text-md);
+  line-height: 1.4;
+  outline: none;
+  appearance: none;
+}
+
+.lc-search-input::placeholder {
+  color: var(--lc-color-placeholder);
+  opacity: 1;
+}
+
+/* ---------- 结果面板 ---------- */
+
+.lc-search-panel {
+  position: absolute;
+  z-index: var(--lc-z-dropdown);
+  top: calc(100% + var(--lc-space-1-5));
+  left: 0;
+  right: 0;
+  max-height: min(70vh, 520px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--lc-color-surface);
+  border: var(--lc-border-width) solid var(--lc-color-line);
+  border-radius: var(--lc-radius-lg);
+  box-shadow: var(--lc-shadow-lg);
+  animation: lc-search-in var(--lc-motion-fast) var(--lc-ease-out);
+}
+
+.lc-search-panel[hidden] {
+  display: none;
+}
+
+@keyframes lc-search-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 结果条数只给读屏，视觉上由分组标题承担。 */
+.lc-search-summary {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- 分组 ---------- */
+
+.lc-search-group-title {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lc-space-2);
+  padding: var(--lc-space-2) var(--lc-space-3) var(--lc-space-1-5);
+  background: var(--lc-color-surface);
+  border-bottom: var(--lc-border-width) solid var(--lc-color-line);
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-xs);
+  font-weight: var(--lc-weight-semibold);
+  letter-spacing: 0.04em;
+}
+
+.lc-search-group + .lc-search-group .lc-search-group-title {
+  border-top: var(--lc-border-width) solid var(--lc-color-line);
+}
+
+.lc-search-group-count {
+  color: var(--lc-color-muted-2);
+  font-family: var(--lc-font-mono);
+  font-size: var(--lc-text-xs);
+  font-weight: var(--lc-weight-normal);
+}
+
+/* ---------- 单条结果 ---------- */
+
+.lc-search-item {
+  padding: var(--lc-space-2-5) var(--lc-space-3) var(--lc-space-3) var(--lc-space-2-5);
+  border-left: 2px solid transparent;
+  cursor: pointer;
+  transition: background-color var(--lc-motion-fast) var(--lc-ease-standard),
+    border-color var(--lc-motion-fast) var(--lc-ease-standard);
+}
+
+.lc-search-item + .lc-search-item {
+  border-top: var(--lc-border-width) solid var(--lc-color-line);
+}
+
+.lc-search-item:hover,
+.lc-search-item.is-active {
+  background: var(--lc-color-surface-2);
+  border-left-color: var(--lc-color-accent);
+}
+
+.lc-search-item-title {
+  color: var(--lc-color-ink);
+  font-size: var(--lc-text-md);
+  font-weight: var(--lc-weight-semibold);
+  line-height: var(--lc-leading-tight);
+  overflow-wrap: anywhere;
+}
+
+.lc-search-item-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--lc-space-2);
+  min-width: 0;
+  margin-top: var(--lc-space-1);
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-xs);
+}
+
+.lc-search-item-path {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--lc-font-mono);
+}
+
+.lc-search-item-crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lc-space-1);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lc-search-item-crumb::before {
+  content: "";
+  width: 3px;
+  height: 3px;
+  flex: 0 0 auto;
+  border-radius: var(--lc-radius-full);
+  background: currentColor;
+  opacity: 0.7;
+}
+
+.lc-search-item-snippet {
+  margin-top: var(--lc-space-1);
+  color: var(--lc-color-ink-2);
+  font-size: var(--lc-text-sm);
+  line-height: var(--lc-leading-base);
+  overflow-wrap: anywhere;
+}
+
+/* 高亮：正文里命中词用强调底色，亮暗都保留底部强调线。 */
+.lc-search-hit {
+  padding: 0 1px;
+  border-radius: var(--lc-radius-xs);
+  background: var(--lc-color-accent-soft);
+  box-shadow: inset 0 -1px 0 var(--lc-color-accent-line);
+  color: var(--lc-color-ink);
+  font-weight: var(--lc-weight-medium);
+}
+
+.lc-search-more {
+  padding: var(--lc-space-1-5) var(--lc-space-3) var(--lc-space-2-5);
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-xs);
+}
+
+/* ---------- 空结果与建议 ---------- */
+
+.lc-search-empty {
+  padding: var(--lc-space-5) var(--lc-space-4) var(--lc-space-4);
+}
+
+.lc-search-empty-title {
+  margin: 0;
+  color: var(--lc-color-ink);
+  font-size: var(--lc-text-md);
+  font-weight: var(--lc-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.lc-search-empty-hint {
+  margin: var(--lc-space-1-5) 0 0;
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-sm);
+  line-height: var(--lc-leading-base);
+}
+
+.lc-search-suggest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lc-space-1-5);
+  margin-top: var(--lc-space-3);
+}
+
+.lc-search-suggest-label {
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-xs);
+}
+
+.lc-search-chip {
+  padding: 3px var(--lc-space-2-5);
+  border: var(--lc-border-width) solid var(--lc-color-line);
+  border-radius: var(--lc-radius-full);
+  background: var(--lc-color-surface-2);
+  color: var(--lc-color-ink-2);
+  font-family: var(--lc-font-sans);
+  font-size: var(--lc-text-xs);
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+.lc-search-chip:hover {
+  border-color: var(--lc-color-accent-line);
+  background: var(--lc-color-accent-soft);
+  color: var(--lc-color-ink);
+}
+
+.lc-search-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--lc-ring);
+}
+
+/* ---------- 加载 / 错误提示 ---------- */
+
+.lc-search-notice {
+  padding: var(--lc-space-3) var(--lc-space-3-5);
+  border: var(--lc-border-width) dashed var(--lc-color-line-strong);
+  border-radius: var(--lc-radius-md);
+  background: var(--lc-color-surface-2);
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-sm);
+  line-height: var(--lc-leading-base);
+}
+
+.lc-search-notice.is-error {
+  border-style: solid;
+  border-color: var(--lc-color-danger-line);
+  background: var(--lc-color-danger-soft);
+  color: var(--lc-color-danger);
+}
+
+/* ---------- 窄屏与减少动态 ---------- */
+
+@media (max-width: 640px) {
+  .lc-search {
+    max-width: none;
+  }
+
+  .lc-search-panel {
+    max-height: 60vh;
+  }
+
+  .lc-search-item {
+    padding-right: var(--lc-space-2-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lc-search-panel {
+    animation: none;
+  }
+
+  .lc-search-field,
+  .lc-search-item {
+    transition: none;
+  }
+}

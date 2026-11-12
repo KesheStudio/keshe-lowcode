@@ -1,0 +1,207 @@
+/* 低代码平台 · 打印样式
+ *
+ * 用法：<link rel="stylesheet" href="lc-print.css" media="print">
+ * 放在所有样式之后加载。只作用于打印，屏幕上完全不影响。
+ *
+ * 三条目标：
+ *   1. 文档打得清：正文 11pt、行高 1.6，标题不落在页底，段落不孤行；
+ *   2. 不出现背景色块：暗色主题、强调浅底、代码底、表格表头底色全部转成白纸 + 墨色；
+ *   3. 导航/目录不打断版面：顶栏、侧栏、检查器、工具栏、状态栏、分页、面包屑、
+ *      弹窗、轻提示一律隐藏，只剩文档正文。
+ *
+ * 注意：打印永远按浅色纸面输出，所以这里会把颜色令牌强制改成纸面值。
+ * 如果打印样式加载顺序早于主题文件，会被主题暗色块盖掉——务必最后加载。
+ */
+@media print {
+  @page {
+    margin: 18mm 16mm;
+  }
+
+  /* 强制浅色渲染：主题颜色全部映射到固定的 --lc-print-* 纸面令牌，
+     不跟随当前主题，也不在这里写死色值。 */
+  html {
+    color-scheme: light;
+  }
+
+  :root,
+  :root[data-lc-mode="dark"],
+  :root[data-theme="dark"],
+  [data-lc-theme][data-lc-mode="dark"],
+  [data-lc-theme][data-lc-mode="light"] {
+    --lc-color-bg: var(--lc-print-bg) !important;
+    --lc-color-bg-deep: var(--lc-print-bg) !important;
+    --lc-color-surface: var(--lc-print-surface) !important;
+    --lc-color-surface-2: var(--lc-print-surface) !important;
+    --lc-color-surface-3: var(--lc-print-surface) !important;
+    --lc-color-ink: var(--lc-print-ink) !important;
+    --lc-color-ink-2: var(--lc-print-ink-2) !important;
+    --lc-color-muted: var(--lc-print-muted) !important;
+    --lc-color-muted-2: var(--lc-print-muted-2) !important;
+    --lc-color-decor: var(--lc-print-decor) !important;
+    --lc-color-placeholder: var(--lc-print-placeholder) !important;
+    --lc-color-disabled-bg: var(--lc-print-surface) !important;
+    --lc-color-disabled-ink: var(--lc-print-disabled-ink) !important;
+    --lc-color-line: var(--lc-print-line) !important;
+    --lc-color-line-strong: var(--lc-print-line-strong) !important;
+    --lc-color-accent: var(--lc-print-accent) !important;
+    --lc-color-accent-fill: var(--lc-print-accent-fill) !important;
+    --lc-color-accent-fill-hover: var(--lc-print-accent-fill) !important;
+    --lc-color-accent-fill-pressed: var(--lc-print-accent-fill) !important;
+    --lc-color-on-accent: var(--lc-print-on-accent) !important;
+    --lc-color-accent-soft: var(--lc-print-accent-soft) !important;
+    --lc-color-accent-line: var(--lc-print-line-strong) !important;
+    --lc-color-accent-2: var(--lc-print-accent) !important;
+    --lc-color-accent-2-soft: var(--lc-print-accent-soft) !important;
+    --lc-color-accent-2-line: var(--lc-print-line-strong) !important;
+    --lc-color-success: var(--lc-print-success) !important;
+    --lc-color-success-soft: var(--lc-print-success-soft) !important;
+    --lc-color-success-line: var(--lc-print-line-strong) !important;
+    --lc-color-warn: var(--lc-print-warn) !important;
+    --lc-color-warn-soft: var(--lc-print-warn-soft) !important;
+    --lc-color-warn-line: var(--lc-print-line-strong) !important;
+    --lc-color-danger: var(--lc-print-danger) !important;
+    --lc-color-danger-soft: var(--lc-print-danger-soft) !important;
+    --lc-color-danger-line: var(--lc-print-line-strong) !important;
+    --lc-color-info: var(--lc-print-info) !important;
+    --lc-color-info-soft: var(--lc-print-info-soft) !important;
+    --lc-color-info-line: var(--lc-print-line-strong) !important;
+    --lc-color-code-bg: var(--lc-print-code-bg) !important;
+    --lc-color-focus: var(--lc-print-focus) !important;
+    --lc-color-overlay: transparent !important;
+    --lc-shadow-xs: none !important;
+    --lc-shadow-sm: none !important;
+    --lc-shadow-md: none !important;
+    --lc-shadow-lg: none !important;
+  }
+
+  /* 编辑器外壳只在屏幕上存在。 */
+  .lc-topbar,
+  .lc-nav,
+  .lc-sidebar,
+  .lc-inspector,
+  .lc-toolbar,
+  .lc-statusbar,
+  .lc-dialog-backdrop,
+  .lc-toast,
+  .lc-pagination,
+  .lc-breadcrumb,
+  .lc-toc,
+  .lc-icon-btn,
+  .lc-print-hide {
+    display: none !important;
+  }
+
+  /* 外壳容器在纸上要恢复成普通文档流，否则 100% 高度会把内容裁掉。 */
+  .lc-shell {
+    display: block;
+    height: auto;
+    overflow: visible;
+    background: var(--lc-print-bg);
+  }
+
+  .lc-main,
+  .lc-workspace {
+    display: block;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    background: var(--lc-print-bg);
+  }
+
+  .lc-canvas-scroll,
+  .lc-canvas {
+    padding: 0 !important;
+    max-width: none;
+    border: 0 !important;
+    background: var(--lc-print-bg) !important;
+    overflow: visible !important;
+  }
+
+  /* 纸面：去掉所有底色块、阴影、渐变，保留必要的细分隔线。 */
+  .lc-doc,
+  .lc-doc * {
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  .lc-doc {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    color: var(--lc-print-ink);
+    font-size: 11pt;
+    line-height: 1.6;
+  }
+
+  .lc-doc h1 { font-size: 18pt; }
+  .lc-doc h2 { font-size: 15pt; }
+  .lc-doc h3 { font-size: 12.5pt; }
+  .lc-doc h4 { font-size: 11pt; }
+
+  .lc-doc h1,
+  .lc-doc h2,
+  .lc-doc h3,
+  .lc-doc h4 {
+    color: var(--lc-print-ink);
+    break-after: avoid-page;
+    page-break-after: avoid;
+  }
+
+  .lc-doc p,
+  .lc-doc li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .lc-doc table,
+  .lc-doc pre,
+  .lc-doc blockquote,
+  .lc-doc figure,
+  .lc-doc img,
+  .lc-table-wrap {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .lc-doc pre,
+  .lc-doc code {
+    border: 1px solid var(--lc-print-line-strong) !important;
+    color: var(--lc-print-ink) !important;
+    background: var(--lc-print-bg) !important;
+  }
+
+  .lc-doc blockquote {
+    border-left: 3px solid var(--lc-print-line-strong) !important;
+    padding-left: 12pt !important;
+  }
+
+  .lc-doc table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .lc-doc th,
+  .lc-doc td {
+    border-bottom: 1px solid var(--lc-print-line) !important;
+    color: var(--lc-print-ink) !important;
+    padding: 6pt 8pt !important;
+  }
+
+  .lc-doc a,
+  .lc-doc a:visited {
+    color: var(--lc-print-ink) !important;
+    text-decoration: underline;
+  }
+
+  .lc-table-wrap {
+    overflow: visible !important;
+    border: 0 !important;
+  }
+
+  /* 屏幕上的提示、徽标在纸上没意义，统一收掉。 */
+  .lc-badge,
+  .lc-hint {
+    color: var(--lc-print-muted) !important;
+  }
+}

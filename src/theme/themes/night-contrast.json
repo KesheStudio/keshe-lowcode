@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 3,
+  "id": "night-contrast",
+  "name": "夜航 · 高对比",
+  "tone": "high-contrast",
+  "description": "深色主导的高对比主题：近黑背景、近白正文、亮青强调。亮色模式同样保持高对比，不做柔和处理。",
+  "modes": {
+    "light": {
+      "seeds": {
+        "bg": "#ffffff",
+        "surface": "#f6f8fa",
+        "ink": "#0d1117",
+        "muted": "#4b5563",
+        "line": "#d2d8de",
+        "accent": "#124e78",
+        "codeBg": "#eef1f4",
+        "success": "#0f6b3f",
+        "warn": "#7a4300",
+        "danger": "#b3261e",
+        "info": "#0b5cad"
+      }
+    },
+    "dark": {
+      "seeds": {
+        "bg": "#05070a",
+        "surface": "#0d1117",
+        "ink": "#f2f4f8",
+        "muted": "#aab4c0",
+        "line": "#222b36",
+        "accent": "#7cc7ff",
+        "accentFill": "#0d3a5c",
+        "onAccent": "#f4f9ff",
+        "codeBg": "#070a0f",
+        "success": "#5fd39a",
+        "warn": "#ffc26b",
+        "danger": "#ff8a80",
+        "info": "#7cc7ff"
+      }
+    }
+  }
+}

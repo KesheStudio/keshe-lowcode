@@ -1,0 +1,110 @@
+/* 低代码平台 · 图标样式
+ *
+ * 配套 src/theme/icons.mjs 生成的 sprite（lc-icons.html）。图形是内联 <symbol>，
+ * 页面里用 <svg class="lc-icon"><use href="#lc-icon-save"></use></svg> 按 id 取用。
+ *
+ * 颜色：描边和实心点都走 currentColor，改父级 color 即可；
+ * 尺寸：默认 16px，用 .lc-icon-sm / -lg / -xl，或父级设 --lc-icon-size；
+ * 描边：默认 1.75，父级设 --lc-icon-stroke（.lc-icon-thin / .lc-icon-bold 是预设）。
+ *
+ * 不用 iconfont、不引外部 SVG、不用 data URI，避免多一套主题色同步机制。
+ */
+
+.lc-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.lc-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--lc-icon-size, 16px);
+  height: var(--lc-icon-size, 16px);
+  flex: 0 0 auto;
+  color: inherit;
+  vertical-align: middle;
+}
+
+.lc-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* 同时覆盖「svg 本身就是 .lc-icon」和「span.lc-icon 包着 svg」两种写法。 */
+.lc-icon,
+.lc-icon svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--lc-icon-stroke, 1.75);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lc-icon-sm { --lc-icon-size: 14px; }
+.lc-icon-lg { --lc-icon-size: 20px; }
+.lc-icon-xl { --lc-icon-size: 24px; }
+.lc-icon-thin { --lc-icon-stroke: 1.5; }
+.lc-icon-bold { --lc-icon-stroke: 2.25; }
+
+/* 只有图标的方按钮，尺寸和普通控件对齐。 */
+.lc-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--lc-size-control);
+  height: var(--lc-size-control);
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--lc-radius-sm);
+  background: transparent;
+  color: var(--lc-color-ink-2);
+  cursor: pointer;
+  transition:
+    background-color var(--lc-motion-fast) var(--lc-ease-standard),
+    border-color var(--lc-motion-fast) var(--lc-ease-standard),
+    color var(--lc-motion-fast) var(--lc-ease-standard);
+}
+
+.lc-icon-btn:hover {
+  background: var(--lc-color-surface-2);
+  border-color: var(--lc-color-line);
+  color: var(--lc-color-ink);
+}
+
+.lc-icon-btn.is-active,
+.lc-icon-btn[aria-pressed="true"],
+.lc-icon-btn[aria-selected="true"] {
+  background: var(--lc-color-accent-soft);
+  border-color: var(--lc-color-accent-line);
+  color: var(--lc-color-accent);
+}
+
+.lc-icon-btn.is-danger {
+  color: var(--lc-color-danger);
+}
+
+.lc-icon-btn.is-danger:hover {
+  border-color: var(--lc-color-danger-line);
+  background: var(--lc-color-danger-soft);
+}
+
+.lc-icon-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--lc-ring);
+}
+
+.lc-icon-btn:disabled,
+.lc-icon-btn[aria-disabled="true"] {
+  border-color: var(--lc-color-line);
+  background: var(--lc-color-disabled-bg);
+  color: var(--lc-color-disabled-ink);
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lc-icon-btn { transition-duration: 0ms; }
+}

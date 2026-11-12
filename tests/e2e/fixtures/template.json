@@ -1,0 +1,20 @@
+{
+  "format": "lowcode-template",
+  "schemaVersion": 1,
+  "template": {
+    "id": "e2e-template",
+    "name": "E2E 页面模板",
+    "kind": "page",
+    "description": "E2E 用例套用的页面模板",
+    "page": {
+      "title": "E2E 模板页",
+      "slug": "e2e-template",
+      "path": "e2e-template.html",
+      "nav": true,
+      "blocks": [
+        { "type": "heading", "level": 2, "text": "模板生成的标题" },
+        { "type": "paragraph", "md": "这一页由模板套用生成，用来验证「新建页面」这条 UI 流程。" }
+      ]
+    }
+  }
+}

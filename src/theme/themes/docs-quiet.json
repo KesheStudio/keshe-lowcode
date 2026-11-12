@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 3,
+  "id": "docs-quiet",
+  "name": "文档 · 素白",
+  "tone": "paper",
+  "description": "文档站默认。近白纸面、墨绿强调，层级克制，长文阅读不刺眼。",
+  "modes": {
+    "light": {
+      "seeds": {
+        "bg": "#faf9f7",
+        "surface": "#ffffff",
+        "ink": "#1b1d1f",
+        "muted": "#5a6066",
+        "line": "#dedcd5",
+        "accent": "#2e5f52",
+        "codeBg": "#f2f1ed",
+        "success": "#2e6047",
+        "warn": "#7a4a12",
+        "danger": "#a3392f",
+        "info": "#33597f"
+      }
+    },
+    "dark": {
+      "seeds": {
+        "bg": "#11161a",
+        "surface": "#171e23",
+        "ink": "#e7e9ea",
+        "muted": "#a2a9b0",
+        "line": "#293440",
+        "accent": "#93c2ae",
+        "accentFill": "#2e5547",
+        "onAccent": "#f4f8f4",
+        "codeBg": "#131a1f",
+        "success": "#8fc9ab",
+        "warn": "#d8a26f",
+        "danger": "#e58c7f",
+        "info": "#95b6da"
+      }
+    }
+  }
+}

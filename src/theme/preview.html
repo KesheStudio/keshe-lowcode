@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lc-theme="ink-green" data-lc-mode="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>主题与设计令牌预览 · 低代码平台</title>
+<link rel="stylesheet" href="../../assets/css/lc-tokens.css">
+<link rel="stylesheet" href="../../assets/css/lc-themes.css">
+<link rel="stylesheet" href="../../assets/css/lc-icons.css">
+<link rel="stylesheet" href="../../assets/css/lc-controls.css">
+<link rel="stylesheet" href="../../assets/css/lc-editor.css">
+<link rel="stylesheet" href="../../assets/css/lc-responsive.css">
+<link rel="stylesheet" href="../../assets/css/lc-a11y.css">
+<link rel="stylesheet" href="../../assets/css/lc-print.css" media="print">
+<style>
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--lc-color-bg);
+  color: var(--lc-color-ink);
+  font-family: var(--lc-font-sans);
+  font-size: var(--lc-text-base);
+  line-height: var(--lc-leading-base);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--lc-color-accent); }
+code, kbd, pre { font-family: var(--lc-font-mono); }
+
+.pv-page { min-height: 100vh; display: flex; flex-direction: column; }
+.pv-inner { width: min(1240px, 100%); margin: 0 auto; padding: 0 var(--lc-space-6); }
+.pv-head {
+  position: sticky;
+  top: 0;
+  z-index: var(--lc-z-sticky);
+  padding: var(--lc-space-4) 0 var(--lc-space-3);
+  border-bottom: 1px solid var(--lc-color-line);
+  background: var(--lc-color-bg);
+}
+.pv-head-inner { display: flex; flex-direction: column; gap: var(--lc-space-3); }
+.pv-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--lc-space-4); flex-wrap: wrap; }
+.pv-title { margin: 0; font-family: var(--lc-font-serif); font-size: var(--lc-text-2xl); font-weight: var(--lc-weight-semibold); line-height: var(--lc-leading-tight); }
+.pv-sub { max-width: 68ch; margin: var(--lc-space-1) 0 0; color: var(--lc-color-muted); font-size: var(--lc-text-sm); line-height: var(--lc-leading-base); }
+.pv-mode-box { display: flex; align-items: center; gap: var(--lc-space-2); flex: 0 0 auto; }
+.pv-label { color: var(--lc-color-muted); font-size: var(--lc-text-xs); font-weight: var(--lc-weight-semibold); letter-spacing: 0.04em; white-space: nowrap; }
+.pv-theme-row { display: flex; align-items: center; gap: var(--lc-space-3); flex-wrap: wrap; }
+.pv-theme-tabs { flex-wrap: wrap; background: var(--lc-color-surface-2); }
+.pv-current { margin-left: auto; color: var(--lc-color-muted); font-family: var(--lc-font-mono); font-size: var(--lc-text-xs); }
+
+.pv-main { flex: 1 0 auto; padding-top: var(--lc-space-7); padding-bottom: var(--lc-space-8); display: flex; flex-direction: column; gap: var(--lc-space-8); }
+.pv-section { scroll-margin-top: 172px; }
+.pv-section-head { margin-bottom: var(--lc-space-4); }
+.pv-section-head h2 { margin: 0; font-family: var(--lc-font-serif); font-size: var(--lc-text-xl); font-weight: var(--lc-weight-semibold); line-height: var(--lc-leading-tight); }
+.pv-section-head p { max-width: 78ch; margin: var(--lc-space-2) 0 0; color: var(--lc-color-muted); font-size: var(--lc-text-sm); line-height: var(--lc-leading-relaxed); }
+.pv-section-head code, .pv-sub code, .pv-foot code { padding: 1px 4px; border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-xs); background: var(--lc-color-code-bg); font-size: 0.92em; }
+
+.pv-theme-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--lc-space-3); }
+.pv-theme-card {
+  display: flex; flex-direction: column; gap: var(--lc-space-1);
+  padding: var(--lc-space-3); border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-md);
+  background: var(--lc-color-surface); color: var(--lc-color-ink); font-family: var(--lc-font-sans);
+  text-align: left; cursor: pointer; transition: border-color var(--lc-motion-fast) var(--lc-ease-standard);
+}
+.pv-theme-card:hover { border-color: var(--lc-color-accent); }
+.pv-theme-card:focus-visible { outline: none; box-shadow: var(--lc-ring); }
+.pv-theme-card[aria-pressed="true"] { border-color: var(--lc-color-accent); box-shadow: inset 0 0 0 1px var(--lc-color-accent-line); }
+.pv-theme-thumbs { display: flex; height: 26px; margin-bottom: var(--lc-space-2); border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-sm); overflow: hidden; }
+.pv-thumb-strip { flex: 1 1 25%; }
+.pv-theme-name { font-size: var(--lc-text-md); font-weight: var(--lc-weight-semibold); }
+.pv-theme-tone { color: var(--lc-color-accent); font-size: var(--lc-text-xs); font-family: var(--lc-font-mono); }
+.pv-theme-desc { color: var(--lc-color-muted); font-size: var(--lc-text-xs); line-height: var(--lc-leading-base); }
+.pv-theme-stat { margin-top: var(--lc-space-1); color: var(--lc-color-muted-2); font-size: 11px; font-family: var(--lc-font-mono); }
+
+.pv-doc { max-width: 100%; min-height: 0; padding: var(--lc-space-6) var(--lc-space-7); }
+.pv-doc h1, .pv-doc h2, .pv-doc h3, .pv-doc h4 { font-family: var(--lc-font-serif); font-weight: var(--lc-weight-semibold); line-height: var(--lc-leading-tight); }
+.pv-doc h1 { margin: 0 0 var(--lc-space-3); font-size: var(--lc-text-2xl); }
+.pv-doc h2 { margin: var(--lc-space-6) 0 var(--lc-space-2); font-size: var(--lc-text-xl); }
+.pv-doc h3 { margin: var(--lc-space-5) 0 var(--lc-space-2); font-size: var(--lc-text-lg); }
+.pv-doc h4 { margin: var(--lc-space-4) 0 var(--lc-space-1); font-size: var(--lc-text-md); }
+.pv-doc p { margin: 0 0 var(--lc-space-3); }
+.pv-lead { color: var(--lc-color-ink-2); font-size: var(--lc-text-md); line-height: var(--lc-leading-relaxed); }
+.pv-doc ul, .pv-doc ol { margin: 0 0 var(--lc-space-3); padding-left: var(--lc-space-5); }
+.pv-doc li { margin-bottom: var(--lc-space-1); }
+.pv-doc blockquote { margin: var(--lc-space-4) 0; padding: var(--lc-space-3) var(--lc-space-4); border-left: 3px solid var(--lc-color-accent-line); background: var(--lc-color-accent-soft); color: var(--lc-color-ink-2); border-radius: 0 var(--lc-radius-md) var(--lc-radius-md) 0; }
+.pv-doc blockquote p:last-child { margin-bottom: 0; }
+.pv-doc pre { margin: var(--lc-space-3) 0; padding: var(--lc-space-3) var(--lc-space-4); overflow-x: auto; border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-md); background: var(--lc-color-code-bg); font-size: var(--lc-text-sm); line-height: var(--lc-leading-base); }
+.pv-doc pre code { padding: 0; border: 0; background: none; }
+.pv-doc > code, .pv-doc p code, .pv-doc li code { padding: 1px 5px; border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-xs); background: var(--lc-color-code-bg); color: var(--lc-color-ink-2); font-size: 0.92em; }
+.pv-doc table { width: 100%; border-collapse: collapse; margin: var(--lc-space-3) 0; font-size: var(--lc-text-sm); }
+.pv-doc th, .pv-doc td { padding: var(--lc-space-2) var(--lc-space-3); border-bottom: 1px solid var(--lc-color-line); text-align: left; }
+.pv-doc th { color: var(--lc-color-ink-2); font-weight: var(--lc-weight-semibold); }
+.pv-num { font-family: var(--lc-font-mono); font-variant-numeric: tabular-nums; }
+
+.pv-controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(286px, 1fr)); gap: var(--lc-space-3); align-items: start; }
+.pv-cell { padding: var(--lc-space-4); border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-md); background: var(--lc-color-surface); }
+.pv-cell-title { margin: 0 0 var(--lc-space-3); padding-bottom: var(--lc-space-2); border-bottom: 1px solid var(--lc-color-line); color: var(--lc-color-muted); font-size: var(--lc-text-xs); font-weight: var(--lc-weight-semibold); letter-spacing: 0.04em; }
+.pv-row { display: flex; align-items: center; gap: var(--lc-space-2); flex-wrap: wrap; }
+.pv-gap-top { margin-top: var(--lc-space-2); }
+
+.pv-shell-frame { height: 620px; border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-lg); overflow: hidden; background: var(--lc-color-bg); box-shadow: var(--lc-shadow-sm); }
+.pv-block { display: flex; align-items: center; justify-content: space-between; gap: var(--lc-space-3); margin-top: var(--lc-space-3); padding: var(--lc-space-4); border: 1px dashed var(--lc-color-line-strong); border-radius: var(--lc-radius-md); color: var(--lc-color-ink-2); font-size: var(--lc-text-sm); }
+.pv-block span { color: var(--lc-color-muted); font-family: var(--lc-font-mono); font-size: 11px; }
+.pv-block:first-of-type { margin-top: var(--lc-space-4); }
+
+.pv-overlay-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: var(--lc-space-3); }
+.pv-stage { position: relative; min-height: 420px; border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-lg); overflow: hidden; background: var(--lc-color-bg-deep); }
+.pv-stage .lc-dialog-backdrop { position: absolute; }
+.pv-stage-toast { display: flex; flex-direction: column; justify-content: flex-end; gap: var(--lc-space-2); padding: var(--lc-space-4); }
+.pv-stage-toast .lc-toast { position: static; max-width: none; }
+
+.pv-swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: var(--lc-space-2); }
+.pv-swatch { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 0 var(--lc-space-2); align-items: center; padding: var(--lc-space-2); border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-md); background: var(--lc-color-surface); }
+.pv-swatch-color { grid-row: span 2; width: 34px; height: 34px; border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-sm); }
+.pv-swatch-label { color: var(--lc-color-ink-2); font-size: var(--lc-text-xs); }
+.pv-swatch code { color: var(--lc-color-muted); font-size: 11px; overflow-wrap: anywhere; }
+
+.pv-cmd { margin: 0; padding: var(--lc-space-3) var(--lc-space-4); overflow-x: auto; border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-md); background: var(--lc-color-code-bg); color: var(--lc-color-ink-2); font-size: var(--lc-text-sm); line-height: var(--lc-leading-relaxed); }
+
+.pv-foot { flex: 0 0 auto; border-top: 1px solid var(--lc-color-line); background: var(--lc-color-surface); }
+.pv-foot p { margin: 0; padding: var(--lc-space-4) 0; color: var(--lc-color-muted); font-size: var(--lc-text-xs); line-height: var(--lc-leading-base); }
+
+/* ---------------- 图标集 ---------------- */
+
+.pv-icon-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--lc-space-3); }
+.pv-icon-group { padding: var(--lc-space-3) var(--lc-space-4); border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-md); background: var(--lc-color-surface); }
+.pv-icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: var(--lc-space-2); }
+.pv-icon-item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: var(--lc-space-2) 2px; border: 1px solid transparent; border-radius: var(--lc-radius-sm); }
+.pv-icon-item:hover { border-color: var(--lc-color-line); background: var(--lc-color-surface-2); }
+.pv-icon-demo { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; color: var(--lc-color-ink-2); }
+.pv-icon-item code { color: var(--lc-color-accent); font-size: 10px; text-align: center; overflow-wrap: anywhere; }
+.pv-icon-name { color: var(--lc-color-muted); font-size: 11px; }
+.pv-icon-caption { color: var(--lc-color-muted); font-family: var(--lc-font-mono); font-size: 11px; }
+.pv-icon-scales .lc-icon { color: var(--lc-color-ink-2); }
+
+/* ---------------- 断点演示 ---------------- */
+
+.pv-bp-bar { display: flex; align-items: center; gap: var(--lc-space-3); flex-wrap: wrap; margin-bottom: var(--lc-space-3); }
+.pv-bp-range { display: flex; align-items: center; gap: var(--lc-space-2); }
+.pv-bp-stage { overflow-x: auto; padding: var(--lc-space-3); border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-lg); background: var(--lc-color-bg-deep); }
+#pvShellFrame { display: block; width: 1280px; max-width: none; height: 620px; border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-md); background: var(--lc-color-bg); }
+
+/* ---------------- 主题编辑器与切换器演示 ---------------- */
+
+.pv-editor-bar { display: flex; align-items: center; gap: var(--lc-space-3); flex-wrap: wrap; margin-bottom: var(--lc-space-3); }
+#pvSwitchFrame { display: block; width: 100%; height: 560px; border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-md); background: var(--lc-color-bg); }
+
+/* ---------------- 打印示意 ---------------- */
+
+.pv-print-bar { display: flex; align-items: center; gap: var(--lc-space-3); flex-wrap: wrap; margin-bottom: var(--lc-space-3); }
+/* 这份“纸”故意用字面色而不是主题令牌：它模拟的是纸张输出，不是屏幕界面。 */
+.pv-paper { max-width: 760px; margin: 0 auto; padding: 48px 52px; border: 1px solid var(--lc-color-line); border-radius: var(--lc-radius-md); background: #ffffff; color: #111111; box-shadow: var(--lc-shadow-sm); font-size: 11pt; line-height: 1.6; }
+.pv-paper h1 { margin: 0 0 12pt; font-family: var(--lc-font-serif); font-size: 18pt; line-height: 1.3; }
+.pv-paper h2 { margin: 18pt 0 8pt; font-family: var(--lc-font-serif); font-size: 15pt; line-height: 1.3; }
+.pv-paper p, .pv-paper ul, .pv-paper table { margin: 0 0 10pt; }
+.pv-paper ul { padding-left: 20pt; }
+.pv-paper blockquote { margin: 12pt 0; padding: 6pt 0 6pt 12pt; border-left: 3px solid #999999; color: #333333; }
+.pv-paper table { width: 100%; border-collapse: collapse; }
+.pv-paper th, .pv-paper td { padding: 5pt 8pt; border-bottom: 1px solid #bbbbbb; text-align: left; }
+.pv-paper code { padding: 0 3px; border: 1px solid #999999; font-family: var(--lc-font-mono); }
+.pv-paper-head { display: flex; justify-content: space-between; gap: var(--lc-space-3); margin-bottom: 18pt; padding-bottom: 8pt; border-bottom: 1px solid #bbbbbb; color: #555555; font-size: 8.5pt; letter-spacing: 0.04em; }
+
+/* 打印本页时只留纸面文档，顺便验证「导航不打断版面」。 */
+@media print {
+  .pv-head,
+  .pv-foot,
+  .pv-print-bar,
+  .pv-section:not(.pv-print-section) { display: none !important; }
+  .pv-page { display: block; min-height: 0; }
+  .pv-main { display: block; padding: 0; }
+  .pv-paper { max-width: none; margin: 0; padding: 0; border: 0; box-shadow: none; }
+}
+
+@media (max-width: 860px) {
+  .pv-inner { padding: 0 var(--lc-space-4); }
+  .pv-overlay-grid { grid-template-columns: 1fr; }
+  .pv-shell-frame { height: 560px; }
+  .pv-doc { padding: var(--lc-space-4); }
+  .pv-current { margin-left: 0; }
+  .pv-icon-groups { grid-template-columns: 1fr; }
+  .pv-paper { padding: var(--lc-space-5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pv-theme-card { transition-duration: 0ms; }
+}
+
+</style>
+</head>
+<body>
+<svg class="lc-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="lc-icon-add" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
+  <symbol id="lc-icon-remove" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="lc-icon-delete" viewBox="0 0 24 24"><path d="M4.5 7h15"/><path d="M9 7V5.5h6V7"/><path d="M6.5 7l.9 12.5h9.2L17.5 7"/><path d="M10 10.5v5.5"/><path d="M14 10.5v5.5"/></symbol>
+  <symbol id="lc-icon-edit" viewBox="0 0 24 24"><path d="M12.5 5H5.5a1 1 0 0 0-1 1v12.5a1 1 0 0 0 1 1H18a1 1 0 0 0 1-1V12"/><path d="M17 4.2l2.8 2.8-8.4 8.4-3.8 1 1-3.8 8.4-8.4z"/></symbol>
+  <symbol id="lc-icon-copy" viewBox="0 0 24 24"><path d="M9 8V6.5A1.5 1.5 0 0 1 10.5 5H19A1.5 1.5 0 0 1 20.5 6.5V15A1.5 1.5 0 0 1 19 16.5h-1.8"/><path d="M5 9.5A1.5 1.5 0 0 1 6.5 8H15a1.5 1.5 0 0 1 1.5 1.5v8.5A1.5 1.5 0 0 1 15 19.5H6.5A1.5 1.5 0 0 1 5 18V9.5z"/></symbol>
+  <symbol id="lc-icon-undo" viewBox="0 0 24 24"><path d="M9.5 14.5L4.5 9.5l5-5"/><path d="M4.5 9.5h9.5a5.5 5.5 0 0 1 0 11H10"/></symbol>
+  <symbol id="lc-icon-redo" viewBox="0 0 24 24"><path d="M14.5 14.5l5-5-5-5"/><path d="M19.5 9.5H10a5.5 5.5 0 0 0 0 11h4"/></symbol>
+  <symbol id="lc-icon-save" viewBox="0 0 24 24"><path d="M5.5 5.5a1 1 0 0 1 1-1h8l4 4v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-13z"/><path d="M8.5 4.5v3.5h5.5V4.5"/><rect x="8.5" y="13" width="7" height="6.5" rx="1"/></symbol>
+  <symbol id="lc-icon-export" viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7.5 7.5L12 3l4.5 4.5"/><path d="M4.5 15v3.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V15"/></symbol>
+  <symbol id="lc-icon-download" viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4.5 15v3.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V15"/></symbol>
+  <symbol id="lc-icon-upload" viewBox="0 0 24 24"><path d="M12 15V4"/><path d="M7.5 8.5L12 4l4.5 4.5"/><path d="M4.5 15v3.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V15"/></symbol>
+  <symbol id="lc-icon-run" viewBox="0 0 24 24"><path d="M8 5.5v13L19 12z"/></symbol>
+  <symbol id="lc-icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6l-12 12"/></symbol>
+  <symbol id="lc-icon-more" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="18" cy="12" r="1.5" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-more-vertical" viewBox="0 0 24 24"><circle cx="12" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="18" r="1.5" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-grip" viewBox="0 0 24 24"><circle cx="9" cy="7" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="7" r="1.3" fill="currentColor" stroke="none"/><circle cx="9" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="9" cy="17" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="17" r="1.3" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-chevron-down" viewBox="0 0 24 24"><path d="M6 9.5l6 5.5 6-5.5"/></symbol>
+  <symbol id="lc-icon-chevron-right" viewBox="0 0 24 24"><path d="M9 5.5l6.5 6.5-6.5 6.5"/></symbol>
+  <symbol id="lc-icon-chevron-up" viewBox="0 0 24 24"><path d="M6 14.5l6-5.5 6 5.5"/></symbol>
+  <symbol id="lc-icon-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="lc-icon-eye-off" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></symbol>
+  <symbol id="lc-icon-lock" viewBox="0 0 24 24"><path d="M6 11.5h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M8.5 11.5V8a3.5 3.5 0 0 1 7 0v3.5"/><circle cx="12" cy="16" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-unlock" viewBox="0 0 24 24"><path d="M6 11.5h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M8.5 11.5V8a3.5 3.5 0 0 1 6.6-1.6"/><circle cx="12" cy="16" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="lc-icon-warning" viewBox="0 0 24 24"><path d="M12 4.5l8 14.5h-16z"/><path d="M12 9.5v4.5"/><circle cx="12" cy="17.2" r="1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5"/><circle cx="12" cy="7.8" r="1.1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.4 9.2a2.7 2.7 0 0 1 5.3 1c0 1.9-2.5 2.2-2.5 3.6"/><circle cx="12" cy="17" r="1.1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+  <symbol id="lc-icon-filter" viewBox="0 0 24 24"><path d="M4 5.5h16l-6.2 7.2v6l-3.6 2v-8z"/></symbol>
+  <symbol id="lc-icon-sort" viewBox="0 0 24 24"><path d="M8 19V5"/><path d="M4.5 8.5L8 5l3.5 3.5"/><path d="M16 5v14"/><path d="M12.5 15.5L16 19l3.5-3.5"/></symbol>
+  <symbol id="lc-icon-grid" viewBox="0 0 24 24"><rect x="4.5" y="4.5" width="6" height="6" rx="1"/><rect x="13.5" y="4.5" width="6" height="6" rx="1"/><rect x="4.5" y="13.5" width="6" height="6" rx="1"/><rect x="13.5" y="13.5" width="6" height="6" rx="1"/></symbol>
+  <symbol id="lc-icon-layers" viewBox="0 0 24 24"><path d="M12 3.5l8.5 4.8-8.5 4.8-8.5-4.8 8.5-4.8z"/><path d="M3.5 12.2l8.5 4.8 8.5-4.8"/><path d="M3.5 16.2l8.5 4.8 8.5-4.8"/></symbol>
+  <symbol id="lc-icon-settings" viewBox="0 0 24 24"><path d="M4.5 6.5h9"/><path d="M18 6.5h2"/><circle cx="15.8" cy="6.5" r="2"/><path d="M4.5 12h2"/><path d="M10.5 12h9.5"/><circle cx="8.5" cy="12" r="2"/><path d="M4.5 17.5h10.5"/><path d="M19 17.5h.5"/><circle cx="17" cy="17.5" r="2"/></symbol>
+  <symbol id="lc-icon-palette" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="9.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="9.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="10" cy="15.5" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-text" viewBox="0 0 24 24"><path d="M5.5 6.5V4.5h13v2"/><path d="M12 4.5v15"/><path d="M8.5 19.5h7"/></symbol>
+  <symbol id="lc-icon-image" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="13" rx="1.5"/><circle cx="9" cy="10.2" r="1.4" fill="currentColor" stroke="none"/><path d="M5.5 16.5l4.3-4.6 3.7 3.7 2.6-2.6 4.4 4.4"/></symbol>
+  <symbol id="lc-icon-link" viewBox="0 0 24 24"><path d="M10.2 14a3.4 3.4 0 0 1 0-4.9l2.9-2.9a3.4 3.4 0 0 1 4.9 4.9l-1.5 1.5"/><path d="M13.8 10a3.4 3.4 0 0 1 0 4.9l-2.9 2.9a3.4 3.4 0 0 1-4.9-4.9l1.5-1.5"/></symbol>
+  <symbol id="lc-icon-external" viewBox="0 0 24 24"><path d="M14 4.5h6v6"/><path d="M20 4.5l-8.5 8.5"/><path d="M18 14v5.5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6.5a1 1 0 0 1 1-1h5.5"/></symbol>
+</svg>
+<div class="pv-page">
+
+  <a class="lc-skip-link" href="#themes">跳到内容</a>
+
+  <header class="pv-head">
+    <div class="pv-inner pv-head-inner">
+      <div class="pv-title-row">
+        <div>
+          <h1 class="pv-title">主题与设计令牌预览</h1>
+          <p class="pv-sub">一套令牌，10 套主题，亮暗两套值。切换下面任意主题和明暗，页面里所有控件、外壳、色板都会跟着变。</p>
+        </div>
+        <div class="pv-mode-box">
+          <span class="pv-label">明暗</span>
+          <div class="lc-tabs" role="group" aria-label="明暗模式">
+            <button class="lc-tab" type="button" data-set-mode="light" aria-pressed="true">亮色</button>
+            <button class="lc-tab" type="button" data-set-mode="dark" aria-pressed="false">暗色</button>
+          </div>
+        </div>
+      </div>
+      <div class="pv-theme-row">
+        <span class="pv-label">主题包</span>
+        <div class="lc-tabs pv-theme-tabs" role="group" aria-label="主题包">
+        <button class="lc-tab" type="button" data-set-theme="auth-clean" aria-pressed="false">认证 · 净白</button>
+        <button class="lc-tab" type="button" data-set-theme="blueprint-amber" aria-pressed="false">蓝图 · 琥珀</button>
+        <button class="lc-tab" type="button" data-set-theme="dashboard-calm" aria-pressed="false">仪表盘 · 石青</button>
+        <button class="lc-tab" type="button" data-set-theme="docs-quiet" aria-pressed="false">文档 · 素白</button>
+        <button class="lc-tab" type="button" data-set-theme="ink-graphite" aria-pressed="false">纸墨 · 石墨</button>
+        <button class="lc-tab" type="button" data-set-theme="ink-green" aria-pressed="false">纸墨 · 松绿</button>
+        <button class="lc-tab" type="button" data-set-theme="ink-navy" aria-pressed="false">纸墨 · 藏青</button>
+        <button class="lc-tab" type="button" data-set-theme="ink-ochre" aria-pressed="false">纸墨 · 赭石</button>
+        <button class="lc-tab" type="button" data-set-theme="night-contrast" aria-pressed="false">夜航 · 高对比</button>
+        <button class="lc-tab" type="button" data-set-theme="portfolio-bold" aria-pressed="false">作品集 · 赤霞</button>
+        </div>
+        <span class="pv-current" id="pvCurrent" aria-live="polite">当前：纸墨 · 松绿 / 亮色</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="pv-inner pv-main">
+
+    <section class="pv-section" id="themes">
+      <div class="pv-section-head">
+        <h2>开箱可用的主题包</h2>
+        <p>四套模板各有默认主题：文档站纸感素净、作品集大胆、仪表盘冷静、认证中心干净。全部内置主题共 10 套，覆盖纸感、冷调、暖调、中性、高对比和工程蓝，每套都有亮暗两种值。</p>
+      </div>
+      <h3 class="pv-cell-title">四套模板的默认主题</h3>
+      <div class="pv-theme-gallery">
+      <button class="pv-theme-card" type="button" data-set-theme="docs-quiet" aria-pressed="false">
+        <span class="pv-theme-thumbs"><span class="pv-thumb-strip" style="background:#faf9f7"></span><span class="pv-thumb-strip" style="background:#ffffff"></span><span class="pv-thumb-strip" style="background:#2e5f52"></span><span class="pv-thumb-strip" style="background:#1b1d1f"></span></span>
+        <span class="pv-theme-name">文档站</span>
+        <span class="pv-theme-tone">默认 docs-quiet · 文档 · 素白</span>
+        <span class="pv-theme-desc">纸感素净。近白纸面、墨绿强调，标题层级克制，适合长文、教程和 API 文档。</span>
+        <span class="pv-theme-stat">可选：文档 · 素白 / 纸墨 · 松绿 / 纸墨 · 藏青 / 纸墨 · 石墨</span>
+      </button>
+      <button class="pv-theme-card" type="button" data-set-theme="portfolio-bold" aria-pressed="false">
+        <span class="pv-theme-thumbs"><span class="pv-thumb-strip" style="background:#fbf4ec"></span><span class="pv-thumb-strip" style="background:#fffdf9"></span><span class="pv-thumb-strip" style="background:#b23a1e"></span><span class="pv-thumb-strip" style="background:#201a16"></span></span>
+        <span class="pv-theme-name">作品集</span>
+        <span class="pv-theme-tone">默认 portfolio-bold · 作品集 · 赤霞</span>
+        <span class="pv-theme-desc">大胆。暖白纸面配赤陶红，色块和图表更抢眼，适合项目封面、案例展示。</span>
+        <span class="pv-theme-stat">可选：作品集 · 赤霞 / 纸墨 · 赭石 / 蓝图 · 琥珀</span>
+      </button>
+      <button class="pv-theme-card" type="button" data-set-theme="dashboard-calm" aria-pressed="false">
+        <span class="pv-theme-thumbs"><span class="pv-thumb-strip" style="background:#f2f5f7"></span><span class="pv-thumb-strip" style="background:#ffffff"></span><span class="pv-thumb-strip" style="background:#2c6e8f"></span><span class="pv-thumb-strip" style="background:#16202a"></span></span>
+        <span class="pv-theme-name">仪表盘</span>
+        <span class="pv-theme-tone">默认 dashboard-calm · 仪表盘 · 石青</span>
+        <span class="pv-theme-desc">冷静。冷灰蓝底、低饱和数据色，长时间盯盘不刺眼，状态色仍能一眼分开。</span>
+        <span class="pv-theme-stat">可选：仪表盘 · 石青 / 纸墨 · 藏青 / 纸墨 · 石墨 / 蓝图 · 琥珀</span>
+      </button>
+      <button class="pv-theme-card" type="button" data-set-theme="auth-clean" aria-pressed="false">
+        <span class="pv-theme-thumbs"><span class="pv-thumb-strip" style="background:#f7f9fb"></span><span class="pv-thumb-strip" style="background:#ffffff"></span><span class="pv-thumb-strip" style="background:#1f5f9e"></span><span class="pv-thumb-strip" style="background:#1a2430"></span></span>
+        <span class="pv-theme-name">认证中心</span>
+        <span class="pv-theme-tone">默认 auth-clean · 认证 · 净白</span>
+        <span class="pv-theme-desc">干净。接近纯白的底色和单一蓝强调，焦点留给表单、验证码和状态提示。</span>
+        <span class="pv-theme-stat">可选：认证 · 净白 / 文档 · 素白 / 纸墨 · 松绿</span>
+      </button>
+      </div>
+      <h3 class="pv-cell-title">全部内置主题</h3>
+      <div class="pv-theme-gallery">
+      <button class="pv-theme-card" type="button" data-set-theme="auth-clean" aria-pressed="false">
+        <span class="pv-theme-thumbs"><span class="pv-thumb-strip" style="background:#f7f9fb"></span><span class="pv-thumb-strip" style="background:#ffffff"></span><span class="pv-thumb-strip" style="background:#1f5f9e"></span><span class="pv-thumb-strip" style="background:#1a2430"></span></span>
+        <span class="pv-theme-name">认证 · 净白</span>
+        <span class="pv-theme-tone">中性 · auth-clean</span>
+        <span class="pv-theme-desc">认证中心默认。接近纯白的干净底色和单一蓝强调，视觉焦点留给表单和状态提示。</span>
+        <span class="pv-theme-stat">66 个令牌 / 亮暗两套</span>
+      </button>
+      <button class="pv-theme-card" type="button" data-set-theme="blueprint-amber" aria-pressed="false">
+        <span class="pv-theme-thumbs"><span class="pv-thumb-strip" style="background:#eef2f6"></span><span class="pv-thumb-strip" style="background:#fbfcfe"></span><span class="pv-thumb-strip" style="background:#8f5208"></span><span class="pv-thumb-strip" style="background:#13202b"></span></span>
+        <span class="pv-theme-name">蓝图 · 琥珀</span>
+        <span class="pv-theme-tone">工程蓝 · blueprint-amber</span>
+        <span class="pv-theme-desc">冷灰蓝底配琥珀强调，工程图纸的调子。适合贴命令和配置的工程文档。</span>
+        <span class="pv-theme-stat">66 个令牌 / 亮暗两套</span>
+      </button>
+      <button class="pv-theme-card" type="button" data-set-theme="dashboard-calm" aria-pressed="false">
+        <span class="pv-theme-thumbs"><span class="pv-thumb-strip" style="background:#f2f5f7"></span><span class="pv-thumb-strip" style="background:#ffffff"></span><span class="pv-thumb-strip" style="background:#2c6e8f"></span><span class="pv-thumb-strip" style="background:#16202a"></span></span>
+        <span class="pv-theme-name">仪表盘 · 石青</span>
+        <span class="pv-theme-tone">冷调 · dashboard-calm</span>
+        <span class="pv-theme-desc">仪表盘默认。冷灰蓝底配低饱和数据色，长时间盯盘不刺眼，状态色仍分得清。</span>
+        <span class="pv-theme-stat">66 个令牌 / 亮暗两套</span>
+      </button>
+      <button class="pv-theme-card" type="button" data-set-theme="docs-quiet" aria-pressed="false">
+        <span class="pv-theme-thumbs"><span class="pv-thumb-strip" style="background:#faf9f7"></span><span class="pv-thumb-strip" style="background:#ffffff"></span><span class="pv-thumb-strip" style="background:#2e5f52"></span><span class="pv-thumb-strip" style="background:#1b1d1f"></span></span>
+        <span class="pv-theme-name">文档 · 素白</span>
+        <span class="pv-theme-tone">纸感 · docs-quiet</span>
+        <span class="pv-theme-desc">文档站默认。近白纸面、墨绿强调，层级克制，长文阅读不刺眼。</span>
+        <span class="pv-theme-stat">66 个令牌 / 亮暗两套</span>
+      </button>
+      <button class="pv-theme-card" type="button" data-set-theme="ink-graphite" aria-pressed="false">
+        <span class="pv-theme-thumbs"><span class="pv-thumb-strip" style="background:#f3f3f0"></span><span class="pv-thumb-strip" style="background:#fcfcf9"></span><span class="pv-thumb-strip" style="background:#4a555c"></span><span class="pv-thumb-strip" style="background:#1f2224"></span></span>
+        <span class="pv-theme-name">纸墨 · 石墨</span>
+        <span class="pv-theme-tone">中性 · ink-graphite</span>
+        <span class="pv-theme-desc">低饱和中性色，界面几乎只剩黑白灰。适合把编辑器当工具用、不想被颜色打扰的人。</span>
+        <span class="pv-theme-stat">66 个令牌 / 亮暗两套</span>
+      </button>
+      <button class="pv-theme-card" type="button" data-set-theme="ink-green" aria-pressed="false">
+        <span class="pv-theme-thumbs"><span class="pv-thumb-strip" style="background:#f4f0e6"></span><span class="pv-thumb-strip" style="background:#fffcf5"></span><span class="pv-thumb-strip" style="background:#3e6a56"></span><span class="pv-thumb-strip" style="background:#20242a"></span></span>
+        <span class="pv-theme-name">纸墨 · 松绿</span>
+        <span class="pv-theme-tone">纸感 · ink-green</span>
+        <span class="pv-theme-desc">默认主题。米色纸面配墨绿，正文偏黑不偏灰，长时间读文档不累。</span>
+        <span class="pv-theme-stat">66 个令牌 / 亮暗两套</span>
+      </button>
+      <button class="pv-theme-card" type="button" data-set-theme="ink-navy" aria-pressed="false">
+        <span class="pv-theme-thumbs"><span class="pv-thumb-strip" style="background:#f2f1ec"></span><span class="pv-thumb-strip" style="background:#fdfcf7"></span><span class="pv-thumb-strip" style="background:#35577f"></span><span class="pv-thumb-strip" style="background:#1f252c"></span></span>
+        <span class="pv-theme-name">纸墨 · 藏青</span>
+        <span class="pv-theme-tone">冷调 · ink-navy</span>
+        <span class="pv-theme-desc">冷调纸感。藏青强调色偏克制，适合技术文档、运维手册这类需要长期盯着看的场景。</span>
+        <span class="pv-theme-stat">66 个令牌 / 亮暗两套</span>
+      </button>
+      <button class="pv-theme-card" type="button" data-set-theme="ink-ochre" aria-pressed="false">
+        <span class="pv-theme-thumbs"><span class="pv-thumb-strip" style="background:#f5efe3"></span><span class="pv-thumb-strip" style="background:#fffdf7"></span><span class="pv-thumb-strip" style="background:#8c4a26"></span><span class="pv-thumb-strip" style="background:#2a231d"></span></span>
+        <span class="pv-theme-name">纸墨 · 赭石</span>
+        <span class="pv-theme-tone">暖调 · ink-ochre</span>
+        <span class="pv-theme-desc">暖调纸感，低饱和的赭石强调，读起来更像一本小册子。适合教程、随笔和产品说明。</span>
+        <span class="pv-theme-stat">66 个令牌 / 亮暗两套</span>
+      </button>
+      <button class="pv-theme-card" type="button" data-set-theme="night-contrast" aria-pressed="false">
+        <span class="pv-theme-thumbs"><span class="pv-thumb-strip" style="background:#ffffff"></span><span class="pv-thumb-strip" style="background:#f6f8fa"></span><span class="pv-thumb-strip" style="background:#124e78"></span><span class="pv-thumb-strip" style="background:#0d1117"></span></span>
+        <span class="pv-theme-name">夜航 · 高对比</span>
+        <span class="pv-theme-tone">高对比 · night-contrast</span>
+        <span class="pv-theme-desc">深色主导的高对比主题：近黑背景、近白正文、亮青强调。亮色模式同样保持高对比，不做柔和处理。</span>
+        <span class="pv-theme-stat">66 个令牌 / 亮暗两套</span>
+      </button>
+      <button class="pv-theme-card" type="button" data-set-theme="portfolio-bold" aria-pressed="false">
+        <span class="pv-theme-thumbs"><span class="pv-thumb-strip" style="background:#fbf4ec"></span><span class="pv-thumb-strip" style="background:#fffdf9"></span><span class="pv-thumb-strip" style="background:#b23a1e"></span><span class="pv-thumb-strip" style="background:#201a16"></span></span>
+        <span class="pv-theme-name">作品集 · 赤霞</span>
+        <span class="pv-theme-tone">暖调 · portfolio-bold</span>
+        <span class="pv-theme-desc">作品集默认。暖白纸面配赤陶红，色块和图表对比更强，适合展示型页面。</span>
+        <span class="pv-theme-stat">66 个令牌 / 亮暗两套</span>
+      </button>
+      </div>
+    </section>
+
+    <section class="pv-section" id="type">
+      <div class="pv-section-head">
+        <h2>排版示例</h2>
+        <p>正文用系统无衬线栈，标题用衬线栈拉开层次。字号阶梯从 12px 到 30px，行高分紧、正常、松三档，长文章不会挤成一坨。</p>
+      </div>
+      <div class="pv-doc lc-canvas">
+        <h1>低代码平台的主题是怎么长出来的</h1>
+        <p class="pv-lead">这套东西不是把几个颜色变量换个名字就完事。它要保证同一套主题在亮色和暗色下都读得清，还得让编辑器、导出的静态站、预览页三处用的是同一份变量。</p>
+        <h2>一、先定主色，其余靠派生</h2>
+        <p>每个主题包只写 11 个主色：页面背景、面板背景、正文、次要文字、分隔线、强调色、代码底色，再加上成功、警告、危险、信息四个状态色。剩下的层级、浅底、描边、悬停位置都由这些颜色算出来。</p>
+        <p>这么做的好处是，不会出现「亮色模式好看、暗色模式某个按钮白字白底」这种事故。派生规则在当前链接色和面板底色上直接算对比度，不够 4.5:1 就换颜色。<a href="#themes">先看看主题包</a>，再往下读。</p>
+        <h3>为什么要拆成两套强调色</h3>
+        <p>强调色在界面上有两个角色：一个是链接和图标，要放在背景上读；另一个是按钮底色，上面还要放文字。一个颜色不可能同时满足这两件事，尤其暗色模式。所以令牌里拆成 <code>accent</code> 和 <code>accent-fill</code>，各自带一个 <code>on-accent</code> 文字色。</p>
+        <blockquote>
+          <p>凡是「一个变量既当文字色又当背景色」的设计，早晚会在某个主题里出对比度问题。宁可多一个变量，也不要在组件里写死颜色。</p>
+        </blockquote>
+        <h2>二、代码和表格也得跟着换</h2>
+        <p>下面是示例代码块和表格。它们没有单独配色，全部引用同一套令牌：</p>
+<pre><code>/* 主题只通过 CSS 变量生效 */
+:root[data-lc-theme="ink-ochre"] {
+  --lc-color-bg: #f5efe3;
+  --lc-color-accent: #8c4a26;
+  --lc-color-accent-fill: #8c4a26;
+}</code></pre>
+        <h3>对比度检查结果</h3>
+        <table>
+          <thead><tr><th>组合</th><th>用途</th><th>要求</th></tr></thead>
+          <tbody>
+            <tr><td>正文 / 页面背景</td><td>文章正文</td><td class="pv-num">≥ 4.5:1</td></tr>
+            <tr><td>次要文字 / 面板背景</td><td>说明、提示</td><td class="pv-num">≥ 4.5:1</td></tr>
+            <tr><td>按钮文字 / 按钮底色</td><td>主要操作</td><td class="pv-num">≥ 4.5:1</td></tr>
+            <tr><td>焦点环 / 页面背景</td><td>键盘焦点</td><td class="pv-num">≥ 3:1</td></tr>
+          </tbody>
+        </table>
+        <p>列表也过一遍：</p>
+        <ul>
+          <li>主色只写 11 个，派生值统一算</li>
+          <li>亮暗两套都过 WCAG AA 正文标准</li>
+          <li>旧版变量保留别名，导出的静态站不用改样式</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="pv-section" id="controls">
+      <div class="pv-section-head">
+        <h2>基础控件</h2>
+        <p>下面这些控件只依赖 <code>assets/css/lc-controls.css</code> 和令牌，没有外部字体、图标库或 CDN。把这一块单独拿出去，换个主题也照样能用。</p>
+      </div>
+      <div class="pv-controls-grid">
+
+        <div class="pv-cell">
+          <h3 class="pv-cell-title">按钮</h3>
+          <div class="pv-row">
+            <button class="lc-btn lc-btn-primary" type="button">保存并预览</button>
+            <button class="lc-btn" type="button">取消</button>
+            <button class="lc-btn lc-btn-ghost" type="button">更多</button>
+          </div>
+          <div class="pv-row">
+            <button class="lc-btn lc-btn-danger" type="button">删除版本</button>
+            <button class="lc-btn lc-btn-sm" type="button">小号</button>
+            <button class="lc-btn" type="button" disabled>不可用</button>
+          </div>
+        </div>
+
+        <div class="pv-cell">
+          <h3 class="pv-cell-title">输入框</h3>
+          <div class="lc-field">
+            <label class="lc-label" for="pvTitle">文章标题 <small>必填</small></label>
+            <input class="lc-input" id="pvTitle" type="text" placeholder="例如：主题与设计令牌">
+            <p class="lc-hint">标题会出现在列表、搜索和页面头部。</p>
+          </div>
+          <div class="lc-field pv-gap-top">
+            <label class="lc-label" for="pvSlug">路径别名</label>
+            <input class="lc-input" id="pvSlug" type="text" value="theme-tokens" aria-describedby="pvSlugErr">
+            <p class="lc-error" id="pvSlugErr">这个别名已经被占用了，换一个。</p>
+          </div>
+        </div>
+
+        <div class="pv-cell">
+          <h3 class="pv-cell-title">下拉与多行文本</h3>
+          <div class="lc-field">
+            <label class="lc-label" for="pvTheme">主题包</label>
+            <div class="lc-select-wrap">
+              <select class="lc-select" id="pvTheme">
+                <option>认证 · 净白</option>
+                <option>蓝图 · 琥珀</option>
+                <option>仪表盘 · 石青</option>
+                <option>文档 · 素白</option>
+                <option>纸墨 · 石墨</option>
+                <option>纸墨 · 松绿</option>
+                <option>纸墨 · 藏青</option>
+                <option>纸墨 · 赭石</option>
+                <option>夜航 · 高对比</option>
+                <option>作品集 · 赤霞</option>
+              </select>
+            </div>
+          </div>
+          <div class="lc-field pv-gap-top">
+            <label class="lc-label" for="pvDesc">摘要</label>
+            <textarea class="lc-textarea" id="pvDesc" rows="3" placeholder="一两句话说清这篇讲什么"></textarea>
+          </div>
+        </div>
+
+        <div class="pv-cell">
+          <h3 class="pv-cell-title">搜索</h3>
+          <div class="lc-field">
+            <label class="lc-label" for="pvSearch">搜索文章</label>
+            <div class="lc-search-wrap">
+              <span class="lc-search-icon lc-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="m16 16 4 4" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
+              </span>
+              <input class="lc-input" id="pvSearch" type="search" placeholder="输入标题或标签">
+            </div>
+          </div>
+          <div class="lc-field pv-gap-top">
+            <label class="lc-label" for="pvSearch2">禁用状态</label>
+            <input class="lc-input" id="pvSearch2" type="text" value="暂不可用" disabled>
+          </div>
+        </div>
+
+        <div class="pv-cell">
+          <h3 class="pv-cell-title">选择控件</h3>
+          <label class="lc-check"><input type="checkbox" checked> <span>导出时保留文章目录</span></label>
+          <label class="lc-check"><input type="checkbox"> <span>导入后自动生成搜索索引</span></label>
+          <div class="pv-row pv-gap-top">
+            <label class="lc-radio"><input type="radio" name="pvMode" checked> <span>流式布局</span></label>
+            <label class="lc-radio"><input type="radio" name="pvMode"> <span>自由布局</span></label>
+          </div>
+        </div>
+
+        <div class="pv-cell">
+          <h3 class="pv-cell-title">开关</h3>
+          <label class="lc-switch">
+            <input type="checkbox" checked>
+            <span class="lc-switch-track" aria-hidden="true"></span>
+            <span>跟随系统明暗</span>
+          </label>
+          <div class="pv-row pv-gap-top">
+            <label class="lc-switch">
+              <input type="checkbox">
+              <span class="lc-switch-track" aria-hidden="true"></span>
+              <span>只读模式</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="pv-cell">
+          <h3 class="pv-cell-title">标签页</h3>
+          <div class="lc-tabs" role="tablist" aria-label="编辑器面板">
+            <button class="lc-tab" type="button" role="tab" aria-selected="true">区块</button>
+            <button class="lc-tab" type="button" role="tab" aria-selected="false">样式</button>
+            <button class="lc-tab" type="button" role="tab" aria-selected="false">数据</button>
+          </div>
+          <div class="pv-row pv-gap-top">
+            <span class="lc-tag">入门</span>
+            <span class="lc-tag is-accent">进阶</span>
+            <span class="lc-tag">4300 字</span>
+          </div>
+        </div>
+
+        <div class="pv-cell">
+          <h3 class="pv-cell-title">徽标</h3>
+          <div class="pv-row">
+            <span class="lc-badge lc-badge-success">已发布</span>
+            <span class="lc-badge lc-badge-warn">待校验</span>
+            <span class="lc-badge lc-badge-danger">有冲突</span>
+            <span class="lc-badge lc-badge-info">草稿</span>
+          </div>
+          <p class="lc-hint pv-gap-top">状态色只做小面积提示，正文仍然用墨色。</p>
+        </div>
+
+        <div class="pv-cell">
+          <h3 class="pv-cell-title">提示条</h3>
+          <div class="lc-note lc-note-info"><p><strong>说明</strong>主题包只覆盖颜色和少量形状变量，其余由基础层兜底。</p></div>
+          <div class="lc-note lc-note-warn pv-gap-top"><p><strong>注意</strong>深色主题里不要直接拿强调色当按钮底色。</p></div>
+        </div>
+
+        <div class="pv-cell">
+          <h3 class="pv-cell-title">表格</h3>
+          <div class="lc-table-wrap">
+            <table class="lc-table">
+              <thead><tr><th>令牌</th><th>角色</th><th class="is-num">数量</th></tr></thead>
+              <tbody>
+                <tr><td>颜色</td><td>主色 + 派生</td><td class="is-num">33</td></tr>
+                <tr><td>字体</td><td>无衬线 / 衬线 / 等宽</td><td class="is-num">3</td></tr>
+                <tr><td>间距</td><td>4px 到 48px</td><td class="is-num">8</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pv-cell">
+          <h3 class="pv-cell-title">进度</h3>
+          <div class="lc-progress" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100">
+            <span class="lc-progress-bar" style="width:72%"></span>
+          </div>
+          <p class="lc-hint pv-gap-top">导出 72%，正在打包文章和样式。</p>
+          <div class="lc-progress is-warn pv-gap-top" role="progressbar" aria-valuenow="91" aria-valuemin="0" aria-valuemax="100">
+            <span class="lc-progress-bar" style="width:91%"></span>
+          </div>
+          <p class="lc-hint pv-gap-top">存储用量 91%，接近浏览器配额。</p>
+        </div>
+
+        <div class="pv-cell">
+          <h3 class="pv-cell-title">分页与面包屑</h3>
+          <nav class="lc-breadcrumb" aria-label="面包屑">
+            <a href="#themes">主题</a><span class="lc-crumb-sep">/</span><span>预览</span><span class="lc-crumb-sep">/</span><span>控件</span>
+          </nav>
+          <div class="lc-pagination pv-gap-top" aria-label="分页">
+            <button class="lc-page-btn" type="button" aria-label="上一页">上一页</button>
+            <button class="lc-page-btn" type="button" aria-current="page">1</button>
+            <button class="lc-page-btn" type="button">2</button>
+            <button class="lc-page-btn" type="button">3</button>
+            <button class="lc-page-btn" type="button" aria-label="下一页">下一页</button>
+          </div>
+          <div class="pv-row pv-gap-top">
+            <kbd class="lc-kbd">Ctrl</kbd><span class="lc-hint">+</span><kbd class="lc-kbd">S</kbd><span class="lc-hint">保存</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="pv-section" id="icons">
+      <div class="pv-section-head">
+        <h2>图标集</h2>
+        <p>38 个内联 SVG，同一套 24×24 网格、1.75 描边、圆头端点。不引图标库、不引字体、不用 data URI；颜色走 <code>currentColor</code>，尺寸和描边用变量覆盖。</p>
+      </div>
+      <div class="lc-note lc-note-info">
+        <p><strong>怎么用</strong>把 <code>src/theme/lc-icons.html</code> 整段粘到页面 <code>&lt;body&gt;</code> 开头，然后按 id 取用：</p>
+      </div>
+      <pre class="pv-cmd pv-gap-top"><code>&lt;svg class=&quot;lc-icon&quot; aria-hidden=&quot;true&quot;&gt;&lt;use href=&quot;#lc-icon-save&quot;&gt;&lt;/use&gt;&lt;/svg&gt;
+&lt;!-- 改尺寸：类名或变量都能改 --&gt;
+&lt;svg class="lc-icon lc-icon-xl"&gt;&lt;use href="#lc-icon-save"&gt;&lt;/use&gt;&lt;/svg&gt;
+&lt;svg class="lc-icon" style="--lc-icon-size:18px;--lc-icon-stroke:2"&gt;&lt;use href="#lc-icon-grip"&gt;&lt;/use&gt;&lt;/svg&gt;
+
+&lt;!-- 改颜色：父级 color 就是描边色 --&gt;
+&lt;span style="color:var(--lc-color-danger)"&gt;&lt;svg class="lc-icon"&gt;&lt;use href="#lc-icon-delete"&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/span&gt;</code></pre>
+      <div class="pv-cell pv-gap-top">
+        <h3 class="pv-cell-title">尺寸与描边档位</h3>
+        <div class="pv-icon-scales">
+          <div class="pv-row"><span class="pv-icon-caption">14px</span><svg class="lc-icon lc-icon-sm" aria-hidden="true"><use href="#lc-icon-save"></use></svg><span class="pv-icon-caption">16px 默认</span><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-save"></use></svg><span class="pv-icon-caption">20px</span><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-save"></use></svg><span class="pv-icon-caption">24px</span><svg class="lc-icon lc-icon-xl" aria-hidden="true"><use href="#lc-icon-save"></use></svg></div>
+          <div class="pv-row pv-gap-top"><span class="pv-icon-caption">描边 1.5</span><svg class="lc-icon lc-icon-lg lc-icon-thin" aria-hidden="true"><use href="#lc-icon-search"></use></svg><span class="pv-icon-caption">1.75 默认</span><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-search"></use></svg><span class="pv-icon-caption">2.25</span><svg class="lc-icon lc-icon-lg lc-icon-bold" aria-hidden="true"><use href="#lc-icon-search"></use></svg></div>
+          <div class="pv-row pv-gap-top"><span class="pv-icon-caption">按钮里</span>
+            <button class="lc-icon-btn" type="button" aria-label="保存"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-save"></use></svg></button>
+            <button class="lc-icon-btn is-active" type="button" aria-label="已启用可见性" aria-pressed="true"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-eye"></use></svg></button>
+            <button class="lc-icon-btn is-danger" type="button" aria-label="删除"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-delete"></use></svg></button>
+            <button class="lc-icon-btn" type="button" aria-label="更多"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-more"></use></svg></button>
+            <button class="lc-icon-btn" type="button" aria-label="不可用" disabled><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-lock"></use></svg></button>
+          </div>
+        </div>
+      </div>
+      <div class="pv-icon-groups pv-gap-top">
+        <div class="pv-icon-group">
+          <h3 class="pv-cell-title">编辑与操作</h3>
+          <div class="pv-icon-grid">
+            <div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-add"></use></svg></span>
+              <code>add</code>
+              <span class="pv-icon-name">新增</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-remove"></use></svg></span>
+              <code>remove</code>
+              <span class="pv-icon-name">移除</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-delete"></use></svg></span>
+              <code>delete</code>
+              <span class="pv-icon-name">删除</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-edit"></use></svg></span>
+              <code>edit</code>
+              <span class="pv-icon-name">编辑</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-copy"></use></svg></span>
+              <code>copy</code>
+              <span class="pv-icon-name">复制</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-undo"></use></svg></span>
+              <code>undo</code>
+              <span class="pv-icon-name">撤销</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-redo"></use></svg></span>
+              <code>redo</code>
+              <span class="pv-icon-name">重做</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-save"></use></svg></span>
+              <code>save</code>
+              <span class="pv-icon-name">保存</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-export"></use></svg></span>
+              <code>export</code>
+              <span class="pv-icon-name">导出</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-download"></use></svg></span>
+              <code>download</code>
+              <span class="pv-icon-name">下载</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-upload"></use></svg></span>
+              <code>upload</code>
+              <span class="pv-icon-name">上传</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-run"></use></svg></span>
+              <code>run</code>
+              <span class="pv-icon-name">运行</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-close"></use></svg></span>
+              <code>close</code>
+              <span class="pv-icon-name">关闭</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-more"></use></svg></span>
+              <code>more</code>
+              <span class="pv-icon-name">更多（横向）</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-more-vertical"></use></svg></span>
+              <code>more-vertical</code>
+              <span class="pv-icon-name">更多（纵向）</span>
+            </div>
+          </div>
+        </div>
+        <div class="pv-icon-group">
+          <h3 class="pv-cell-title">展开与拖拽</h3>
+          <div class="pv-icon-grid">
+            <div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-grip"></use></svg></span>
+              <code>grip</code>
+              <span class="pv-icon-name">拖拽手柄</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-chevron-down"></use></svg></span>
+              <code>chevron-down</code>
+              <span class="pv-icon-name">展开</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-chevron-right"></use></svg></span>
+              <code>chevron-right</code>
+              <span class="pv-icon-name">收起</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-chevron-up"></use></svg></span>
+              <code>chevron-up</code>
+              <span class="pv-icon-name">向上收起</span>
+            </div>
+          </div>
+        </div>
+        <div class="pv-icon-group">
+          <h3 class="pv-cell-title">可见性与状态</h3>
+          <div class="pv-icon-grid">
+            <div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-eye"></use></svg></span>
+              <code>eye</code>
+              <span class="pv-icon-name">可见</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-eye-off"></use></svg></span>
+              <code>eye-off</code>
+              <span class="pv-icon-name">隐藏</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-lock"></use></svg></span>
+              <code>lock</code>
+              <span class="pv-icon-name">锁定</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-unlock"></use></svg></span>
+              <code>unlock</code>
+              <span class="pv-icon-name">解锁</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-check"></use></svg></span>
+              <code>check</code>
+              <span class="pv-icon-name">完成</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-warning"></use></svg></span>
+              <code>warning</code>
+              <span class="pv-icon-name">警告</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-info"></use></svg></span>
+              <code>info</code>
+              <span class="pv-icon-name">信息</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-help"></use></svg></span>
+              <code>help</code>
+              <span class="pv-icon-name">帮助</span>
+            </div>
+          </div>
+        </div>
+        <div class="pv-icon-group">
+          <h3 class="pv-cell-title">查找与排列</h3>
+          <div class="pv-icon-grid">
+            <div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-search"></use></svg></span>
+              <code>search</code>
+              <span class="pv-icon-name">搜索</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-filter"></use></svg></span>
+              <code>filter</code>
+              <span class="pv-icon-name">筛选</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-sort"></use></svg></span>
+              <code>sort</code>
+              <span class="pv-icon-name">排序</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-grid"></use></svg></span>
+              <code>grid</code>
+              <span class="pv-icon-name">网格</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-layers"></use></svg></span>
+              <code>layers</code>
+              <span class="pv-icon-name">图层</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-settings"></use></svg></span>
+              <code>settings</code>
+              <span class="pv-icon-name">设置</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-palette"></use></svg></span>
+              <code>palette</code>
+              <span class="pv-icon-name">色板</span>
+            </div>
+          </div>
+        </div>
+        <div class="pv-icon-group">
+          <h3 class="pv-cell-title">内容类型</h3>
+          <div class="pv-icon-grid">
+            <div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-text"></use></svg></span>
+              <code>text</code>
+              <span class="pv-icon-name">文本</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-image"></use></svg></span>
+              <code>image</code>
+              <span class="pv-icon-name">图片</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-link"></use></svg></span>
+              <code>link</code>
+              <span class="pv-icon-name">链接</span>
+            </div><div class="pv-icon-item">
+              <span class="pv-icon-demo"><svg class="lc-icon lc-icon-lg" aria-hidden="true"><use href="#lc-icon-external"></use></svg></span>
+              <code>external</code>
+              <span class="pv-icon-name">外部打开</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pv-section" id="editor">
+      <div class="pv-section-head">
+        <h2>编辑器外壳</h2>
+        <p>顶栏、资源栏、工作区、属性栏、状态栏按真实比例摆一遍。外壳只负责布局和分隔，不掺杂业务逻辑；换主题时整块一起变。</p>
+      </div>
+      <div class="pv-shell-frame">
+        <div class="lc-shell" id="lcShell">
+          <header class="lc-topbar">
+            <div class="lc-brand">
+              <span class="lc-brand-mark lc-icon lc-icon-lg" aria-hidden="true"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-layers"></use></svg></span>
+              <span class="lc-brand-text">科设低代码</span>
+              <span class="lc-brand-sub">主题工作台</span>
+            </div>
+            <nav class="lc-nav" aria-label="主导航">
+              <button class="lc-nav-item" type="button">站点</button>
+              <button class="lc-nav-item is-active" type="button" aria-current="page">页面</button>
+              <button class="lc-nav-item" type="button">组件库</button>
+              <button class="lc-nav-item" type="button">主题</button>
+              <button class="lc-nav-item" type="button">导出</button>
+            </nav>
+            <div class="lc-topbar-side">
+              <button class="lc-icon-btn" type="button" aria-label="搜索"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-search"></use></svg></button>
+              <span class="lc-badge lc-badge-success lc-hide-below-sm">本地草稿</span>
+              <button class="lc-btn lc-btn-sm" type="button"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-eye"></use></svg><span class="lc-btn-label">预览</span></button>
+              <button class="lc-btn lc-btn-primary lc-btn-sm" type="button"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-export"></use></svg><span class="lc-btn-label">导出站点</span></button>
+            </div>
+          </header>
+          <main class="lc-main">
+            <aside class="lc-sidebar" aria-label="页面与区块">
+              <div class="lc-sidebar-head">
+                <h2>页面</h2>
+                <p>共 12 篇文章，按方向 / 系列 / 主题分组</p>
+              </div>
+              <div class="lc-sidebar-body">
+                <div class="lc-tree-group-title"><span>前端</span><span>4</span></div>
+                <ul class="lc-tree">
+                  <li><button class="lc-tree-item" type="button">工程化<span class="lc-tree-meta">10 篇</span></button></li>
+                  <li><button class="lc-tree-item is-active" type="button" aria-selected="true">主题与令牌<span class="lc-tree-meta">编辑中</span></button></li>
+                  <li><button class="lc-tree-item" type="button">自研框架<span class="lc-tree-meta">3 篇</span></button></li>
+                </ul>
+                <div class="lc-tree-group-title"><span>后端</span><span>5</span></div>
+                <ul class="lc-tree">
+                  <li><button class="lc-tree-item" type="button">Rust 基础<span class="lc-tree-meta">11 篇</span></button></li>
+                  <li><button class="lc-tree-item" type="button">PHP 基础<span class="lc-tree-meta">12 篇</span></button></li>
+                </ul>
+              </div>
+              <p class="lc-sidebar-foot">数据保存在浏览器 IndexedDB，路径 <code>/articles/frontend/...</code></p>
+            </aside>
+            <section class="lc-workspace">
+              <div class="lc-toolbar">
+                <button class="lc-btn lc-btn-sm lc-show-below-sm" type="button" data-lc-toggle="sidebar" aria-expanded="false" aria-controls="lcShell"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-layers"></use></svg><span class="lc-btn-label">页面</span></button>
+                <span class="lc-toolbar-title">主题与令牌 / 预览页</span>
+                <span class="lc-toolbar-meta">1280 × 720</span>
+                <div class="lc-toolbar-actions">
+                  <button class="lc-icon-btn lc-hide-below-sm" type="button" aria-label="撤销"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-undo"></use></svg></button>
+                  <button class="lc-icon-btn lc-hide-below-sm" type="button" aria-label="重做"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-redo"></use></svg></button>
+                  <button class="lc-btn lc-btn-sm" type="button"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-add"></use></svg><span class="lc-btn-label">插入组件</span></button>
+                  <button class="lc-btn lc-btn-sm lc-btn-primary" type="button"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-save"></use></svg><span class="lc-btn-label">保存</span></button>
+                  <button class="lc-btn lc-btn-sm lc-show-below-md" type="button" data-lc-toggle="inspector" aria-expanded="false" aria-controls="lcShell"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-settings"></use></svg><span class="lc-btn-label">属性</span></button>
+                </div>
+              </div>
+              <div class="lc-canvas-scroll">
+                <div class="lc-canvas">
+                  <p class="lc-canvas-hint">画布 · 拖入区块后在这里排布</p>
+                  <div class="pv-block">标题区<span>h1 + 摘要</span></div>
+                  <div class="pv-block">正文区块<span>段落 / 列表 / 表格</span></div>
+                  <div class="pv-block">代码区块<span>命令 + 复制按钮</span></div>
+                </div>
+              </div>
+            </section>
+            <aside class="lc-inspector" aria-label="属性">
+              <div class="lc-inspector-head">
+                <h2>属性</h2>
+                <p>当前选中：主题与令牌</p>
+              </div>
+              <div class="lc-inspector-body">
+                <div class="lc-prop-group">
+                  <h3>内容</h3>
+                  <div class="lc-field">
+                    <label class="lc-label" for="pvInsTitle">标题</label>
+                    <input class="lc-input" id="pvInsTitle" type="text" value="主题与令牌">
+                  </div>
+                  <div class="lc-field pv-gap-top">
+                    <label class="lc-label" for="pvInsDiff">难度</label>
+                    <div class="lc-select-wrap">
+                      <select class="lc-select" id="pvInsDiff"><option>进阶</option><option>基础</option><option>深入</option></select>
+                    </div>
+                  </div>
+                </div>
+                <div class="lc-prop-group">
+                  <h3>主题</h3>
+                  <div class="lc-prop-row"><span>明暗</span><b>跟随系统</b></div>
+                  <div class="lc-prop-row"><span>主题包</span><b>ink-green</b></div>
+                  <div class="lc-prop-row"><span>强调色</span><b>#3e6a56</b></div>
+                </div>
+                <div class="lc-panel">
+                  <h3 class="lc-panel-title">说明</h3>
+                  <p class="lc-hint">右侧栏始终有内容：没选中区块时显示页面属性和导出说明，不留空白。</p>
+                </div>
+              </div>
+            </aside>
+          </main>
+          <footer class="lc-statusbar">
+            <span><span class="lc-status-dot"></span>已连接本地数据</span>
+            <span class="is-secondary">字号 14px / 行高 1.65</span>
+            <span class="is-right">主题 ink-green · 亮色</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+
+    <section class="pv-section" id="breakpoints">
+      <div class="pv-section-head">
+        <h2>响应式断点</h2>
+        <p>断点定义收在 <code>src/theme/tokens.mjs</code> 的 <code>BREAKPOINTS</code> 里，同时输出 <code>--lc-bp-*</code> 令牌。CSS 变量不能写进 <code>@media</code> 条件，所以媒体查询用固定数值，校验脚本会核对两边一致。</p>
+      </div>
+      <div class="pv-bp-bar">
+        <div class="lc-tabs" role="group" aria-label="断点预设"><button class="lc-tab" type="button" data-bp="1280" aria-pressed="false">1280px</button><button class="lc-tab" type="button" data-bp="1180" aria-pressed="false">1180px</button><button class="lc-tab" type="button" data-bp="900" aria-pressed="false">900px</button><button class="lc-tab" type="button" data-bp="640" aria-pressed="false">640px</button></div>
+        <label class="pv-bp-range">
+          <span class="pv-label">宽度</span>
+          <input id="pvBpRange" type="range" min="320" max="1280" step="20" value="1280" aria-label="预览宽度">
+        </label>
+        <span class="pv-current" id="pvBpLabel">1280px</span>
+      </div>
+      <div class="pv-bp-stage" id="pvBpStage">
+        <iframe id="pvShellFrame" src="preview-shell.html?theme=ink-green&amp;mode=light" title="响应式编辑器外壳演示"></iframe>
+      </div>
+      <div class="lc-table-wrap pv-gap-top">
+        <table class="lc-table">
+          <thead><tr><th>视口</th><th>令牌</th><th>折叠规则</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="pv-num">≤ 640px</td>
+              <td><code>--lc-bp-sm</code></td>
+              <td>窄屏：侧栏与检查器改为覆盖层抽屉，工具栏只留图标</td>
+            </tr>
+            <tr>
+              <td class="pv-num">≤ 900px</td>
+              <td><code>--lc-bp-md</code></td>
+              <td>平板：检查器改为右侧覆盖层，工具栏收起次要信息</td>
+            </tr>
+            <tr>
+              <td class="pv-num">≤ 1180px</td>
+              <td><code>--lc-bp-lg</code></td>
+              <td>小桌面：侧栏与检查器收窄，工作区优先</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="lc-note lc-note-info pv-gap-top">
+        <p><strong>折叠靠属性，不靠 JS 改样式</strong>容器上写 <code>data-lc-sidebar="open|closed|hidden"</code>、<code>data-lc-inspector="open|closed|hidden"</code>，样式在 <code>lc-responsive.css</code> 里统一处理。演示里把宽度拖到 900px 以下，点工具栏的齿轮/图层按钮可以拉开检查器和侧栏。</p>
+      </div>
+    </section>
+
+    <section class="pv-section" id="theme-editor">
+      <div class="pv-section-head">
+        <h2>主题编辑器与站点切换器</h2>
+        <p>内置主题共 10 套，不够用时用主题编辑器从空白或复制内置主题开始：改主色、看派生色、实时对比度标红、亮暗并排预览、导出/导入单个 JSON。编辑器本身跟随当前主题变，编辑暗色主题时不会留在亮色界面。</p>
+      </div>
+      <div class="pv-editor-bar">
+        <a class="lc-btn lc-btn-primary" href="editor.html" target="_blank" rel="noopener"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-palette"></use></svg><span class="lc-btn-label">打开主题编辑器</span></a>
+        <a class="lc-btn" href="switcher-demo.html" target="_blank" rel="noopener"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-external"></use></svg><span class="lc-btn-label">单独打开切换器演示</span></a>
+        <span class="lc-hint">下面这块是真切换器：改外观或主题，整个 iframe 页面会跟着变。</span>
+      </div>
+      <div class="pv-bp-stage">
+        <iframe id="pvSwitchFrame" src="switcher-demo.html" title="站点主题切换器演示"></iframe>
+      </div>
+      <div class="lc-note lc-note-info pv-gap-top">
+        <p><strong>切换器怎么接</strong>把 <code>src/theme/theme-switch.js</code> 和 <code>assets/css/lc-theme-switch.css</code> 引入导出站，在需要的位置放 <code>data-lc-theme-switch</code> 容器，里面放 <code>data-lc-theme-mode</code> 三个按钮和 <code>data-lc-theme-select</code> 下拉即可。它只改 <code>&lt;html&gt;</code> 的 <code>data-lc-theme</code> / <code>data-lc-mode</code>，颜色仍全部走 CSS 变量；选择会存在 localStorage。</p>
+      </div>
+    </section>
+
+    <section class="pv-section pv-print-section" id="print">
+      <div class="pv-section-head">
+        <h2>打印样式</h2>
+        <p><code>assets/css/lc-print.css</code> 只在打印时加载。纸面强制浅色、去掉所有背景色块和阴影、隐藏导航/目录/工具栏，标题不落在页底，表格和代码块不跨页断开。</p>
+      </div>
+      <div class="pv-print-bar">
+        <button class="lc-btn lc-btn-primary" type="button" id="pvPrintBtn">打开打印预览</button>
+        <span class="lc-hint">会隐藏本页其他区块，只打印下面这份“纸面”文档。</span>
+      </div>
+      <div class="pv-paper">
+        <div class="pv-paper-head">
+          <span class="pv-paper-kicker">打印输出示意</span>
+          <span class="pv-paper-meta">A4 · 18mm / 16mm 页边距</span>
+        </div>
+        <h1>主题与设计令牌 · 打印验收</h1>
+        <p>这一段模拟纸面输出：不出现主题背景色，正文字号固定 11pt，行高 1.6。暗色主题下打印也不会出现白字白纸。</p>
+        <h2>一、会隐藏的东西</h2>
+        <p>顶栏、侧栏、检查器、工具栏、状态栏、分页、面包屑、目录、弹窗遮罩和轻提示全部 <code>display:none</code>，只剩文档正文。</p>
+        <h2>二、会保留的东西</h2>
+        <ul>
+          <li>标题层级保持，但不会孤零零落在页底</li>
+          <li>表格、代码块、引用、图片整块不跨页</li>
+          <li>链接保留下划线，颜色统一成墨色</li>
+        </ul>
+        <blockquote><p>打印样式的目标是「读得清」，不是「还原屏幕」。</p></blockquote>
+        <table>
+          <thead><tr><th>项目</th><th>纸面规则</th></tr></thead>
+          <tbody>
+            <tr><td>背景</td><td>一律白纸，无底色块</td></tr>
+            <tr><td>阴影</td><td>全部去掉</td></tr>
+            <tr><td>正文</td><td>11pt / 行高 1.6</td></tr>
+            <tr><td>分页</td><td>标题不留页底，表格不跨页</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="pv-section" id="overlays">
+      <div class="pv-section-head">
+        <h2>弹窗与轻提示</h2>
+        <p>弹窗用固定的遮罩 + 面板块，轻提示从右下角出现。两者都只引用令牌，深浅主题下不会糊成一片。</p>
+      </div>
+      <div class="pv-overlay-grid">
+        <div class="pv-stage">
+          <div class="lc-dialog-backdrop">
+            <div class="lc-dialog" role="dialog" aria-modal="true" aria-labelledby="pvDlgTitle">
+              <div class="lc-dialog-head">
+                <div>
+                  <h2 id="pvDlgTitle">导出这个站点？</h2>
+                  <p>导出包会包含全部文章、样式和主题，解压后可直接放进 nginx。</p>
+                </div>
+              </div>
+              <div class="lc-dialog-body">
+                <div class="lc-note lc-note-info"><p><strong>提醒</strong>导出前建议先生成一个构建记录，回滚时用得到。</p></div>
+                <div class="lc-field pv-gap-top">
+                  <label class="lc-label" for="pvDlgName">包名</label>
+                  <input class="lc-input" id="pvDlgName" type="text" value="docs-site-20261108">
+                </div>
+              </div>
+              <div class="lc-dialog-foot">
+                <button class="lc-btn" type="button">取消</button>
+                <button class="lc-btn lc-btn-primary" type="button">开始导出</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pv-stage pv-stage-toast">
+          <div class="lc-toast is-success" role="status">主题已保存。亮暗两套对比度都通过了。</div>
+          <div class="lc-toast is-warn pv-gap-top" role="status">存储用量接近配额，建议先导出备份。</div>
+          <div class="lc-toast is-error pv-gap-top" role="status">导入失败：第 3 个页面的区块类型不认识。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pv-section" id="palette">
+      <div class="pv-section-head">
+        <h2>颜色令牌</h2>
+        <p>下面 56 个颜色令牌全部由主题包的 11 个主色派生。切主题时色块会实时更新，名字不变，方便在组件里查。</p>
+      </div>
+      <div class="pv-swatches">
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-bg)"></span>
+        <span class="pv-swatch-label">页面背景</span>
+        <code>--lc-color-bg</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-bg-deep)"></span>
+        <span class="pv-swatch-label">更深一层的背景</span>
+        <code>--lc-color-bg-deep</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-surface)"></span>
+        <span class="pv-swatch-label">面板背景</span>
+        <code>--lc-color-surface</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-surface-2)"></span>
+        <span class="pv-swatch-label">次级面板背景</span>
+        <code>--lc-color-surface-2</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-surface-3)"></span>
+        <span class="pv-swatch-label">三级面板背景</span>
+        <code>--lc-color-surface-3</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-ink)"></span>
+        <span class="pv-swatch-label">正文文字</span>
+        <code>--lc-color-ink</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-ink-2)"></span>
+        <span class="pv-swatch-label">正文次级文字</span>
+        <code>--lc-color-ink-2</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-muted)"></span>
+        <span class="pv-swatch-label">次要文字</span>
+        <code>--lc-color-muted</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-muted-2)"></span>
+        <span class="pv-swatch-label">更深一档的次要文字</span>
+        <code>--lc-color-muted-2</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-decor)"></span>
+        <span class="pv-swatch-label">装饰色（行号、分隔符、斜杠；非信息，按 3:1 下限）</span>
+        <code>--lc-color-decor</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-placeholder)"></span>
+        <span class="pv-swatch-label">占位符文字（按正文标准 4.5:1）</span>
+        <code>--lc-color-placeholder</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-disabled-bg)"></span>
+        <span class="pv-swatch-label">禁用态底色</span>
+        <code>--lc-color-disabled-bg</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-disabled-ink)"></span>
+        <span class="pv-swatch-label">禁用态文字（内部要求 3:1）</span>
+        <code>--lc-color-disabled-ink</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-line)"></span>
+        <span class="pv-swatch-label">分隔线</span>
+        <code>--lc-color-line</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-line-strong)"></span>
+        <span class="pv-swatch-label">强调分隔线</span>
+        <code>--lc-color-line-strong</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-accent)"></span>
+        <span class="pv-swatch-label">主色（文字/图标）</span>
+        <code>--lc-color-accent</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-accent-fill)"></span>
+        <span class="pv-swatch-label">主色填充（按钮底）</span>
+        <code>--lc-color-accent-fill</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-accent-fill-hover)"></span>
+        <span class="pv-swatch-label">主按钮悬停底色</span>
+        <code>--lc-color-accent-fill-hover</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-accent-fill-pressed)"></span>
+        <span class="pv-swatch-label">主按钮按下底色</span>
+        <code>--lc-color-accent-fill-pressed</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-on-accent)"></span>
+        <span class="pv-swatch-label">填充上的文字</span>
+        <code>--lc-color-on-accent</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-accent-soft)"></span>
+        <span class="pv-swatch-label">主色浅底</span>
+        <code>--lc-color-accent-soft</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-accent-line)"></span>
+        <span class="pv-swatch-label">主色描边</span>
+        <code>--lc-color-accent-line</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-accent-2)"></span>
+        <span class="pv-swatch-label">辅助强调色</span>
+        <code>--lc-color-accent-2</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-accent-2-soft)"></span>
+        <span class="pv-swatch-label">辅助强调色浅底</span>
+        <code>--lc-color-accent-2-soft</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-accent-2-line)"></span>
+        <span class="pv-swatch-label">辅助强调色描边</span>
+        <code>--lc-color-accent-2-line</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-code-bg)"></span>
+        <span class="pv-swatch-label">代码底色</span>
+        <code>--lc-color-code-bg</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-code-text)"></span>
+        <span class="pv-swatch-label">代码正文</span>
+        <code>--lc-color-code-text</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-code-keyword)"></span>
+        <span class="pv-swatch-label">代码关键字</span>
+        <code>--lc-color-code-keyword</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-code-string)"></span>
+        <span class="pv-swatch-label">代码字符串</span>
+        <code>--lc-color-code-string</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-code-comment)"></span>
+        <span class="pv-swatch-label">代码注释（放宽到 3:1）</span>
+        <code>--lc-color-code-comment</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-code-number)"></span>
+        <span class="pv-swatch-label">代码数字</span>
+        <code>--lc-color-code-number</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-code-function)"></span>
+        <span class="pv-swatch-label">代码函数名</span>
+        <code>--lc-color-code-function</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-code-line)"></span>
+        <span class="pv-swatch-label">代码块分隔线（非文字 3:1）</span>
+        <code>--lc-color-code-line</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-focus)"></span>
+        <span class="pv-swatch-label">焦点环</span>
+        <code>--lc-color-focus</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-focus-overlay)"></span>
+        <span class="pv-swatch-label">遮罩上的焦点环（黑白反色）</span>
+        <code>--lc-color-focus-overlay</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-success)"></span>
+        <span class="pv-swatch-label">成功</span>
+        <code>--lc-color-success</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-success-soft)"></span>
+        <span class="pv-swatch-label">成功浅底</span>
+        <code>--lc-color-success-soft</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-success-line)"></span>
+        <span class="pv-swatch-label">成功描边</span>
+        <code>--lc-color-success-line</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-warn)"></span>
+        <span class="pv-swatch-label">警告</span>
+        <code>--lc-color-warn</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-warn-soft)"></span>
+        <span class="pv-swatch-label">警告浅底</span>
+        <code>--lc-color-warn-soft</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-warn-line)"></span>
+        <span class="pv-swatch-label">警告描边</span>
+        <code>--lc-color-warn-line</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-danger)"></span>
+        <span class="pv-swatch-label">危险</span>
+        <code>--lc-color-danger</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-danger-soft)"></span>
+        <span class="pv-swatch-label">危险浅底</span>
+        <code>--lc-color-danger-soft</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-danger-line)"></span>
+        <span class="pv-swatch-label">危险描边</span>
+        <code>--lc-color-danger-line</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-info)"></span>
+        <span class="pv-swatch-label">信息</span>
+        <code>--lc-color-info</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-info-soft)"></span>
+        <span class="pv-swatch-label">信息浅底</span>
+        <code>--lc-color-info-soft</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-info-line)"></span>
+        <span class="pv-swatch-label">信息描边</span>
+        <code>--lc-color-info-line</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-selection-bg)"></span>
+        <span class="pv-swatch-label">文本选中底色</span>
+        <code>--lc-color-selection-bg</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-selection-ink)"></span>
+        <span class="pv-swatch-label">文本选中文字</span>
+        <code>--lc-color-selection-ink</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-color-overlay)"></span>
+        <span class="pv-swatch-label">遮罩层</span>
+        <code>--lc-color-overlay</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-mermaid-node-fill)"></span>
+        <span class="pv-swatch-label">流程图节点底色</span>
+        <code>--lc-mermaid-node-fill</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-mermaid-node-stroke)"></span>
+        <span class="pv-swatch-label">流程图节点描边</span>
+        <code>--lc-mermaid-node-stroke</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-mermaid-line)"></span>
+        <span class="pv-swatch-label">流程图连线</span>
+        <code>--lc-mermaid-line</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-mermaid-label)"></span>
+        <span class="pv-swatch-label">流程图文字</span>
+        <code>--lc-mermaid-label</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-mermaid-note-fill)"></span>
+        <span class="pv-swatch-label">流程图注释底色</span>
+        <code>--lc-mermaid-note-fill</code>
+      </div>
+      <div class="pv-swatch">
+        <span class="pv-swatch-color" style="background:var(--lc-mermaid-label-bg)"></span>
+        <span class="pv-swatch-label">流程图文字底色</span>
+        <code>--lc-mermaid-label-bg</code>
+      </div>
+      </div>
+    </section>
+
+    <section class="pv-section" id="verify">
+      <div class="pv-section-head">
+        <h2>怎么自己验证</h2>
+        <p>预览页只能看外观，对比度靠脚本算。两条命令都在 <code>lowcode/</code> 根目录执行：</p>
+      </div>
+      <pre class="pv-cmd"><code>node src/theme/check.mjs          # 主题字段 / 令牌 / 对比度 / 弱化文字 / 遮罩焦点环 / 图标集 / 断点同步
+node src/theme/build.mjs          # 重新生成令牌、主题、图标 sprite、运行时、编辑器和本页</code></pre>
+      <div class="lc-note lc-note-info pv-gap-top">
+        <p><strong>边界</strong>本页是静态文件，双击就能看，不需要起服务。它只演示外观，不代替真实编辑器的交互；键盘可达性与焦点顺序的复核记录写在 <code>src/theme/NOTES.md</code>。</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="pv-foot">
+    <div class="pv-inner">
+      <p>主题与设计系统 · 令牌定义在 <code>src/theme/tokens.mjs</code>，主题包在 <code>src/theme/themes/</code>，编辑器样式在 <code>assets/css/</code>。</p>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var current = document.getElementById('pvCurrent');
+  var shellFrame = document.getElementById('pvShellFrame');
+  var bpRange = document.getElementById('pvBpRange');
+  var bpLabel = document.getElementById('pvBpLabel');
+  var bpStage = document.getElementById('pvBpStage');
+  var themeNames = {"auth-clean":"认证 · 净白","blueprint-amber":"蓝图 · 琥珀","dashboard-calm":"仪表盘 · 石青","docs-quiet":"文档 · 素白","ink-graphite":"纸墨 · 石墨","ink-green":"纸墨 · 松绿","ink-navy":"纸墨 · 藏青","ink-ochre":"纸墨 · 赭石","night-contrast":"夜航 · 高对比","portfolio-bold":"作品集 · 赤霞"};
+
+  function syncFrame() {
+    if (!shellFrame) return;
+    var theme = root.getAttribute('data-lc-theme') || 'ink-green';
+    var mode = root.getAttribute('data-lc-mode') || 'light';
+    shellFrame.setAttribute('src', 'preview-shell.html?theme=' + encodeURIComponent(theme) + '&mode=' + mode);
+  }
+
+  function applyTheme(id) {
+    root.setAttribute('data-lc-theme', id);
+    document.querySelectorAll('[data-set-theme]').forEach(function (node) {
+      node.setAttribute('aria-pressed', node.getAttribute('data-set-theme') === id ? 'true' : 'false');
+    });
+    updateCurrent();
+    syncFrame();
+  }
+
+  function applyMode(mode) {
+    root.setAttribute('data-lc-mode', mode);
+    document.querySelectorAll('[data-set-mode]').forEach(function (node) {
+      node.setAttribute('aria-pressed', node.getAttribute('data-set-mode') === mode ? 'true' : 'false');
+    });
+    updateCurrent();
+    syncFrame();
+  }
+
+  function updateCurrent() {
+    var id = root.getAttribute('data-lc-theme');
+    var mode = root.getAttribute('data-lc-mode') === 'dark' ? '暗色' : '亮色';
+    if (current) current.textContent = '当前：' + (themeNames[id] || id) + ' / ' + mode;
+  }
+
+  document.querySelectorAll('[data-set-theme]').forEach(function (node) {
+    node.addEventListener('click', function () {
+      applyTheme(node.getAttribute('data-set-theme'));
+    });
+  });
+
+  document.querySelectorAll('[data-set-mode]').forEach(function (node) {
+    node.addEventListener('click', function () {
+      applyMode(node.getAttribute('data-set-mode'));
+    });
+  });
+
+  // 断点演示：拖宽度或点预设，直接改 iframe 宽度，让媒体查询真的按宽度触发。
+  function setWidth(px) {
+    if (!bpStage || !shellFrame) return;
+    var width = Math.max(320, Math.min(1280, Number(px) || 1280));
+    shellFrame.style.width = width + 'px';
+    if (bpRange) bpRange.value = String(width);
+    if (bpLabel) bpLabel.textContent = width + 'px';
+    document.querySelectorAll('[data-bp]').forEach(function (node) {
+      node.setAttribute('aria-pressed', Number(node.getAttribute('data-bp')) === width ? 'true' : 'false');
+    });
+  }
+  if (bpRange) {
+    bpRange.addEventListener('input', function () { setWidth(bpRange.value); });
+  }
+  document.querySelectorAll('[data-bp]').forEach(function (node) {
+    node.addEventListener('click', function () { setWidth(node.getAttribute('data-bp')); });
+  });
+  setWidth(bpRange ? bpRange.value : 1280);
+
+  // 外壳演示里的抽屉开关（预览用，不是编辑器业务逻辑）。
+  document.querySelectorAll('[data-lc-toggle]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var shell = btn.closest('.lc-shell');
+      if (!shell) return;
+      var key = 'data-lc-' + btn.getAttribute('data-lc-toggle');
+      var next = shell.getAttribute(key) === 'open' ? 'closed' : 'open';
+      shell.setAttribute(key, next);
+      btn.setAttribute('aria-expanded', next === 'open' ? 'true' : 'false');
+    });
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Escape') return;
+    document.querySelectorAll('.lc-shell').forEach(function (shell) {
+      shell.setAttribute('data-lc-sidebar', 'closed');
+      shell.setAttribute('data-lc-inspector', 'closed');
+    });
+    document.querySelectorAll('[data-lc-toggle]').forEach(function (btn) {
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  var printBtn = document.getElementById('pvPrintBtn');
+  if (printBtn) printBtn.addEventListener('click', function () { window.print(); });
+
+  applyTheme(root.getAttribute('data-lc-theme') || 'ink-green');
+  applyMode(root.getAttribute('data-lc-mode') || 'light');
+})();
+</script>
+</body>
+</html>

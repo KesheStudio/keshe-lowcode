@@ -1,0 +1,29 @@
+{
+  "format": "lowcode-page",
+  "schemaVersion": 1,
+  "page": {
+    "schemaVersion": 2,
+    "id": "e2e-article-two",
+    "title": "第二篇：发布检查清单",
+    "slug": "article-two",
+    "path": "article-two.html",
+    "nav": true,
+    "layout": { "mode": "flow" },
+    "article": { "tocTitle": "本文目录" },
+    "articleId": "a2",
+    "blocks": [
+      { "id": "t1", "type": "heading", "level": 2, "text": "发布前检查" },
+      {
+        "id": "t1-body",
+        "type": "paragraph",
+        "md": "检查首页是否指向正确的入口，检查文章链接是否能在 file:// 下打开。检查静态资源是否全部使用相对路径，确认没有外链字体、外链脚本和外链图片。检查导出包里没有测试密钥或私钥。"
+      },
+      { "id": "t2", "type": "heading", "level": 2, "text": "发布后验证" },
+      {
+        "id": "t2-body",
+        "type": "paragraph",
+        "md": "打开首页与任意一篇文章，确认目录能定位章节、上下篇能跳转、站内检索能高亮命中。清空缓存后再次打开，样式与交互仍应正常。"
+      }
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "keshe-lowcode",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "科设低代码平台：本地单机低代码搭建器，Node 服务 + 浏览器编辑器 + 文件系统存储",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KesheStudio/keshe-lowcode.git"
+  },
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "start": "node scripts/start.mjs",
+    "dev": "node server/index.js --no-open",
+    "doctor": "node scripts/doctor.mjs",
+    "migrate": "node scripts/migrate.mjs",
+    "vendor:sync": "node scripts/vendor-sync.mjs",
+    "export": "node scripts/export.mjs",
+    "test": "node --test \"tests/**/*.test.mjs\"",
+    "e2e": "node tests/e2e/support/preflight.mjs && playwright test",
+    "e2e:headed": "node tests/e2e/support/preflight.mjs && playwright test --headed",
+    "e2e:parallel": "node tests/e2e/support/parallel-check.mjs",
+    "e2e:report": "playwright show-report tests/e2e/.report",
+    "e2e:doctor": "node tests/e2e/support/preflight.mjs"
+  },
+  "dependencies": {
+    "@fastify/static": "^8.2.0",
+    "ajv": "^8.17.1",
+    "fastify": "^5.6.1",
+    "jszip": "^3.10.1",
+    "mermaid": "12.3.0",
+    "selfsigned": "^2.4.1",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1"
+  }
+}

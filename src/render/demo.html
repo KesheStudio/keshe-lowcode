@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>渲染核心 · 独立验收</title>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body { font-family: var(--lc-font-sans); }
+  #app { min-height: 100vh; background: var(--lc-color-bg, var(--bg, #f4f0e6)); color: var(--lc-color-ink, var(--ink, #20242a)); }
+  .demo-toolbar { position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; padding: 12px 20px; border-bottom: 1px solid var(--lc-color-line, var(--line, #ded6c5)); background: var(--lc-color-surface, var(--surface, #fffcf5)); }
+  .demo-toolbar-title { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; color: var(--lc-color-muted, var(--muted, #5f656b)); }
+  .demo-field { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--lc-color-muted, var(--muted, #5f656b)); }
+  .demo-field select { padding: 5px 8px; border: 1px solid var(--lc-color-line, var(--line, #ded6c5)); border-radius: var(--lc-radius-md, var(--radius, 8px)); background: var(--lc-color-bg, var(--bg, #f4f0e6)); color: var(--lc-color-ink, var(--ink, #20242a)); font: inherit; font-size: 12px; }
+  .demo-toolbar-note { margin-left: auto; font-size: 12px; color: var(--lc-color-muted-2, var(--muted-2, #51575d)); }
+  .demo-report { padding: 10px 20px; border-bottom: 1px solid var(--lc-color-line, var(--line, #ded6c5)); background: var(--lc-color-surface-2, var(--surface-2, #f9f5ed)); font-size: 12px; color: var(--lc-color-muted, var(--muted, #5f656b)); }
+  .demo-report ul { margin: 6px 0 0; padding-left: 18px; }
+  .demo-report li { margin: 2px 0; }
+  .demo-report .is-error { color: var(--lc-color-accent, var(--accent, #3e6a56)); font-weight: 600; }
+  .demo-report .is-warn { color: var(--lc-color-muted, var(--muted, #5f656b)); }
+  .demo-report-ok { margin: 0; color: var(--lc-color-accent, var(--accent, #3e6a56)); }
+  .demo-article-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 20px; border-bottom: 1px solid var(--lc-color-line, var(--line, #ded6c5)); background: var(--lc-color-surface-2, var(--surface-2, #f9f5ed)); font-size: 12px; color: var(--lc-color-muted, var(--muted, #5f656b)); }
+  .demo-article-tools[hidden] { display: none; }
+  .demo-article-tools-title { font-weight: 700; letter-spacing: 0.04em; }
+  .demo-tool-input { padding: 4px 8px; border: 1px solid var(--lc-color-line, var(--line, #ded6c5)); border-radius: var(--lc-radius-md, var(--radius, 8px)); background: var(--lc-color-bg, var(--bg, #f4f0e6)); color: var(--lc-color-ink, var(--ink, #20242a)); font: inherit; font-size: 12px; }
+  .demo-tool-button { padding: 4px 10px; border: 1px solid var(--lc-color-line, var(--line, #ded6c5)); border-radius: var(--lc-radius-md, var(--radius, 8px)); background: var(--lc-color-surface, var(--surface, #fffcf5)); color: var(--lc-color-ink, var(--ink, #20242a)); font: inherit; font-size: 12px; cursor: pointer; }
+  .demo-tool-button:hover { border-color: var(--lc-color-accent-line, var(--accent-line, #999)); color: var(--lc-color-accent, var(--accent, #3e6a56)); }
+  .demo-tool-count { font-variant-numeric: tabular-nums; color: var(--lc-color-muted-2, var(--muted-2, #51575d)); }
+  .demo-tools-note { margin-left: auto; color: var(--lc-color-muted-2, var(--muted-2, #51575d)); }
+  .demo-stage { padding: 20px; }
+  .demo-stage.is-scrollbox { max-height: 68vh; overflow-y: auto; border: 1px solid var(--lc-color-line, var(--line, #ded6c5)); border-radius: var(--lc-radius-md, var(--radius, 8px)); background: var(--lc-color-surface-2, var(--surface-2, #f9f5ed)); }
+  @media (max-width: 720px) {
+    .demo-toolbar-note { display: none; }
+    .demo-tools-note { display: none; }
+    .demo-stage { padding: 12px; }
+    .demo-article-tools { padding: 10px 12px; }
+  }
+</style>
+<link rel="stylesheet" href="samples/sample.css">
+<link rel="stylesheet" href="../../assets/css/lc-icons.css">
+</head>
+<body>
+<svg class="lc-sprite" aria-hidden="true" focusable="false">
+  <symbol id="lc-icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6l-12 12"/></symbol>
+  <symbol id="lc-icon-copy" viewBox="0 0 24 24"><path d="M9 8V6.5A1.5 1.5 0 0 1 10.5 5H19A1.5 1.5 0 0 1 20.5 6.5V15A1.5 1.5 0 0 1 19 16.5h-1.8"/><path d="M5 9.5A1.5 1.5 0 0 1 6.5 8H15a1.5 1.5 0 0 1 1.5 1.5v8.5A1.5 1.5 0 0 1 15 19.5H6.5A1.5 1.5 0 0 1 5 18V9.5z"/></symbol>
+  <symbol id="lc-icon-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="lc-icon-chevron-down" viewBox="0 0 24 24"><path d="M6 9.5l6 5.5 6-5.5"/></symbol>
+  <symbol id="lc-icon-chevron-up" viewBox="0 0 24 24"><path d="M6 14.5l6-5.5 6 5.5"/></symbol>
+  <symbol id="lc-icon-chevron-right" viewBox="0 0 24 24"><path d="M9 5.5l6.5 6.5-6.5 6.5"/></symbol>
+  <symbol id="lc-icon-sort" viewBox="0 0 24 24"><path d="M8 19V5"/><path d="M4.5 8.5L8 5l3.5 3.5"/><path d="M16 5v14"/><path d="M12.5 15.5L16 19l3.5-3.5"/></symbol>
+  <symbol id="lc-icon-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5"/><circle cx="12" cy="7.8" r="1.1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-warning" viewBox="0 0 24 24"><path d="M12 4.5l8 14.5h-16z"/><path d="M12 9.5v4.5"/><circle cx="12" cy="17.2" r="1" fill="currentColor" stroke="none"/></symbol>
+</svg>
+<div id="app" data-lc-theme="ink-green" data-lc-mode="light">
+  <h1 class="demo-sr-only">渲染核心独立验收</h1>
+  <div class="demo-toolbar" role="region" aria-label="验收工具栏">
+    <span class="demo-toolbar-title">渲染核心 F2 · 独立验收</span>
+    <label class="demo-field">页面
+      <select id="page-select"></select>
+    </label>
+    <label class="demo-field">主题
+      <select id="theme-select"></select>
+    </label>
+    <label class="demo-field">明暗
+      <select id="mode-select">
+        <option value="auto">跟随系统</option>
+        <option value="light">浅色</option>
+        <option value="dark">深色</option>
+      </select>
+    </label>
+    <span class="demo-toolbar-note" id="stats"></span>
+  </div>
+  <div class="demo-report" id="report" role="region" aria-label="渲染报告"></div>
+  <div class="demo-article-tools" id="article-tools" hidden>
+    <span class="demo-article-tools-title">文章交互</span>
+    <label class="demo-field">检索
+      <input id="search-input" class="demo-tool-input" type="search" placeholder="正文关键词" autocomplete="off">
+    </label>
+    <button id="search-prev" class="demo-tool-button" type="button">上一个</button>
+    <button id="search-next" class="demo-tool-button" type="button">下一个</button>
+    <button id="search-clear" class="demo-tool-button" type="button">清除</button>
+    <span class="demo-tool-count" id="search-count">0 / 0</span>
+    <label class="demo-field"><input type="checkbox" id="scroll-box"> 限高容器滚动</label>
+    <label class="demo-field">定位
+      <select id="anchor-select" class="demo-tool-input"></select>
+    </label>
+    <button id="anchor-go" class="demo-tool-button" type="button">跳转</button>
+    <span class="demo-tools-note" id="interaction-state"></span>
+  </div>
+  <div class="demo-stage" id="stage"></div>
+</div>
+
+<script src="dom.js"></script>
+<script src="errors.js"></script>
+<script src="markdown.js"></script>
+<script src="scope.js"></script>
+<script src="theme.js"></script>
+<script src="registry.js"></script>
+<script src="free.js"></script>
+<script src="shell.js"></script>
+<script src="article.js"></script>
+<script src="overrides.js"></script>
+<script src="runtime.js?v=2"></script>
+<script src="export.js?v=2"></script>
+<script src="components/common.js"></script>
+<script src="components/table.js?v=2"></script>
+<script src="components/image.js?v=2"></script>
+<script src="components/form.js?v=2"></script>
+<script src="components/overlay.js"></script>
+<script src="components/tabs.js"></script>
+<script src="components/carousel.js"></script>
+<script src="components/timeline.js"></script>
+<script src="components/code.js"></script>
+<script src="components/state.js"></script>
+<script src="components/textfield.js?v=2"></script>
+<script src="components/otp.js?v=2"></script>
+<script src="components/upload.js?v=2"></script>
+<script src="datasource.js"></script>
+<script src="components/date.js"></script>
+<script src="components/slider.js"></script>
+<script src="components/autocomplete.js"></script>
+<script src="components/controls.js"></script>
+<script src="components/shell.js"></script>
+<script src="components/charts.js"></script>
+<script src="components/stats.js"></script>
+<script src="builtins.js"></script>
+<script src="defaults.js"></script>
+<script src="page-size.js"></script>
+<script src="engine.js"></script>
+<script src="mermaid.js"></script>
+<script src="interactions.js"></script>
+<script src="index.js"></script>
+<script src="samples/site.data.js?v=2"></script>
+<script>
+  if (/[?&]perf=1/.test(location.search)) {
+    document.write('<script src="samples/perf.data.js"><\/script>');
+  }
+</script>
+<script src="samples/blocks.js"></script>
+<script src="templates/starters.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var R = window.LC && window.LC.Render;
+  var site = window.LC_PERF_SITE || window.LC_SAMPLE_SITE;
+  /* 基准数据里图片写的是导出产物的路径（assets/…）；在 demo 里资源在 samples/assets/，
+     这里只改 demo 的内存副本，不影响导出产物。 */
+  if (window.LC_PERF_SITE) {
+    window.LC_PERF_SITE.pages.forEach(function (page) {
+      (page.blocks || []).forEach(function (block) {
+        if (block && block.type === 'ui-image' && String(block.src || '').indexOf('assets/') === 0) {
+          block.src = 'samples/' + block.src;
+        }
+      });
+    });
+  }
+  if (!R || !R.ready) {
+    document.getElementById('report').textContent = '渲染核心未加载完成，请检查脚本顺序。';
+    return;
+  }
+
+  /* 演示用假数据源：固定 900ms 延迟，尊重 AbortSignal。
+     自动补全组件在输入变化时会 abort 上一笔请求，所以快速输入只会看到最后一笔结果。 */
+  var demoPeople = ['张伟', '李娜', '王强', '陈静', '刘洋', '赵敏', '周杰', '吴磊'];
+  R.registerDataSource('demo-people', {
+    search: function (query, options) {
+      options = options || {};
+      var signal = options.signal;
+      return new Promise(function (resolve, reject) {
+        var timer = setTimeout(function () {
+          var keyword = String(query || '').toLowerCase();
+          var list = demoPeople.filter(function (name) {
+            return !keyword || name.toLowerCase().indexOf(keyword) !== -1;
+          }).slice(0, options.limit || 8).map(function (name) {
+            return { label: name, value: name };
+          });
+          resolve(list);
+        }, 900);
+        if (signal) {
+          if (signal.aborted) {
+            clearTimeout(timer);
+            var early = new Error('aborted');
+            early.name = 'AbortError';
+            reject(early);
+            return;
+          }
+          signal.addEventListener('abort', function () {
+            clearTimeout(timer);
+            var error = new Error('aborted');
+            error.name = 'AbortError';
+            reject(error);
+          });
+        }
+      });
+    }
+  });
+
+  /* 图表/统计演示数据源：只读展示数据，不读取也不修改任何业务库或订单数据。
+     使用 load() 返回 { labels, series }；AbortSignal 用于快速切换页面时取消旧请求。 */
+  function demoDelay(options, factory) {
+    return new Promise(function (resolve, reject) {
+      var timer = setTimeout(function () {
+        try { resolve(factory()); } catch (error) { reject(error); }
+      }, 700);
+      var signal = options && options.signal;
+      if (!signal) return;
+      if (signal.aborted) {
+        clearTimeout(timer);
+        var early = new Error('aborted');
+        early.name = 'AbortError';
+        reject(early);
+        return;
+      }
+      signal.addEventListener('abort', function () {
+        clearTimeout(timer);
+        var error = new Error('aborted');
+        error.name = 'AbortError';
+        reject(error);
+      });
+    });
+  }
+
+  R.registerDataSource('demo-traffic', {
+    load: function (options) {
+      return demoDelay(options, function () {
+        return {
+          labels: ['9-01', '9-02', '9-03', '9-04', '9-05', '9-06', '9-07'],
+          series: [
+            { name: '访问量', values: [820, 932, 901, 1234, 1290, 1330, 1420] },
+            { name: '转化数', values: [120, 160, 150, 210, 240, 230, 260] }
+          ]
+        };
+      });
+    }
+  });
+
+  R.registerDataSource('demo-empty-chart', {
+    load: function (options) {
+      return demoDelay(options, function () { return []; });
+    }
+  });
+
+  R.registerDataSource('demo-fail-chart', {
+    load: function (options) {
+      return demoDelay(options, function () {
+        throw new Error('演示：数据源暂时不可用');
+      });
+    }
+  });
+
+  R.registerDataSource('demo-kpi', {
+    load: function (options) {
+      return demoDelay(options, function () {
+        return { value: 128.4, comparison: 12.6, label: '本月销售额', subtitle: '数据来自演示数据源，只读。' };
+      });
+    }
+  });
+
+  R.registerDataSource('demo-progress', {
+    load: function (options) {
+      return demoDelay(options, function () { return { value: 72, max: 100 }; });
+    }
+  });
+
+  var registry = R.createRegistry();
+  R.registerBuiltinComponents(registry);
+  window.LC.SampleBlocks.registerSampleBlocks(registry);
+  var renderer = R.createRenderer(site, { registry: registry, preview: true });
+  var mermaidRegistry = R.createMermaidRegistry ? R.createMermaidRegistry() : null;
+  if (mermaidRegistry && R.renderMermaidBuiltin) mermaidRegistry.use(R.renderMermaidBuiltin);
+
+  var app = document.getElementById('app');
+  var stage = document.getElementById('stage');
+  var reportBox = document.getElementById('report');
+  var statsBox = document.getElementById('stats');
+  var pageSelect = document.getElementById('page-select');
+  var themeSelect = document.getElementById('theme-select');
+  var modeSelect = document.getElementById('mode-select');
+  var toolsBox = document.getElementById('article-tools');
+  var searchInput = document.getElementById('search-input');
+  var searchPrev = document.getElementById('search-prev');
+  var searchNext = document.getElementById('search-next');
+  var searchClear = document.getElementById('search-clear');
+  var searchCount = document.getElementById('search-count');
+  var scrollBoxToggle = document.getElementById('scroll-box');
+  var anchorSelect = document.getElementById('anchor-select');
+  var anchorGo = document.getElementById('anchor-go');
+  var interactionNote = document.getElementById('interaction-state');
+  var currentInteractions = null;
+  var currentComponents = null;
+
+  renderer.listPages().forEach(function (page) {
+    var option = document.createElement('option');
+    option.value = page.id;
+    option.textContent = (page.nav && page.nav.label) || page.title || page.id;
+    pageSelect.appendChild(option);
+  });
+  renderer.themes.forEach(function (theme) {
+    var option = document.createElement('option');
+    option.value = theme.id;
+    option.textContent = theme.name || theme.id;
+    themeSelect.appendChild(option);
+  });
+  themeSelect.value = renderer.defaultThemeId;
+  pageSelect.value = 'page-home';
+
+  // 支持 ?page=page-free&theme=ink-ochre&mode=dark 直达，方便分段验收
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('page') && renderer.findPage(params.get('page'))) pageSelect.value = params.get('page');
+  if (params.get('theme') && renderer.themes.some(function (theme) { return theme.id === params.get('theme'); })) {
+    themeSelect.value = params.get('theme');
+  }
+  if (params.get('mode') && ['auto', 'light', 'dark'].indexOf(params.get('mode')) !== -1) {
+    modeSelect.value = params.get('mode');
+  }
+
+  function renderReport(report) {
+    while (reportBox.firstChild) reportBox.removeChild(reportBox.firstChild);
+    var items = report.items || [];
+    if (!items.length) {
+      var ok = document.createElement('p');
+      ok.className = 'demo-report-ok';
+      ok.textContent = '无渲染错误：所有区块均已通过。';
+      reportBox.appendChild(ok);
+      return;
+    }
+    var head = document.createElement('p');
+    head.className = 'is-warn';
+    head.textContent = '渲染报告：' + report.errors().length + ' 个错误，' + report.warnings().length + ' 个提醒。出错的区块已跳过，其余照常渲染。';
+    reportBox.appendChild(head);
+    var list = document.createElement('ul');
+    items.forEach(function (item) {
+      var row = document.createElement('li');
+      row.className = item.severity === 'error' ? 'is-error' : 'is-warn';
+      row.textContent = '[' + item.severity + '] ' + item.code + ' · ' + item.message +
+        (item.path ? ' · ' + item.path : '');
+      list.appendChild(row);
+    });
+    reportBox.appendChild(list);
+  }
+
+  function fillAnchors(headings) {
+    while (anchorSelect.firstChild) anchorSelect.removeChild(anchorSelect.firstChild);
+    (headings || []).forEach(function (item) {
+      var option = document.createElement('option');
+      option.value = item.id;
+      option.textContent = (item.level === 3 ? '　· ' : '') + item.text;
+      anchorSelect.appendChild(option);
+    });
+    anchorSelect.disabled = !anchorSelect.options.length;
+    anchorGo.disabled = anchorSelect.disabled;
+  }
+
+  function syncSearchUI() {
+    if (!currentInteractions) { searchCount.textContent = '0 / 0'; return; }
+    var state = currentInteractions.searchState();
+    searchCount.textContent = state.current + ' / ' + state.total;
+  }
+
+  function updateInteractionNote(state) {
+    if (!currentInteractions || toolsBox.hidden) { interactionNote.textContent = ''; return; }
+    var current = state || currentInteractions.getState();
+    var searchText = current.query
+      ? '命中 ' + current.total + (current.total ? '（第 ' + (current.hitIndex + 1) + ' / ' + current.total + '）' : '')
+      : '未检索';
+    interactionNote.textContent = [
+      '章节 ' + (current.activeId || '—'),
+      '目录' + (current.collapsed ? '已收起' : '已展开'),
+      searchText,
+      current.usesWindow ? '窗口滚动' : '容器内滚动'
+    ].join(' · ');
+  }
+
+  // 外壳层职责：把 auto 解析成实际 light/dark；渲染层只收到结果，不读系统偏好。
+  function systemMode() {
+    // auto 默认亮色：默认使用主题配色，不按操作系统 prefers-color-scheme 猜暗色。
+    return 'light';
+  }
+  function resolveMode(requested) {
+    return requested === 'light' || requested === 'dark' ? requested : systemMode();
+  }
+
+  function draw() {
+    var themeId = themeSelect.value;
+    var requested = modeSelect.value;
+    var mode = resolveMode(requested);
+
+    app.setAttribute('data-lc-theme', themeId);
+    app.setAttribute('data-lc-mode', mode);
+    app.setAttribute('data-theme', mode);
+
+    var tr0 = window.performance ? window.performance.now() : Date.now();
+    var deferOn = !/[?&]nodefer=1/.test(location.search);
+    var result = renderer.render(pageSelect.value, { themeId: themeId, mode: mode, preview: true, defer: deferOn });
+    var tr1 = window.performance ? window.performance.now() : Date.now();
+    if (currentComponents) { currentComponents.destroy(); currentComponents = null; }
+    var t0 = tr1;
+    R.mount(result, stage, { registry: registry });
+    var t1 = window.performance ? window.performance.now() : Date.now();
+    currentComponents = R.enhanceComponents(stage);
+    var t2 = window.performance ? window.performance.now() : Date.now();
+    window.__LC_LAST_DRAW__ = {
+      page: pageSelect.value,
+      renderMs: Math.round((tr1 - tr0) * 10) / 10,
+      mountMs: Math.round((t1 - t0) * 10) / 10,
+      enhanceMs: Math.round((t2 - t1) * 10) / 10,
+      blocks: stage.querySelectorAll('[data-lc-block]').length,
+      rows: stage.querySelectorAll('.lc-ui-tr').length,
+      images: stage.querySelectorAll('[data-lc-ui="ui-image"]').length,
+      ts: Date.now()
+    };
+    if (window.performance && window.performance.now) {
+      var start = window.performance.now();
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+          window.__LC_AFTER_PAINT__ = {
+            page: pageSelect.value,
+            defer: deferOn,
+            paintMs: Math.round((window.performance.now() - start) * 10) / 10,
+            heapMB: window.performance.memory
+              ? Math.round((window.performance.memory.usedJSHeapSize / 1048576) * 10) / 10 : null
+          };
+        });
+      });
+    }
+
+    if (currentInteractions) { currentInteractions.destroy(); currentInteractions = null; }
+    var isArticle = !!result.article;
+    scrollBoxToggle.disabled = !isArticle;
+    toolsBox.hidden = !isArticle;
+    if (isArticle && scrollBoxToggle.checked) stage.classList.add('is-scrollbox');
+    else stage.classList.remove('is-scrollbox');
+    searchInput.value = '';
+    if (isArticle && R.createInteractions) {
+      currentInteractions = R.createInteractions(stage, {
+        storageKey: 'lc-demo-toc-collapsed',
+        offset: function (info) {
+          if (!info || !info.usesWindow) return 14;
+          var bar = document.querySelector('.demo-toolbar');
+          return (bar ? bar.offsetHeight : 0) + 12;
+        },
+        onChange: updateInteractionNote
+      });
+      fillAnchors(result.article.headings);
+    } else {
+      fillAnchors([]);
+    }
+    syncSearchUI();
+    updateInteractionNote();
+
+    var mermaidSummary = { total: 0, rendered: 0 };
+    if (R.enhanceMermaid && mermaidRegistry) {
+      mermaidSummary = R.enhanceMermaid(stage, { registry: mermaidRegistry });
+    }
+
+    var blocks = stage.querySelectorAll('[data-lc-block]').length;
+    var modeNote = requested === 'auto' ? mode + '（跟随系统）' : mode;
+    statsBox.textContent = '区块 ' + blocks + ' · 样式 ' + Math.round(result.css.length / 1024) + ' KB · 脚本 ' + result.scripts.length + ' 段 · 模式 ' + modeNote +
+      (mermaidSummary.total ? ' · 图 ' + mermaidSummary.rendered + '/' + mermaidSummary.total : '');
+    renderReport(result.report);
+  }
+
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    var onSystemChange = function () { if (modeSelect.value === 'auto') draw(); };
+    if (mq.addEventListener) mq.addEventListener('change', onSystemChange);
+    else if (mq.addListener) mq.addListener(onSystemChange);
+  }
+
+  pageSelect.addEventListener('change', draw);
+  themeSelect.addEventListener('change', draw);
+  modeSelect.addEventListener('change', draw);
+
+  searchInput.addEventListener('input', function () {
+    if (!currentInteractions) return;
+    currentInteractions.search(searchInput.value);
+    syncSearchUI();
+  });
+  searchInput.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      searchInput.value = '';
+      if (currentInteractions) currentInteractions.clearSearch();
+      syncSearchUI();
+      return;
+    }
+    if (event.key !== 'Enter' || !currentInteractions) return;
+    event.preventDefault();
+    if (event.shiftKey) currentInteractions.prevHit();
+    else currentInteractions.nextHit();
+    syncSearchUI();
+  });
+  searchNext.addEventListener('click', function () {
+    if (!currentInteractions) return;
+    currentInteractions.nextHit();
+    syncSearchUI();
+  });
+  searchPrev.addEventListener('click', function () {
+    if (!currentInteractions) return;
+    currentInteractions.prevHit();
+    syncSearchUI();
+  });
+  searchClear.addEventListener('click', function () {
+    searchInput.value = '';
+    if (currentInteractions) currentInteractions.clearSearch();
+    syncSearchUI();
+    searchInput.focus();
+  });
+  scrollBoxToggle.addEventListener('change', draw);
+  anchorGo.addEventListener('click', function () {
+    if (currentInteractions) currentInteractions.goToSection(anchorSelect.value, { behavior: 'smooth' });
+  });
+
+  /* 性能基准：同一页面在浏览器里重复渲染，取中位数，避免单次噪声。
+     用法：__LC_BENCH__('page-perf-stress', { defer: true }, 5) → Promise<结果数组> */
+  window.__LC_BENCH__ = function (pageId, options, rounds) {
+    var opts = options || {};
+    var times = Math.max(3, rounds || 5);
+    var perf = window.performance;
+
+    function median(list) {
+      var sorted = list.slice().sort(function (a, b) { return a - b; });
+      var mid = Math.floor(sorted.length / 2);
+      return Math.round((sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2) * 10) / 10;
+    }
+
+    function once() {
+      return new Promise(function (resolve) {
+        var renderOpts = Object.assign({
+          themeId: themeSelect.value || renderer.defaultThemeId,
+          mode: 'light',
+          preview: true
+        }, opts);
+        var t0 = perf.now();
+        var result = renderer.render(pageId, renderOpts);
+        var renderMs = perf.now() - t0;
+        if (currentComponents) { currentComponents.destroy(); currentComponents = null; }
+        while (stage.firstChild) stage.removeChild(stage.firstChild);
+        var t1 = perf.now();
+        R.mount(result, stage, { registry: registry });
+        var mountMs = perf.now() - t1;
+        var t2 = perf.now();
+        stage.getBoundingClientRect();
+        void document.scrollingElement.scrollHeight;
+        var layoutMs = perf.now() - t2;
+        var t3 = perf.now();
+        currentComponents = R.enhanceComponents(stage);
+        var enhanceMs = perf.now() - t3;
+        var heapMB = perf.memory ? Math.round((perf.memory.usedJSHeapSize / 1048576) * 10) / 10 : null;
+        var record = {
+          page: pageId,
+          renderMs: renderMs,
+          mountMs: mountMs,
+          layoutMs: layoutMs,
+          enhanceMs: enhanceMs,
+          heapMB: heapMB,
+          blocks: stage.querySelectorAll('[data-lc-block]').length,
+          rows: stage.querySelectorAll('.lc-ui-tr').length,
+          images: stage.querySelectorAll('[data-lc-ui="ui-image"]').length,
+          deferred: stage.querySelectorAll('[data-lc-defer="true"]').length
+        };
+        var t4 = perf.now();
+        window.requestAnimationFrame(function () {
+          window.requestAnimationFrame(function () {
+            record.paintMs = perf.now() - t4;
+            resolve(record);
+          });
+        });
+      });
+    }
+
+    var queue = Promise.resolve();
+    var results = [];
+    for (var i = 0; i < times; i += 1) {
+      queue = queue.then(function () { return once(); }).then(function (record) { results.push(record); });
+    }
+    return queue.then(function () {
+      var summary = {
+        page: pageId,
+        options: opts,
+        rounds: times,
+        renderMs: median(results.map(function (r) { return r.renderMs; })),
+        mountMs: median(results.map(function (r) { return r.mountMs; })),
+        layoutMs: median(results.map(function (r) { return r.layoutMs; })),
+        enhanceMs: median(results.map(function (r) { return r.enhanceMs; })),
+        paintMs: median(results.map(function (r) { return r.paintMs; })),
+        heapMB: median(results.map(function (r) { return r.heapMB || 0; })),
+        blocks: results[0].blocks,
+        rows: results[0].rows,
+        images: results[0].images,
+        deferred: results[0].deferred,
+        samples: results
+      };
+      window.__LC_BENCH_RESULT__ = window.__LC_BENCH_RESULT__ || [];
+      window.__LC_BENCH_RESULT__.push(summary);
+      return summary;
+    });
+  };
+
+  draw();
+}());
+</script>
+</body>
+</html>

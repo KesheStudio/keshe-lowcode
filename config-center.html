@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lc-mode="light" data-lc-mode-pref="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>配置中心 · 低代码工作台</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="lc-token" content="__LC_TOKEN__">
+<link rel="icon" href="vendor/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/lc-tokens.css">
+<link rel="stylesheet" href="assets/css/lc-controls.css">
+<link rel="stylesheet" href="assets/css/lc-editor.css">
+<link rel="stylesheet" href="assets/css/lc-config-ui.css">
+<link rel="stylesheet" href="assets/css/lc-responsive.css">
+</head>
+<body class="lc-shell">
+
+<header class="lc-topbar">
+  <a class="lc-brand lc-brand-link" href="home.html" title="返回工作台">
+    <span class="lc-brand-mark" aria-hidden="true"></span>
+    <span class="lc-brand-text">配置中心</span>
+    <span class="lc-brand-sub">五层覆盖 · dev / prod</span>
+  </a>
+
+  <div class="lc-topbar-side">
+    <a class="lc-btn lc-btn-sm" href="home.html">返回工作台</a>
+    <a class="lc-btn lc-btn-sm" data-back-builder href="builder.html" title="回到当前项目的 Builder">返回编辑器</a>
+    <label class="lc-field lc-toolbar-site">
+      <span class="lc-label">项目</span>
+      <select class="lc-select" data-site-select aria-label="选择项目"></select>
+    </label>
+    <a class="lc-btn lc-btn-sm" href="middleware.html" data-backend-link data-site-link="middleware.html">中间件</a>
+    <a class="lc-btn lc-btn-sm" href="export.html" data-site-link="export.html">导出</a>
+  </div>
+</header>
+
+<main class="lc-main lc-config-main">
+  <aside class="lc-sidebar" aria-label="配置中心导航">
+    <div class="lc-sidebar-head">
+      <h2>配置中心</h2>
+      <p>按站点、后端、部署、中间件分组；每个键都能看到当前生效值来自哪一层。</p>
+    </div>
+    <div class="lc-sidebar-body">
+      <div class="lc-config-side-section">
+        <h3>环境</h3>
+        <div class="lc-env-switch" data-env-switch>
+          <button type="button" data-env="dev">dev</button>
+          <button type="button" data-env="prod">prod</button>
+        </div>
+      </div>
+      <div class="lc-config-side-section">
+        <h3>分组</h3>
+        <nav class="lc-config-nav" data-group-nav></nav>
+      </div>
+      <div class="lc-config-side-section">
+        <h3>整份配置</h3>
+        <div class="lc-config-side-tools">
+          <button class="lc-btn lc-btn-sm" type="button" data-import disabled>导入 JSON</button>
+          <button class="lc-btn lc-btn-sm" type="button" data-export disabled>导出 JSON</button>
+        </div>
+      </div>
+    </div>
+    <div class="lc-sidebar-foot">
+      键名：<code>[A-Z][A-Z0-9_]*</code><br>
+      环境变量：<code>LC_CFG_&lt;KEY&gt;</code>
+    </div>
+  </aside>
+
+  <section class="lc-workspace lc-config-workspace">
+    <div class="lc-toolbar">
+      <span class="lc-toolbar-title" data-page-title>配置中心</span>
+      <span class="lc-toolbar-meta" data-page-meta></span>
+      <div class="lc-toolbar-actions">
+        <span class="lc-save-state" data-save-state>未选择项目</span>
+        <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-save disabled>保存</button>
+      </div>
+    </div>
+
+    <div class="lc-config-scroll">
+      <div class="lc-config-gate" data-gate>
+        <h3 data-gate-title>先选择一个项目</h3>
+        <p>配置项与生效值都挂在具体项目下；未选项目时所有编辑保持禁用。</p>
+        <label class="lc-field">
+          <span class="lc-label">项目</span>
+          <select class="lc-select" data-gate-site aria-label="选择项目"></select>
+        </label>
+        <p class="lc-hint" data-gate-hint>正在读取项目列表…</p>
+      </div>
+
+      <div class="lc-config-shell-narrow" data-content hidden>
+        <div class="lc-config-hero">
+          <div class="lc-config-hero-card">
+            <h3>当前生效值来自哪一层</h3>
+            <p>配置中心按五层覆盖解析：内置默认 → 平台生成 → 站点覆盖 → 环境变量 → 启动参数。后面的层覆盖前面的层，表格里的「来源」列就是最后命中的那一层。</p>
+            <ul class="lc-layer-chain" data-chain style="margin-top:12px;"></ul>
+          </div>
+          <div class="lc-config-hero-card">
+            <h3>命名与导出</h3>
+            <p>配置键使用大写字母、数字和下划线；导出到后端配置的 <code>configCenter.definitions</code> 与 <code>values</code>，环境变量层写进 <code>.env.generated</code>。</p>
+            <div class="lc-config-rule">
+              <code>APP_MODE</code>
+              <code>LC_CFG_APP_MODE</code>
+              <code>MW_&lt;ID&gt;_&lt;FIELD&gt;</code>
+            </div>
+          </div>
+        </div>
+
+        <div data-groups></div>
+      </div>
+    </div>
+
+    <footer class="lc-statusbar">
+      <span data-status-site>未选择项目</span>
+      <span class="is-right" data-status-note>密钥只存放在项目 .lowcode 目录，导出产物不写明文</span>
+    </footer>
+  </section>
+</main>
+
+<div data-dialog-root></div>
+<input type="file" accept="application/json,.json" data-import-file hidden>
+
+<script src="/shared/middleware-catalog.js"></script>
+<script src="assets/config-ui.js"></script>
+<script src="assets/config-center.js"></script>
+</body>
+</html>

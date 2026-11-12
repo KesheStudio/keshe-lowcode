@@ -1,0 +1,53 @@
+/* 低代码平台 · 站点主题切换器
+ *
+ * 只做布局与状态，配色全部来自 lc-tokens.css：
+ *   - 按钮复用 .lc-tab 的外观；
+ *   - 下拉复用 .lc-select；
+ *   - 选中态用强调浅底 + 强调色文字，和编辑器里的标签一致。
+ */
+
+.lc-theme-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lc-space-2);
+  flex-wrap: wrap;
+  padding: var(--lc-space-1) var(--lc-space-2);
+  border: 1px solid var(--lc-color-line);
+  border-radius: var(--lc-radius-md);
+  background: var(--lc-color-surface);
+}
+
+.lc-theme-switch-label {
+  color: var(--lc-color-muted);
+  font-size: var(--lc-text-xs);
+  white-space: nowrap;
+}
+
+.lc-theme-switch .lc-select {
+  width: auto;
+  min-height: 28px;
+  font-size: var(--lc-text-xs);
+}
+
+.lc-theme-switch .lc-tab {
+  min-height: 28px;
+  padding: 0 var(--lc-space-2);
+  font-size: var(--lc-text-xs);
+}
+
+/* 跟随系统时给个可见但克制的提示，不额外加颜色。 */
+.lc-theme-switch[data-lc-resolved-mode="dark"] .lc-theme-switch-label::after {
+  content: ' · 暗';
+  color: var(--lc-color-muted);
+}
+
+.lc-theme-switch[data-lc-resolved-mode="light"] .lc-theme-switch-label::after {
+  content: ' · 亮';
+  color: var(--lc-color-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lc-theme-switch * {
+    transition-duration: 0ms;
+  }
+}

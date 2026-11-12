@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lc-theme="ink-green" data-lc-mode="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>编辑器外壳 · 断点演示</title>
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  if (params.get('theme')) document.documentElement.setAttribute('data-lc-theme', params.get('theme'));
+  if (params.get('mode')) document.documentElement.setAttribute('data-lc-mode', params.get('mode'));
+})();
+</script>
+<link rel="stylesheet" href="../../assets/css/lc-tokens.css">
+<link rel="stylesheet" href="../../assets/css/lc-themes.css">
+<link rel="stylesheet" href="../../assets/css/lc-icons.css">
+<link rel="stylesheet" href="../../assets/css/lc-controls.css">
+<link rel="stylesheet" href="../../assets/css/lc-editor.css">
+<link rel="stylesheet" href="../../assets/css/lc-responsive.css">
+<link rel="stylesheet" href="../../assets/css/lc-a11y.css">
+<link rel="stylesheet" href="../../assets/css/lc-print.css" media="print">
+<style>
+html, body { height: 100%; margin: 0; }
+body { background: var(--lc-color-bg); }
+.lc-shell { height: 100vh; }
+</style>
+</head>
+<body>
+<svg class="lc-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="lc-icon-add" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
+  <symbol id="lc-icon-remove" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="lc-icon-delete" viewBox="0 0 24 24"><path d="M4.5 7h15"/><path d="M9 7V5.5h6V7"/><path d="M6.5 7l.9 12.5h9.2L17.5 7"/><path d="M10 10.5v5.5"/><path d="M14 10.5v5.5"/></symbol>
+  <symbol id="lc-icon-edit" viewBox="0 0 24 24"><path d="M12.5 5H5.5a1 1 0 0 0-1 1v12.5a1 1 0 0 0 1 1H18a1 1 0 0 0 1-1V12"/><path d="M17 4.2l2.8 2.8-8.4 8.4-3.8 1 1-3.8 8.4-8.4z"/></symbol>
+  <symbol id="lc-icon-copy" viewBox="0 0 24 24"><path d="M9 8V6.5A1.5 1.5 0 0 1 10.5 5H19A1.5 1.5 0 0 1 20.5 6.5V15A1.5 1.5 0 0 1 19 16.5h-1.8"/><path d="M5 9.5A1.5 1.5 0 0 1 6.5 8H15a1.5 1.5 0 0 1 1.5 1.5v8.5A1.5 1.5 0 0 1 15 19.5H6.5A1.5 1.5 0 0 1 5 18V9.5z"/></symbol>
+  <symbol id="lc-icon-undo" viewBox="0 0 24 24"><path d="M9.5 14.5L4.5 9.5l5-5"/><path d="M4.5 9.5h9.5a5.5 5.5 0 0 1 0 11H10"/></symbol>
+  <symbol id="lc-icon-redo" viewBox="0 0 24 24"><path d="M14.5 14.5l5-5-5-5"/><path d="M19.5 9.5H10a5.5 5.5 0 0 0 0 11h4"/></symbol>
+  <symbol id="lc-icon-save" viewBox="0 0 24 24"><path d="M5.5 5.5a1 1 0 0 1 1-1h8l4 4v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-13z"/><path d="M8.5 4.5v3.5h5.5V4.5"/><rect x="8.5" y="13" width="7" height="6.5" rx="1"/></symbol>
+  <symbol id="lc-icon-export" viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7.5 7.5L12 3l4.5 4.5"/><path d="M4.5 15v3.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V15"/></symbol>
+  <symbol id="lc-icon-download" viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4.5 15v3.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V15"/></symbol>
+  <symbol id="lc-icon-upload" viewBox="0 0 24 24"><path d="M12 15V4"/><path d="M7.5 8.5L12 4l4.5 4.5"/><path d="M4.5 15v3.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V15"/></symbol>
+  <symbol id="lc-icon-run" viewBox="0 0 24 24"><path d="M8 5.5v13L19 12z"/></symbol>
+  <symbol id="lc-icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6l-12 12"/></symbol>
+  <symbol id="lc-icon-more" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="18" cy="12" r="1.5" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-more-vertical" viewBox="0 0 24 24"><circle cx="12" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="18" r="1.5" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-grip" viewBox="0 0 24 24"><circle cx="9" cy="7" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="7" r="1.3" fill="currentColor" stroke="none"/><circle cx="9" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="9" cy="17" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="17" r="1.3" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-chevron-down" viewBox="0 0 24 24"><path d="M6 9.5l6 5.5 6-5.5"/></symbol>
+  <symbol id="lc-icon-chevron-right" viewBox="0 0 24 24"><path d="M9 5.5l6.5 6.5-6.5 6.5"/></symbol>
+  <symbol id="lc-icon-chevron-up" viewBox="0 0 24 24"><path d="M6 14.5l6-5.5 6 5.5"/></symbol>
+  <symbol id="lc-icon-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="lc-icon-eye-off" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></symbol>
+  <symbol id="lc-icon-lock" viewBox="0 0 24 24"><path d="M6 11.5h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M8.5 11.5V8a3.5 3.5 0 0 1 7 0v3.5"/><circle cx="12" cy="16" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-unlock" viewBox="0 0 24 24"><path d="M6 11.5h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M8.5 11.5V8a3.5 3.5 0 0 1 6.6-1.6"/><circle cx="12" cy="16" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="lc-icon-warning" viewBox="0 0 24 24"><path d="M12 4.5l8 14.5h-16z"/><path d="M12 9.5v4.5"/><circle cx="12" cy="17.2" r="1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5"/><circle cx="12" cy="7.8" r="1.1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.4 9.2a2.7 2.7 0 0 1 5.3 1c0 1.9-2.5 2.2-2.5 3.6"/><circle cx="12" cy="17" r="1.1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+  <symbol id="lc-icon-filter" viewBox="0 0 24 24"><path d="M4 5.5h16l-6.2 7.2v6l-3.6 2v-8z"/></symbol>
+  <symbol id="lc-icon-sort" viewBox="0 0 24 24"><path d="M8 19V5"/><path d="M4.5 8.5L8 5l3.5 3.5"/><path d="M16 5v14"/><path d="M12.5 15.5L16 19l3.5-3.5"/></symbol>
+  <symbol id="lc-icon-grid" viewBox="0 0 24 24"><rect x="4.5" y="4.5" width="6" height="6" rx="1"/><rect x="13.5" y="4.5" width="6" height="6" rx="1"/><rect x="4.5" y="13.5" width="6" height="6" rx="1"/><rect x="13.5" y="13.5" width="6" height="6" rx="1"/></symbol>
+  <symbol id="lc-icon-layers" viewBox="0 0 24 24"><path d="M12 3.5l8.5 4.8-8.5 4.8-8.5-4.8 8.5-4.8z"/><path d="M3.5 12.2l8.5 4.8 8.5-4.8"/><path d="M3.5 16.2l8.5 4.8 8.5-4.8"/></symbol>
+  <symbol id="lc-icon-settings" viewBox="0 0 24 24"><path d="M4.5 6.5h9"/><path d="M18 6.5h2"/><circle cx="15.8" cy="6.5" r="2"/><path d="M4.5 12h2"/><path d="M10.5 12h9.5"/><circle cx="8.5" cy="12" r="2"/><path d="M4.5 17.5h10.5"/><path d="M19 17.5h.5"/><circle cx="17" cy="17.5" r="2"/></symbol>
+  <symbol id="lc-icon-palette" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="9.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="9.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="10" cy="15.5" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="lc-icon-text" viewBox="0 0 24 24"><path d="M5.5 6.5V4.5h13v2"/><path d="M12 4.5v15"/><path d="M8.5 19.5h7"/></symbol>
+  <symbol id="lc-icon-image" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="13" rx="1.5"/><circle cx="9" cy="10.2" r="1.4" fill="currentColor" stroke="none"/><path d="M5.5 16.5l4.3-4.6 3.7 3.7 2.6-2.6 4.4 4.4"/></symbol>
+  <symbol id="lc-icon-link" viewBox="0 0 24 24"><path d="M10.2 14a3.4 3.4 0 0 1 0-4.9l2.9-2.9a3.4 3.4 0 0 1 4.9 4.9l-1.5 1.5"/><path d="M13.8 10a3.4 3.4 0 0 1 0 4.9l-2.9 2.9a3.4 3.4 0 0 1-4.9-4.9l1.5-1.5"/></symbol>
+  <symbol id="lc-icon-external" viewBox="0 0 24 24"><path d="M14 4.5h6v6"/><path d="M20 4.5l-8.5 8.5"/><path d="M18 14v5.5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6.5a1 1 0 0 1 1-1h5.5"/></symbol>
+</svg>
+        <div class="lc-shell" id="lcShell">
+          <header class="lc-topbar">
+            <div class="lc-brand">
+              <span class="lc-brand-mark lc-icon lc-icon-lg" aria-hidden="true"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-layers"></use></svg></span>
+              <span class="lc-brand-text">科设低代码</span>
+              <span class="lc-brand-sub">主题工作台</span>
+            </div>
+            <nav class="lc-nav" aria-label="主导航">
+              <button class="lc-nav-item" type="button">站点</button>
+              <button class="lc-nav-item is-active" type="button" aria-current="page">页面</button>
+              <button class="lc-nav-item" type="button">组件库</button>
+              <button class="lc-nav-item" type="button">主题</button>
+              <button class="lc-nav-item" type="button">导出</button>
+            </nav>
+            <div class="lc-topbar-side">
+              <button class="lc-icon-btn" type="button" aria-label="搜索"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-search"></use></svg></button>
+              <span class="lc-badge lc-badge-success lc-hide-below-sm">本地草稿</span>
+              <button class="lc-btn lc-btn-sm" type="button"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-eye"></use></svg><span class="lc-btn-label">预览</span></button>
+              <button class="lc-btn lc-btn-primary lc-btn-sm" type="button"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-export"></use></svg><span class="lc-btn-label">导出站点</span></button>
+            </div>
+          </header>
+          <main class="lc-main">
+            <aside class="lc-sidebar" aria-label="页面与区块">
+              <div class="lc-sidebar-head">
+                <h2>页面</h2>
+                <p>共 12 篇文章，按方向 / 系列 / 主题分组</p>
+              </div>
+              <div class="lc-sidebar-body">
+                <div class="lc-tree-group-title"><span>前端</span><span>4</span></div>
+                <ul class="lc-tree">
+                  <li><button class="lc-tree-item" type="button">工程化<span class="lc-tree-meta">10 篇</span></button></li>
+                  <li><button class="lc-tree-item is-active" type="button" aria-selected="true">主题与令牌<span class="lc-tree-meta">编辑中</span></button></li>
+                  <li><button class="lc-tree-item" type="button">自研框架<span class="lc-tree-meta">3 篇</span></button></li>
+                </ul>
+                <div class="lc-tree-group-title"><span>后端</span><span>5</span></div>
+                <ul class="lc-tree">
+                  <li><button class="lc-tree-item" type="button">Rust 基础<span class="lc-tree-meta">11 篇</span></button></li>
+                  <li><button class="lc-tree-item" type="button">PHP 基础<span class="lc-tree-meta">12 篇</span></button></li>
+                </ul>
+              </div>
+              <p class="lc-sidebar-foot">数据保存在浏览器 IndexedDB，路径 <code>/articles/frontend/...</code></p>
+            </aside>
+            <section class="lc-workspace">
+              <div class="lc-toolbar">
+                <button class="lc-btn lc-btn-sm lc-show-below-sm" type="button" data-lc-toggle="sidebar" aria-expanded="false" aria-controls="lcShell"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-layers"></use></svg><span class="lc-btn-label">页面</span></button>
+                <span class="lc-toolbar-title">主题与令牌 / 预览页</span>
+                <span class="lc-toolbar-meta">1280 × 720</span>
+                <div class="lc-toolbar-actions">
+                  <button class="lc-icon-btn lc-hide-below-sm" type="button" aria-label="撤销"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-undo"></use></svg></button>
+                  <button class="lc-icon-btn lc-hide-below-sm" type="button" aria-label="重做"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-redo"></use></svg></button>
+                  <button class="lc-btn lc-btn-sm" type="button"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-add"></use></svg><span class="lc-btn-label">插入组件</span></button>
+                  <button class="lc-btn lc-btn-sm lc-btn-primary" type="button"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-save"></use></svg><span class="lc-btn-label">保存</span></button>
+                  <button class="lc-btn lc-btn-sm lc-show-below-md" type="button" data-lc-toggle="inspector" aria-expanded="false" aria-controls="lcShell"><svg class="lc-icon" aria-hidden="true"><use href="#lc-icon-settings"></use></svg><span class="lc-btn-label">属性</span></button>
+                </div>
+              </div>
+              <div class="lc-canvas-scroll">
+                <div class="lc-canvas">
+                  <p class="lc-canvas-hint">画布 · 拖入区块后在这里排布</p>
+                  <div class="pv-block">标题区<span>h1 + 摘要</span></div>
+                  <div class="pv-block">正文区块<span>段落 / 列表 / 表格</span></div>
+                  <div class="pv-block">代码区块<span>命令 + 复制按钮</span></div>
+                </div>
+              </div>
+            </section>
+            <aside class="lc-inspector" aria-label="属性">
+              <div class="lc-inspector-head">
+                <h2>属性</h2>
+                <p>当前选中：主题与令牌</p>
+              </div>
+              <div class="lc-inspector-body">
+                <div class="lc-prop-group">
+                  <h3>内容</h3>
+                  <div class="lc-field">
+                    <label class="lc-label" for="pvInsTitle">标题</label>
+                    <input class="lc-input" id="pvInsTitle" type="text" value="主题与令牌">
+                  </div>
+                  <div class="lc-field pv-gap-top">
+                    <label class="lc-label" for="pvInsDiff">难度</label>
+                    <div class="lc-select-wrap">
+                      <select class="lc-select" id="pvInsDiff"><option>进阶</option><option>基础</option><option>深入</option></select>
+                    </div>
+                  </div>
+                </div>
+                <div class="lc-prop-group">
+                  <h3>主题</h3>
+                  <div class="lc-prop-row"><span>明暗</span><b>跟随系统</b></div>
+                  <div class="lc-prop-row"><span>主题包</span><b>ink-green</b></div>
+                  <div class="lc-prop-row"><span>强调色</span><b>#3e6a56</b></div>
+                </div>
+                <div class="lc-panel">
+                  <h3 class="lc-panel-title">说明</h3>
+                  <p class="lc-hint">右侧栏始终有内容：没选中区块时显示页面属性和导出说明，不留空白。</p>
+                </div>
+              </div>
+            </aside>
+          </main>
+          <footer class="lc-statusbar">
+            <span><span class="lc-status-dot"></span>已连接本地数据</span>
+            <span class="is-secondary">字号 14px / 行高 1.65</span>
+            <span class="is-right">主题 ink-green · 亮色</span>
+          </footer>
+        </div>
+<script>
+document.querySelectorAll('[data-lc-toggle]').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var shell = btn.closest('.lc-shell');
+    var key = 'data-lc-' + btn.getAttribute('data-lc-toggle');
+    var next = shell.getAttribute(key) === 'open' ? 'closed' : 'open';
+    shell.setAttribute(key, next);
+    btn.setAttribute('aria-expanded', next === 'open' ? 'true' : 'false');
+  });
+});
+document.addEventListener('keydown', function (event) {
+  if (event.key !== 'Escape') return;
+  var shell = document.querySelector('.lc-shell');
+  if (!shell) return;
+  ['sidebar', 'inspector'].forEach(function (name) {
+    shell.setAttribute('data-lc-' + name, 'closed');
+  });
+  document.querySelectorAll('[data-lc-toggle]').forEach(function (btn) {
+    btn.setAttribute('aria-expanded', 'false');
+  });
+});
+</script>
+</body>
+</html>

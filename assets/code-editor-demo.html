@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lc-mode="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>独立代码编辑器 · 第三步验收 · 低代码工作台</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/lc-tokens.css">
+<link rel="stylesheet" href="css/lc-code-editor.css">
+<style>
+  /* 演示页自身的布局样式；颜色一律取自 --lc-* 变量。 */
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 32px 20px 64px;
+    background: var(--lc-color-bg);
+    color: var(--lc-color-ink);
+    font-family: var(--lc-font-sans);
+    font-size: var(--lc-text-base);
+    line-height: var(--lc-leading-base);
+  }
+
+  .page {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .eyebrow {
+    margin: 0 0 var(--lc-space-2);
+    color: var(--lc-color-accent);
+    font-size: var(--lc-text-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0 0 var(--lc-space-2);
+    font-family: var(--lc-font-serif);
+    font-size: var(--lc-text-3xl);
+    font-weight: var(--lc-weight-semibold);
+    line-height: var(--lc-leading-tight);
+  }
+
+  .lead {
+    max-width: 740px;
+    margin: 0 0 var(--lc-space-6);
+    color: var(--lc-color-muted);
+  }
+
+  .panel {
+    margin-bottom: var(--lc-space-5);
+    padding: var(--lc-space-4);
+    border: var(--lc-border);
+    border-radius: var(--lc-radius-lg);
+    background: var(--lc-color-surface);
+  }
+
+  .panel-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--lc-space-3);
+    margin-bottom: var(--lc-space-3);
+  }
+
+  .panel-title {
+    margin: 0;
+    font-size: var(--lc-text-md);
+    font-weight: var(--lc-weight-semibold);
+  }
+
+  .panel-note {
+    margin: 0;
+    color: var(--lc-color-muted);
+    font-size: var(--lc-text-sm);
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--lc-space-2);
+  }
+
+  .seg {
+    display: inline-flex;
+    flex-wrap: wrap;
+    max-width: 100%;
+    padding: 2px;
+    border: var(--lc-border);
+    border-radius: var(--lc-radius-sm);
+    background: var(--lc-color-surface-2);
+  }
+
+  .seg button,
+  .btn {
+    appearance: none;
+    min-height: var(--lc-size-control);
+    padding: 0 var(--lc-space-3);
+    border: 0;
+    border-radius: var(--lc-radius-sm);
+    background: transparent;
+    color: var(--lc-color-ink-2);
+    font: inherit;
+    font-size: var(--lc-text-sm);
+    cursor: pointer;
+  }
+
+  .seg button:hover,
+  .btn:hover {
+    background: var(--lc-color-accent-soft);
+    color: var(--lc-color-accent);
+  }
+
+  .seg button[aria-pressed="true"] {
+    background: var(--lc-color-accent);
+    color: var(--lc-color-on-accent);
+  }
+
+  .btn {
+    border: var(--lc-border);
+    background: var(--lc-color-surface);
+  }
+
+  .field {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--lc-space-2);
+    color: var(--lc-color-muted);
+    font-size: var(--lc-text-sm);
+  }
+
+  .field select {
+    min-height: var(--lc-size-control);
+    padding: 0 var(--lc-space-2);
+    border: var(--lc-border);
+    border-radius: var(--lc-radius-sm);
+    background: var(--lc-color-surface);
+    color: var(--lc-color-ink);
+    font: inherit;
+    font-size: var(--lc-text-sm);
+  }
+
+  button:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--lc-color-focus);
+    outline-offset: 2px;
+  }
+
+  .editor-frame {
+    height: 520px;
+  }
+
+  .hint {
+    margin: var(--lc-space-2) 0 0;
+    color: var(--lc-color-muted);
+    font-size: var(--lc-text-xs);
+  }
+
+  kbd {
+    display: inline-block;
+    padding: 1px 6px;
+    border: var(--lc-border);
+    border-radius: var(--lc-radius-xs);
+    background: var(--lc-color-surface-2);
+    color: var(--lc-color-ink-2);
+    font-family: var(--lc-font-mono);
+    font-size: var(--lc-text-xs);
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--lc-space-3);
+  }
+
+  .stat {
+    padding: var(--lc-space-3) var(--lc-space-4);
+    border: var(--lc-border);
+    border-radius: var(--lc-radius-md);
+    background: var(--lc-color-surface-2);
+  }
+
+  .stat-label {
+    display: block;
+    margin-bottom: var(--lc-space-1);
+    color: var(--lc-color-muted);
+    font-size: var(--lc-text-xs);
+  }
+
+  .stat-value {
+    display: block;
+    color: var(--lc-color-ink);
+    font-family: var(--lc-font-mono);
+    font-size: var(--lc-text-lg);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-meta {
+    display: block;
+    margin-top: var(--lc-space-1);
+    color: var(--lc-color-muted);
+    font-size: var(--lc-text-xs);
+    word-break: break-all;
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: var(--lc-space-4);
+  }
+
+  .split h3 {
+    margin: 0 0 var(--lc-space-2);
+    font-size: var(--lc-text-md);
+  }
+
+  ul.limits {
+    margin: 0;
+    padding-left: 1.2em;
+  }
+
+  ul.limits li {
+    margin: 6px 0;
+    color: var(--lc-color-ink-2);
+    font-size: var(--lc-text-sm);
+  }
+
+  .code-sample {
+    margin: 0;
+    padding: var(--lc-space-3);
+    overflow: auto;
+    border: var(--lc-border);
+    border-radius: var(--lc-radius-md);
+    background: var(--lc-color-code-bg);
+    color: var(--lc-color-code-text);
+    font-family: var(--lc-font-mono);
+    font-size: var(--lc-text-sm);
+    line-height: 1.65;
+    tab-size: 2;
+  }
+
+  .code-sample .k { color: var(--lc-color-code-keyword); }
+  .code-sample .s { color: var(--lc-color-code-string); }
+  .code-sample .c { color: var(--lc-color-code-comment); }
+
+  .table-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  table.keytable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--lc-text-sm);
+  }
+
+  .keytable caption {
+    padding-bottom: var(--lc-space-2);
+    color: var(--lc-color-muted);
+    font-size: var(--lc-text-xs);
+    text-align: left;
+  }
+
+  .keytable th,
+  .keytable td {
+    padding: 7px 10px;
+    border-bottom: var(--lc-border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .keytable thead th {
+    color: var(--lc-color-muted);
+    font-size: var(--lc-text-xs);
+    font-weight: var(--lc-weight-semibold);
+    white-space: nowrap;
+  }
+
+  .keytable tbody th {
+    color: var(--lc-color-ink-2);
+    font-family: var(--lc-font-mono);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .keytable td {
+    color: var(--lc-color-ink-2);
+  }
+
+  .keytable td:first-child {
+    white-space: nowrap;
+  }
+
+  .footnote {
+    margin: var(--lc-space-6) 0 0;
+    color: var(--lc-color-muted);
+    font-size: var(--lc-text-xs);
+  }
+
+  @media (max-width: 820px) {
+    body { padding: 24px 14px 48px; }
+    .editor-frame { height: 440px; }
+    .split { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <p class="eyebrow">lowcode · 独立模块 · 第三步</p>
+  <h1>独立代码编辑器</h1>
+  <p class="lead">
+    收尾这一步补上大文件降级、括号匹配、快捷键对照表、无障碍与多实例隔离。
+    超过 5,000 行自动关闭逐行高亮、只保留纯文本编辑，并在编辑器顶部写明原因和仍可用的能力；
+    光标贴近括号时高亮配对项，找不到配对会在状态栏提示行列并由读屏播报。
+  </p>
+
+  <section class="panel" aria-labelledby="editor-title">
+    <div class="panel-head">
+      <div>
+        <h2 class="panel-title" id="editor-title">编辑器</h2>
+        <p class="panel-note" id="sample-note">当前样例：JavaScript</p>
+      </div>
+      <div class="controls">
+        <div class="seg" role="group" aria-label="切换语言样例">
+          <button type="button" data-lang="javascript" aria-pressed="true">JavaScript</button>
+          <button type="button" data-lang="json" aria-pressed="false">JSON</button>
+          <button type="button" data-lang="css" aria-pressed="false">CSS</button>
+          <button type="button" data-lang="html" aria-pressed="false">HTML</button>
+          <button type="button" data-lang="markdown" aria-pressed="false">Markdown</button>
+          <button type="button" data-lang="rust" aria-pressed="false">Rust</button>
+          <button type="button" data-lang="go" aria-pressed="false">Go</button>
+          <button type="button" data-lang="java" aria-pressed="false">Java</button>
+        </div>
+        <label class="field" for="tab-size">Tab 宽度
+          <select id="tab-size">
+            <option value="2">2</option>
+            <option value="4" selected>4</option>
+            <option value="8">8</option>
+          </select>
+        </label>
+        <button type="button" class="btn" id="find-btn">查找（Ctrl+F）</button>
+        <button type="button" class="btn" id="replace-btn">查找替换（Ctrl+H）</button>
+        <button type="button" class="btn" id="theme-btn" aria-pressed="false">切到暗色</button>
+        <button type="button" class="btn" id="save-btn">保存（Ctrl+S）</button>
+      </div>
+    </div>
+
+    <div class="editor-frame" id="code-editor"></div>
+    <p class="hint">
+      试试：在某行按 <kbd>Enter</kbd> 看自动缩进；按 <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> 看缩进宽度；
+      按 <kbd>Ctrl+F</kbd> / <kbd>Ctrl+H</kbd> 打开查找替换；按 <kbd>Ctrl+S</kbd> 触发保存回调。
+      把光标放到 <code>(</code>、<code>[</code>、<code>{</code> 旁边会高亮配对括号；找不到配对时状态栏中间会给出具体行列。
+    </p>
+  </section>
+
+  <section class="panel" aria-labelledby="callback-title">
+    <div class="panel-head">
+      <h2 class="panel-title" id="callback-title">回调状态</h2>
+      <p class="panel-note">外部只需要传 onChange 与 onSave，不需要读模块内部状态。</p>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-label">onChange 触发次数</span>
+        <span class="stat-value" id="change-count">0</span>
+        <span class="stat-meta" id="change-meta">尚未输入</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">onSave 触发次数</span>
+        <span class="stat-value" id="save-count">0</span>
+        <span class="stat-meta" id="save-meta">尚未保存</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">当前文档</span>
+        <span class="stat-value" id="doc-size">—</span>
+        <span class="stat-meta" id="doc-meta">等待初始化</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="bigfile-title">
+    <div class="panel-head">
+      <div>
+        <h2 class="panel-title" id="bigfile-title">大文件降级</h2>
+        <p class="panel-note" id="bigfile-note">阈值 5,000 行：超过后关闭语法高亮与查找底色，行号只渲染可见区域。</p>
+      </div>
+      <div class="controls">
+        <button type="button" class="btn" data-bigfile="1000">载入 1,000 行</button>
+        <button type="button" class="btn" data-bigfile="10000">载入 10,000 行</button>
+        <button type="button" class="btn" data-bigfile="100000">载入 100,000 行</button>
+        <button type="button" class="btn" id="bigfile-restore">回到语言样例</button>
+      </div>
+    </div>
+    <p class="hint" id="bigfile-result" role="status" aria-live="polite">还没有载入大文件；当前内容按语言样例渲染。</p>
+    <div class="table-wrap">
+      <table class="keytable">
+        <caption>本机实测：创建实例并完成首屏渲染的耗时，Edge 无头、<code>file://</code>，取 3 次中位数（100,000 行取 2 次）。</caption>
+        <thead>
+          <tr>
+            <th scope="col">行数</th>
+            <th scope="col">默认（超阈值降级）</th>
+            <th scope="col">强制不降级</th>
+            <th scope="col">高亮层行节点</th>
+            <th scope="col">行号节点</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">1,000</th><td>46 ms</td><td>42 ms</td><td>1,000</td><td>1,000</td></tr>
+          <tr><th scope="row">10,000</th><td>146 ms</td><td>389 ms</td><td>0</td><td>28</td></tr>
+          <tr><th scope="row">100,000</th><td>1,514 ms</td><td>4,037 ms</td><td>0</td><td>28</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="hint">
+      为什么是 5,000 行：渲染成本随行数线性增长，每行都要生成一个行节点和若干 token 片段；
+      5,000 行以内首屏仍在几十毫秒级，再往上输入重排和滚动的开销明显上升。
+      降级后仍可纯文本编辑、查找计数、逐个/全部替换和保存，点「回到语言样例」即可恢复高亮。
+    </p>
+  </section>
+
+  <div class="split">
+    <section class="panel" aria-labelledby="keys-title">
+      <h3 id="keys-title">快捷键对照表</h3>
+      <div class="table-wrap">
+        <table class="keytable">
+          <thead>
+            <tr>
+              <th scope="col">快捷键</th>
+              <th scope="col">生效位置</th>
+              <th scope="col">行为</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><kbd>Ctrl/Cmd+S</kbd></td><td>编辑器任意位置</td><td>触发 <code>onSave</code></td></tr>
+            <tr><td><kbd>Ctrl/Cmd+F</kbd></td><td>编辑器任意位置</td><td>打开查找栏并聚焦查找框</td></tr>
+            <tr><td><kbd>Ctrl/Cmd+H</kbd></td><td>编辑器任意位置</td><td>打开查找栏并展开替换行</td></tr>
+            <tr><td><kbd>Esc</kbd></td><td>查找栏打开时</td><td>关闭查找栏，焦点回到编辑区</td></tr>
+            <tr><td><kbd>Enter</kbd></td><td>查找框</td><td>跳到下一个匹配，到末尾后回到第一个</td></tr>
+            <tr><td><kbd>Shift+Enter</kbd></td><td>查找框</td><td>跳到上一个匹配</td></tr>
+            <tr><td><kbd>Enter</kbd></td><td>替换框</td><td>替换当前匹配</td></tr>
+            <tr><td><kbd>Tab</kbd></td><td>编辑区 · 无选区</td><td>插入到下一个 Tab 停止位的空格</td></tr>
+            <tr><td><kbd>Tab</kbd></td><td>编辑区 · 有选区</td><td>选中行整体右移一级</td></tr>
+            <tr><td><kbd>Shift+Tab</kbd></td><td>编辑区</td><td>当前行或选中行整体左移一级</td></tr>
+            <tr><td><kbd>Enter</kbd></td><td>编辑区</td><td>保持当前行缩进；在 <code>()</code> / <code>[]</code> / <code>{}</code> 之间换行会补一层缩进并留出闭合行</td></tr>
+            <tr><td><kbd>Ctrl/Cmd+Z</kbd></td><td>编辑区</td><td>撤销（浏览器原生）</td></tr>
+            <tr><td><kbd>Shift+Ctrl/Cmd+Z</kbd></td><td>编辑区</td><td>重做（浏览器原生）</td></tr>
+            <tr><td><kbd>Ctrl/Cmd+A</kbd> / <kbd>C</kbd> / <kbd>X</kbd> / <kbd>V</kbd></td><td>编辑区</td><td>全选 / 复制 / 剪切 / 粘贴（浏览器原生）</td></tr>
+            <tr><td>方向键 / <kbd>Home</kbd> / <kbd>End</kbd> / <kbd>PageUp</kbd> / <kbd>PageDown</kbd></td><td>编辑区</td><td>光标移动与滚动（浏览器原生）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="hint">查找栏打开后，输入框、复选框和按钮可以按 <kbd>Tab</kbd> 依次到达；键位同样写在 <code>code-editor.js</code> 头部注释里。</p>
+    </section>
+
+    <section class="panel" aria-labelledby="a11y-title">
+      <h3 id="a11y-title">无障碍与焦点</h3>
+      <ul class="limits">
+        <li>键盘可达：<kbd>Tab</kbd> 可进入查找框、匹配计数、上一个/下一个、正则、大小写和关闭按钮；<kbd>Esc</kbd> 关闭后焦点回到编辑区。</li>
+        <li>键盘边界：编辑区内 <kbd>Tab</kbd> 用于缩进（代码编辑器惯例），不用于切换焦点；查找栏打开后 <kbd>Tab</kbd> 在控件间移动，<kbd>Esc</kbd> 回到编辑区。</li>
+        <li>焦点可见：整块编辑器用 <code>:focus-within</code> 显示边框和 2px 光晕；输入框、复选框、按钮用 <code>:focus-visible</code> 显示 outline。</li>
+        <li>可读名称：textarea 的 <code>aria-label</code> 随语言更新（例如「代码编辑器（JavaScript）」），并声明 <code>aria-keyshortcuts="Control+S Control+F Control+H"</code>；查找、替换、计数、关闭按钮都有各自的 <code>aria-label</code>。</li>
+        <li>结果播报：查找无结果、正则无效、替换结果、括号未配对、大文件降级都写入 <code>role="status" aria-live="polite"</code> 区域，读屏会读出「无结果（已搜索全文 N 行）」这类完整信息。</li>
+        <li>行号栏和装饰层对读屏隐藏（<code>aria-hidden</code>），避免逐行重复朗读；行列与选中字符数在状态栏文本里。</li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="panel" aria-labelledby="integration-title">
+    <h3 id="integration-title">外部接管容器时的注意事项</h3>
+    <ul class="limits">
+      <li><strong>高度</strong>：容器必须有确定高度，例如 <code>height: 520px</code>，或在 flex 布局里写 <code>flex: 1; min-height: 0</code>。编辑器自身是 <code>height: 100%</code> 且最小 220px；父级高度为 auto 时会退到最小高度，行号窗口和滚动范围都按这个高度算。</li>
+      <li><strong>字体继承</strong>：编辑区固定使用 <code>--lc-font-mono</code>，行高固定为 <code>--lce-line-height</code>（默认 20px）。外部不要再给 <code>textarea</code> 或高亮层单独设 <code>font-size</code> / <code>line-height</code>；要改字号请覆盖 <code>--lce-font-size</code> 并同步改 <code>--lce-line-height</code>，两者不匹配会让光标和高亮错位。</li>
+      <li><strong>z-index</strong>：编辑器根节点已经是 <code>position: relative</code> 并建立了独立层叠上下文（<code>isolation: isolate</code>），内部层级固定在 0/1/2。宿主的下拉菜单、拖拽把手不要插进 <code>.lce-code</code>；需要和弹窗比较层级时，给编辑器外层容器设 <code>position</code> 与 <code>z-index</code>，不要改内部层级。</li>
+      <li><strong>多实例共存</strong>：每个实例有独立的 DOM、定时器和唯一 id（<code>lce-help-*</code>、<code>lce-find-msg-*</code>），快捷键监听挂在各自根节点上，只有焦点所在实例响应。卸载时调用 <code>destroy()</code>，它会移除全局 <code>selectionchange</code> 监听和括号匹配定时器；不要只删 DOM 节点。</li>
+      <li><strong>主题</strong>：所有颜色来自 <code>--lc-color-*</code>，跟随最近的 <code>[data-lc-mode="dark"]</code> 或 <code>[data-theme="dark"]</code> 祖先；多个实例默认共享页面主题，也可以在外层容器上单独设 <code>data-lc-mode</code> 做局部主题。</li>
+      <li><strong>输入法</strong>：组合输入期间高亮层自动隐藏，文字交还 textarea；宿主不要在这段时间强制刷新 <code>value</code>。</li>
+    </ul>
+  </section>
+
+  <div class="split">
+    <section class="panel" aria-labelledby="limits-title">
+      <h3 id="limits-title">tokenizer 已知局限</h3>
+      <ul class="limits">
+        <li>JavaScript 的正则字面量（<code>/abc/g</code>）不单独着色，里面的引号可能被误认成字符串。</li>
+        <li>模板字符串整体按字符串着色，<code>${...}</code> 里的表达式不会再拆分。</li>
+        <li>不支持 JSX、TypeScript；类型注解按普通标识符处理。</li>
+        <li>JSON 按严格 JSON 处理：注释、尾逗号、单引号都不属于合法语法，也不会特殊着色。</li>
+        <li>CSS 只覆盖基础选择器、属性名、数值/单位、十六进制颜色、函数与注释；SCSS/Less、原生 CSS 嵌套、复杂选择器不做语义分析。</li>
+        <li>HTML 只做标签名、属性名、属性值、注释、DOCTYPE 与实体的区分；<code>&lt;script&gt;</code> / <code>&lt;style&gt;</code> 内部不进入子语言。</li>
+        <li>Markdown 用行级规则判断标题、引用、分隔线、列表与围栏代码；行内只识别反引号代码、链接和 <code>*</code>/<code>_</code> 强调，复杂嵌套不做完整解析。</li>
+        <li>Rust / Go / Java 按 C 系规则着色，不做宏展开、泛型嵌套、类型推导；Rust 属性（<code>#[...]</code>）按普通符号处理。</li>
+        <li>查找替换每次最多记录 10000 个匹配，超出后计数带 <code>+</code>；大文件模式下不画命中底色，但计数和替换仍然工作。</li>
+        <li>括号匹配按语言跳过字符串、行注释、块注释、HTML 注释和 Java 文本块；JavaScript 模板字符串的 <code>${...}</code> 内部被当作字符串，不参与匹配。</li>
+        <li>超过 5,000 行进入大文件模式，括号匹配暂停，避免每次移动光标都扫描全文。</li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="api-title">
+      <h3 id="api-title">接入方式</h3>
+      <pre class="code-sample"><code><span class="c">// 页面先引入 lc-tokens.css、lc-code-editor.css 与 code-editor.js</span>
+<span class="k">const</span> editor = LC.CodeEditor.<span class="k">create</span>(<span class="s">'#code-editor'</span>, {
+  language: <span class="s">'javascript'</span>,   <span class="c">// javascript | json | css | html | markdown | rust | go | java</span>
+  value: <span class="s">'const a = 1;'</span>,
+  tabSize: 4,
+  maxHighlightLines: 5000, <span class="c">// 超过降级为纯文本；Infinity 关闭降级</span>
+  onChange(value, meta) { <span class="c">// 每次文本变化</span> },
+  onSave(value) { <span class="c">// Ctrl+S 或编辑器实例 save()</span> }
+});
+
+LC.CodeEditor.defaults.maxHighlightLines; <span class="c">// 5000</span>
+editor.<span class="k">setValue</span>(next, { silent: <span class="k">true</span> }); <span class="c">// 不触发 onChange</span>
+editor.<span class="k">openFind</span>(<span class="s">'find'</span>);   <span class="c">// 'replace' 打开替换行</span>
+editor.<span class="k">replaceAll</span>();        <span class="c">// 返回替换处数</span>
+editor.<span class="k">destroy</span>();           <span class="c">// 卸载：移除全局监听与定时器</span></code></pre>
+      <p class="hint">容器需要有明确高度；编辑器会铺满容器。实例还提供 getValue / setValue / setLanguage / setTabSize / focus / destroy，以及 openFind / closeFind / findNext / findPrev / replaceOne / replaceAll / getFindState。</p>
+    </section>
+  </div>
+
+  <p class="footnote">
+    本页只依赖同目录的 <code>css/lc-tokens.css</code>、<code>css/lc-code-editor.css</code> 与 <code>code-editor.js</code>，
+    不请求任何网络资源，<code>file://</code> 直接双击可用。
+  </p>
+</main>
+
+<!-- 三段样例放在 text/plain 里，避免和页面脚本互相转义。 -->
+<script type="text/plain" id="sample-javascript">
+// 订单列表：分页、筛选与取消
+const PAGE_SIZE = 20;
+
+const STATUS = {
+  pending: '待确认',
+  paid: '已支付',
+  cancelled: '已取消'
+};
+
+function normalizeOrder(raw) {
+  return {
+    id: raw.id,
+    amount: Number(raw.amount) || 0,
+    status: STATUS[raw.status] ?? STATUS.pending,
+    tags: (raw.tags || []).filter(Boolean)
+  };
+}
+
+async function fetchOrders({ page = 1, status } = {}) {
+  const query = new URLSearchParams({
+    page: String(page),
+    size: String(PAGE_SIZE)
+  });
+
+  if (status) query.set('status', status);
+
+  const response = await fetch(`/api/orders?${query}`);
+  if (!response.ok) {
+    throw new Error(`请求失败：${response.status}`);
+  }
+
+  const payload = await response.json();
+  return {
+    total: payload.total,
+    items: payload.items.map(normalizeOrder)
+  };
+}
+
+const total = 128;
+const summary = `共 ${total} 笔订单`;
+console.log(summary);
+</script>
+
+<script type="text/plain" id="sample-json">
+{
+  "site": {
+    "name": "文档站",
+    "domain": "docs.czgrzx.cn",
+    "theme": {
+      "mode": "light",
+      "accent": "#3e6a56"
+    }
+  },
+  "routes": [
+    { "path": "/", "title": "首页", "menu": true },
+    { "path": "/articles", "title": "文章", "menu": true },
+    { "path": "/about", "title": "关于", "menu": false }
+  ],
+  "stats": {
+    "articles": 349,
+    "directions": 10,
+    "updatedAt": "2026-11-08"
+  },
+  "featured": null,
+  "draft": false
+}
+</script>
+
+<script type="text/plain" id="sample-css">
+/* 文档站 · 卡片与目录 */
+:root {
+  --page-bg: #f4f0e6;
+  --ink: #20242a;
+  --accent: #3e6a56;
+  --line: #ded6c5;
+  --radius: 8px;
+}
+
+body {
+  margin: 0;
+  background: var(--page-bg);
+  color: var(--ink);
+  font: 15px/1.7 "Microsoft YaHei", sans-serif;
+}
+
+.article-card {
+  max-width: 760px;
+  margin: 40px auto;
+  padding: 24px 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fffcf5;
+  box-shadow: 0 8px 24px rgba(20, 24, 28, 0.10);
+}
+
+.article-card h2::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  margin-right: 10px;
+  background: var(--accent);
+  vertical-align: middle;
+}
+
+@media (max-width: 640px) {
+  .article-card {
+    margin: 20px 16px;
+    padding: 18px;
+  }
+}
+</script>
+
+<script type="text/plain" id="sample-html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>订单详情</title>
+  <link rel="stylesheet" href="/assets/order.css">
+</head>
+<body class="order-page" data-state="paid">
+  <!-- 金额与状态 -->
+  <main class="order-card">
+    <h1 id="order-title">订单 #A1024</h1>
+    <p class="amount" data-currency="CNY">¥ 128.00 &amp; 运费 0</p>
+    <img src="/assets/paid.svg" alt="已支付">
+    <button type="button" class="btn-primary" disabled>已支付</button>
+  </main>
+</body>
+</html>
+</script>
+
+<script type="text/plain" id="sample-markdown">
+# 订单模块说明
+
+> 这份文档用于第三步验收。
+
+## 快捷规则
+
+- **待确认**：创建后 30 分钟内可取消
+- *已支付*：进入发货队列
+- 调用 `GET /api/orders/:id` 拉取详情
+
+## 相关链接
+
+- [接口文档](https://example.com/api/orders)
+- [状态机说明](./states.md)
+
+```js
+const status = order.status;
+```
+
+最后更新：2026-11-08
+</script>
+
+<script type="text/plain" id="sample-rust">
+use std::collections::HashMap;
+
+#[derive(Debug, Clone)]
+struct Order {
+    id: u64,
+    amount: f64,
+    status: String,
+}
+
+fn pick<'a>(value: &'a str) -> &'a str {
+    value
+}
+
+fn main() {
+    let mut orders: HashMap<u64, Order> = HashMap::new();
+    orders.insert(1, Order { id: 1, amount: 128.0, status: "paid".to_string() });
+
+    for (id, order) in &orders {
+        println!("订单 {id}: {:?}", order.status);
+    }
+
+    let note = r#"原始字符串里可以写 "引号""#;
+    let label = '待';
+    match orders.len() {
+        0 => println!("空"),
+        n if n > 3 => println!("很多：{n}"),
+        _ => {}
+    }
+    println!("{:?}{:?}{}", pick("备注"), note, label);
+}
+</script>
+
+<script type="text/plain" id="sample-go">
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+type Order struct {
+	ID     int
+	Amount float64
+	Status string
+}
+
+func normalize(status string) string {
+	switch status {
+	case "paid", "shipped":
+		return strings.ToUpper(status)
+	default:
+		return "unknown"
+	}
+}
+
+func main() {
+	orders := []Order{{ID: 1, Amount: 128.5, Status: "paid"}}
+	raw := `原始字符串
+可以换行`
+	note := '待'
+	for _, order := range orders {
+		fmt.Printf("订单 %d：%s\n", order.ID, order.Status)
+	}
+	fmt.Println(normalize(orders[0].Status), raw != "", note)
+}
+</script>
+
+<script type="text/plain" id="sample-java">
+package demo.orders;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class OrderService {
+    private static final int PAGE_SIZE = 20;
+
+    public List<String> paidIds(List<Order> orders) {
+        return orders.stream()
+            .filter(order -> "paid".equals(order.status))
+            .limit(PAGE_SIZE)
+            .map(order -> order.id)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public String toString() {
+        String note = """
+            订单备注
+            """;
+        return "OrderService " + note;
+    }
+}
+
+record Order(String id, double amount, String status) {}
+</script>
+
+<script src="code-editor.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var samples = {
+    javascript: document.getElementById('sample-javascript').textContent.trim(),
+    json: document.getElementById('sample-json').textContent.trim(),
+    css: document.getElementById('sample-css').textContent.trim(),
+    html: document.getElementById('sample-html').textContent.trim(),
+    markdown: document.getElementById('sample-markdown').textContent.trim(),
+    rust: document.getElementById('sample-rust').textContent.trim(),
+    go: document.getElementById('sample-go').textContent.trim(),
+    java: document.getElementById('sample-java').textContent.trim()
+  };
+
+  var labels = {
+    javascript: 'JavaScript',
+    json: 'JSON',
+    css: 'CSS',
+    html: 'HTML',
+    markdown: 'Markdown',
+    rust: 'Rust',
+    go: 'Go',
+    java: 'Java'
+  };
+  var changeCount = 0;
+  var saveCount = 0;
+  var currentLanguage = 'javascript';
+
+  var ui = {
+    changeCount: document.getElementById('change-count'),
+    changeMeta: document.getElementById('change-meta'),
+    saveCount: document.getElementById('save-count'),
+    saveMeta: document.getElementById('save-meta'),
+    docSize: document.getElementById('doc-size'),
+    docMeta: document.getElementById('doc-meta'),
+    sampleNote: document.getElementById('sample-note'),
+    themeBtn: document.getElementById('theme-btn')
+  };
+
+  var editor = window.LC.CodeEditor.create(document.getElementById('code-editor'), {
+    language: currentLanguage,
+    value: samples[currentLanguage],
+    tabSize: 4,
+    onChange: function (value, meta) {
+      changeCount += 1;
+      ui.changeCount.textContent = String(changeCount);
+      ui.changeMeta.textContent = meta.source + ' · ' + meta.lines + ' 行';
+      ui.docSize.textContent = meta.length.toLocaleString('zh-CN');
+      ui.docMeta.textContent = labels[meta.language] + ' · ' + meta.lines + ' 行';
+    },
+    onSave: function (value) {
+      saveCount += 1;
+      ui.saveCount.textContent = String(saveCount);
+      ui.saveMeta.textContent = '已收到 ' + value.length.toLocaleString('zh-CN') + ' 字符 · ' +
+        new Date().toLocaleTimeString('zh-CN', { hour12: false });
+    }
+  });
+
+  ui.docSize.textContent = samples[currentLanguage].length.toLocaleString('zh-CN');
+  ui.docMeta.textContent = labels[currentLanguage] + ' · ' + samples[currentLanguage].split('\n').length + ' 行';
+
+  var langButtons = Array.prototype.slice.call(document.querySelectorAll('[data-lang]'));
+  langButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      var lang = button.getAttribute('data-lang');
+      if (!lang || lang === currentLanguage) return;
+
+      currentLanguage = lang;
+      editor.setLanguage(lang);
+      editor.setValue(samples[lang]);
+
+      langButtons.forEach(function (item) {
+        item.setAttribute('aria-pressed', String(item.getAttribute('data-lang') === lang));
+      });
+      ui.sampleNote.textContent = '当前样例：' + labels[lang];
+
+      changeCount = 0;
+      saveCount = 0;
+      ui.changeCount.textContent = '0';
+      ui.changeMeta.textContent = '尚未输入';
+      ui.saveCount.textContent = '0';
+      ui.saveMeta.textContent = '尚未保存';
+      ui.docSize.textContent = samples[lang].length.toLocaleString('zh-CN');
+      ui.docMeta.textContent = labels[lang] + ' · ' + samples[lang].split('\n').length + ' 行';
+    });
+  });
+
+  document.getElementById('tab-size').addEventListener('change', function (event) {
+    editor.setTabSize(parseInt(event.target.value, 10));
+  });
+
+  document.getElementById('save-btn').addEventListener('click', function () {
+    editor.save();
+  });
+
+  document.getElementById('find-btn').addEventListener('click', function () {
+    editor.openFind('find');
+  });
+
+  document.getElementById('replace-btn').addEventListener('click', function () {
+    editor.openFind('replace');
+  });
+
+  ui.themeBtn.addEventListener('click', function () {
+    var root = document.documentElement;
+    var dark = root.getAttribute('data-lc-mode') === 'dark';
+    root.setAttribute('data-lc-mode', dark ? 'light' : 'dark');
+    ui.themeBtn.setAttribute('aria-pressed', String(!dark));
+    ui.themeBtn.textContent = dark ? '切到暗色' : '切到亮色';
+  });
+
+  var bigfileResult = document.getElementById('bigfile-result');
+
+  function syncDocStats(value, note) {
+    ui.docSize.textContent = value.length.toLocaleString('zh-CN');
+    ui.docMeta.textContent = note;
+  }
+
+  function makeBigText(lineCount) {
+    var parts = new Array(lineCount);
+    for (var i = 0; i < lineCount; i += 1) {
+      parts[i] = "const item" + i + " = { value: " + i +
+        ", label: 'item-" + i + "' }; // 第 " + (i + 1) + " 行";
+    }
+    return parts.join('\n');
+  }
+
+  Array.prototype.slice.call(document.querySelectorAll('[data-bigfile]')).forEach(function (button) {
+    button.addEventListener('click', function () {
+      var lineCount = parseInt(button.getAttribute('data-bigfile'), 10);
+      var text = makeBigText(lineCount);
+      var started = performance.now();
+      editor.setValue(text, { silent: true });
+      var elapsed = performance.now() - started;
+      var degraded = editor.root.getAttribute('data-degraded') === '1';
+      bigfileResult.textContent = '已载入 ' + lineCount.toLocaleString('zh-CN') +
+        ' 行，setValue 耗时 ' + Math.round(elapsed) + ' ms；' +
+        (degraded ? '已进入大文件模式（高亮关闭）' : '仍保持语法高亮');
+      syncDocStats(text, '大文件演示 · ' + lineCount.toLocaleString('zh-CN') + ' 行');
+    });
+  });
+
+  document.getElementById('bigfile-restore').addEventListener('click', function () {
+    editor.setValue(samples[currentLanguage], { silent: true });
+    bigfileResult.textContent = '已回到 ' + labels[currentLanguage] + ' 样例。';
+    syncDocStats(
+      samples[currentLanguage],
+      labels[currentLanguage] + ' · ' + samples[currentLanguage].split('\n').length + ' 行'
+    );
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+[package]
+name = "lowcode-server"
+version = "0.1.0"
+edition = "2021"
+description = "低代码平台导出的 Rust 后端骨架（full 档）"
+
+[dependencies]
+axum = "0.8"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal", "net", "io-util", "time", "sync"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "any", "sqlite", "mysql", "postgres", "tls-rustls"] }
+tower-http = { version = "0.6", features = ["cors", "compression-gzip", "compression-br", "set-header", "fs", "util"] }
+tower = { version = "0.5", features = ["util"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", features = ["clock"] }
+anyhow = "1"
+argon2 = "0.6.0"
+jsonwebtoken = { version = "11.1.0", features = ["rust_crypto"] }
+sha2 = "0.11.1"

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lc-mode="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>桌面壳占位页</title>
+  <style>
+    :root {
+      --paper: #f4f0e6;
+      --surface: #fffcf5;
+      --ink: #20242a;
+      --muted: #6b7076;
+      --line: #ded6c5;
+      --accent: #3e6a56;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; background: var(--paper); color: var(--ink); }
+    body {
+      margin: 0;
+      display: grid;
+      place-items: center;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: system-ui, "Segoe UI", "Microsoft YaHei", sans-serif;
+      line-height: 1.7;
+    }
+    main {
+      width: min(640px, calc(100% - 48px));
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 32px 36px;
+    }
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: .18em;
+      color: var(--muted);
+      margin: 0 0 10px;
+    }
+    h1 { font-size: 26px; margin: 0 0 8px; letter-spacing: .01em; }
+    .rule { height: 3px; width: 56px; background: var(--accent); margin: 16px 0 20px; }
+    p { margin: 0 0 12px; color: var(--muted); font-size: 14.5px; }
+    dl { margin: 20px 0 0; display: grid; grid-template-columns: 96px 1fr; gap: 8px 16px; font-size: 13.5px; }
+    dt { color: var(--muted); }
+    dd { margin: 0; font-variant-numeric: tabular-nums; }
+    code { background: #efeade; padding: 1px 5px; border-radius: 3px; font-size: 12.5px; }
+    .panel { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); }
+    .badge { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); }
+    .badge.ok { color: #245a43; border-color: #9fc4b3; background: #eaf3ee; }
+    .badge.bad { color: #8a2d20; border-color: #dfb3a8; background: #f8ece8; }
+    .badge.wait { color: #6b5a1f; border-color: #ded0a0; background: #faf4e2; }
+    .msg { font-size: 13.5px; color: var(--muted); margin: 10px 0 0; white-space: pre-wrap; }
+    form { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+    input { flex: 1 1 220px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; font: inherit; }
+    button { padding: 8px 14px; border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 6px; font: inherit; cursor: pointer; }
+    button.secondary { background: transparent; color: var(--accent); }
+    [hidden] { display: none !important; }
+    footer { margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">TAURI DESKTOP SHELL</p>
+    <h1 id="app-name">桌面工程已就绪</h1>
+    <div class="rule"></div>
+    <p>这是模板自带的占位前端，只用来确认壳能启动、配置注入正常。导出时整目录会被站点产物替换，页面里的 <code>__LC_DESKTOP__</code> 由 <code>desktop-config.js</code> 提供。</p>
+    <dl>
+      <dt>版本</dt><dd id="app-version">—</dd>
+      <dt>接入方式</dt><dd id="delivery">—</dd>
+      <dt>后端</dt><dd id="backend">—</dd>
+    </dl>
+    <footer id="boot-note">没有读到 <code>desktop-config.js</code> 时，这里会保持默认值，不影响壳启动。</footer>
+    <section id="sidecar-panel" class="panel" hidden>
+      <p class="eyebrow" style="margin-bottom:6px">LOCAL BACKEND / SIDECAR</p>
+      <span id="sidecar-badge" class="badge wait">等待中</span>
+      <p id="sidecar-message" class="msg"></p>
+      <form id="password-form" hidden>
+        <input id="password-input" type="password" autocomplete="new-password" placeholder="数据库密码（只保存在本机配置目录）">
+        <button id="password-submit" type="submit">保存并启动</button>
+      </form>
+      <button id="retry" type="button" class="secondary" hidden>重试启动</button>
+    </section>
+    <section id="update-panel" class="panel" hidden>
+      <p class="eyebrow" style="margin-bottom:6px">UPDATE</p>
+      <span id="update-badge" class="badge wait">未检查</span>
+      <p id="update-message" class="msg"></p>
+      <p id="update-progress" class="msg" hidden></p>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button id="update-check" type="button" class="secondary">检查更新</button>
+        <button id="update-install" type="button" hidden>下载并安装</button>
+      </div>
+    </section>
+    <noscript><p>这个页面需要启用 JavaScript 才能显示运行时配置。</p></noscript>
+  </main>
+  <script src="./desktop-config.js"></script>
+  <script>
+    var cfg = window.__LC_DESKTOP__;
+    if (cfg) {
+      document.getElementById('app-name').textContent = cfg.appName || '桌面工程已就绪';
+      document.getElementById('app-version').textContent = cfg.appVersion || '—';
+      document.getElementById('delivery').textContent =
+        cfg.deliveryMode === 'server' ? '外部服务（' + cfg.protocol + '）' : '资源内嵌（' + cfg.protocol + ' 方案）';
+      document.getElementById('backend').textContent =
+        cfg.backend && cfg.backend.enabled ? cfg.backend.baseUrl : '未启用';
+      document.title = cfg.appName || document.title;
+    }
+
+    (function () {
+      var panel = document.getElementById('sidecar-panel');
+      // 没开本地内置后端（或旧版渲染产物没这段）时，不显示这块，页面保持原样。
+      if (!cfg || !cfg.sidecar || !cfg.sidecar.enabled) return;
+      panel.hidden = false;
+
+      var badge = document.getElementById('sidecar-badge');
+      var message = document.getElementById('sidecar-message');
+      var form = document.getElementById('password-form');
+      var input = document.getElementById('password-input');
+      var retry = document.getElementById('retry');
+      var backendRow = document.getElementById('backend');
+      var timeoutMs = (cfg.sidecar.readinessTimeoutMs || 10000) + 4000;
+      var deadline = Date.now() + timeoutMs;
+      var settled = false;
+
+      var tauri = window.__TAURI__;
+      if (!tauri || !tauri.core) {
+        badge.className = 'badge bad';
+        badge.textContent = '不可用';
+        message.textContent = '页面没有拿到 Tauri 运行时（window.__TAURI__）。确认渲染产物打开了 withGlobalTauri，且页面由应用内加载而不是浏览器直开。';
+        return;
+      }
+
+      // 轮询每 400ms 回来一次；状态没变时不要覆盖用户刚触发的本地提示（例如密码超长），
+      // 否则提示只闪一下就被“首次启动需要设置密码”冲掉。
+      var lastKey = '';
+
+      function setBadge(text, kind) {
+        badge.textContent = text;
+        badge.className = 'badge ' + kind;
+      }
+
+      function show(state, text, url) {
+        message.textContent = text || '';
+        // 失败时也保留密码输入：密码输错后能把新密码重新填进来，而不是只能对着同一份错误凭据重试。
+        form.hidden = !(state === 'setup-required' || state === 'error');
+        panel.dataset.state = state;
+        retry.hidden = state !== 'error';
+        if (state === 'ready') {
+          setBadge('已就绪', 'ok');
+          backendRow.textContent = url;
+          cfg.backendUrl = url;
+        } else if (state === 'error') {
+          setBadge('启动失败', 'bad');
+          backendRow.textContent = '未就绪';
+        } else if (state === 'setup-required') {
+          setBadge('需要初始化', 'wait');
+        } else if (state === 'starting') {
+          setBadge('启动中', 'wait');
+        } else {
+          setBadge('未启动', 'wait');
+        }
+      }
+
+      function render(status) {
+        if (!status) return;
+        var key = status.state + '|' + (status.message || '');
+        if (key === lastKey) return;
+        lastKey = key;
+        if (status.state === 'ready' || status.state === 'error' || status.state === 'setup-required') {
+          settled = true;
+        }
+        show(status.state, status.message, status.backendUrl);
+      }
+
+      function invoke(cmd, args) {
+        return tauri.core.invoke(cmd, args || {});
+      }
+
+      function poll() {
+        // 外壳自己会在 readinessTimeoutMs 内给出 ready/error；这里多给 4 秒，
+        // 只兜底「IPC 不通、状态永远停在 starting」的情况。
+        if (!settled && Date.now() > deadline) {
+          settled = true;
+          show('error', '等待本地后端超过 ' + Math.round(timeoutMs / 1000) + ' 秒仍没有拿到地址。可点「重试启动」，或查看应用日志里的 sidecar 输出。');
+          return;
+        }
+        invoke('sidecar_status').then(render).catch(function (err) {
+          if (!settled) {
+            settled = true;
+            show('error', '无法读取本地后端状态：' + err + '\n如果是开发模式，确认 sidecar 相关命令已注册。');
+          }
+        });
+      }
+
+      // 事件比轮询快，但事件可能发在前端加载之前，所以启动时先主动查一次，再按事件更新。
+      ['lc:backend-ready', 'lc:backend-error', 'lc:backend-setup-required', 'lc:backend-starting'].forEach(function (name) {
+        if (tauri.event && tauri.event.listen) {
+          tauri.event.listen(name, function (e) { render(e.payload); });
+        }
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var password = input.value;
+        // 前端先给出可读反馈，避免把明显无效的值写进本机凭据；外壳侧还有同样的校验兜底。
+        if (!password) {
+          message.textContent = '密码不能为空。';
+          return;
+        }
+        if (/^\s+$/.test(password)) {
+          message.textContent = '密码不能只有空白字符。';
+          return;
+        }
+        if (password.length > 256) {
+          message.textContent = '密码长度 ' + password.length + ' 超过 256 个字符。请确认没有误粘贴整段文本，或换用更短的密码。';
+          return;
+        }
+        input.value = '';
+        settled = false;
+        deadline = Date.now() + timeoutMs;
+        invoke('submit_backend_password', { password: password }).catch(function (err) {
+          show('error', '保存本机凭据失败：' + err);
+        });
+      });
+
+      retry.addEventListener('click', function () {
+        settled = false;
+        deadline = Date.now() + timeoutMs;
+        invoke('restart_sidecar').catch(function (err) {
+          show('error', '重试失败：' + err);
+        });
+      });
+
+      poll();
+      setInterval(poll, 400);
+    })();
+
+    (function () {
+      if (!cfg || !cfg.update || !cfg.update.active) return;
+      var panel = document.getElementById('update-panel');
+      panel.hidden = false;
+
+      var badge = document.getElementById('update-badge');
+      var message = document.getElementById('update-message');
+      var progress = document.getElementById('update-progress');
+      var checkBtn = document.getElementById('update-check');
+      var installBtn = document.getElementById('update-install');
+      var tauri = window.__TAURI__;
+
+      if (!tauri || !tauri.core) {
+        badge.className = 'badge bad';
+        badge.textContent = '不可用';
+        message.textContent = '页面没有拿到 Tauri 运行时，无法检查更新。请从应用内打开，而不是浏览器直开。';
+        return;
+      }
+
+      function setBadge(text, kind) {
+        badge.textContent = text;
+        badge.className = 'badge ' + kind;
+      }
+
+      function setBusy(busy) {
+        checkBtn.disabled = busy;
+        installBtn.disabled = busy;
+      }
+
+      function render(status) {
+        if (!status) return;
+        panel.dataset.state = status.state;
+        progress.hidden = true;
+        message.textContent = status.message || '';
+        if (status.notes) message.textContent += (message.textContent ? '\n' : '') + status.notes;
+
+        if (status.state === 'available') {
+          setBadge('发现新版本', 'wait');
+          installBtn.hidden = false;
+        } else if (status.state === 'up-to-date') {
+          setBadge('已是最新', 'ok');
+          installBtn.hidden = true;
+        } else if (status.state === 'checking') {
+          setBadge('检查中', 'wait');
+          installBtn.hidden = true;
+        } else if (status.state === 'downloading') {
+          setBadge('下载中', 'wait');
+          installBtn.hidden = true;
+          if (status.total && status.downloaded) {
+            progress.hidden = false;
+            progress.textContent = '已下载 ' + Math.min(100, Math.round(status.downloaded * 100 / status.total)) + '%';
+          }
+        } else if (status.state === 'installing') {
+          setBadge('安装中', 'wait');
+          installBtn.hidden = true;
+        } else if (status.state === 'error') {
+          setBadge('更新失败', 'bad');
+          installBtn.hidden = true;
+        } else {
+          setBadge('未检查', 'wait');
+          installBtn.hidden = true;
+        }
+
+        setBusy(status.state === 'checking' || status.state === 'downloading' || status.state === 'installing');
+      }
+
+      function fail(err) {
+        setBadge('更新失败', 'bad');
+        message.textContent = '无法调用更新命令：' + err;
+        setBusy(false);
+      }
+
+      checkBtn.addEventListener('click', function () {
+        setBusy(true);
+        tauri.core.invoke('update_check').then(render).catch(fail);
+      });
+
+      installBtn.addEventListener('click', function () {
+        setBusy(true);
+        // 成功时 Windows 会直接启动安装器并退出应用，这个 Promise 不会返回；
+        // 失败时返回 error 状态，按钮会重新可用，不会卡在「安装中」。
+        tauri.core.invoke('update_install').then(render).catch(fail);
+      });
+
+      if (tauri.event && tauri.event.listen) {
+        tauri.event.listen('lc:update-status', function (e) { render(e.payload); });
+      }
+
+      // 启动时的自动检查可能已经跑完（状态存在外壳里），这里主动取一次作为初始值。
+      tauri.core.invoke('update_status').then(render).catch(fail);
+    })();
+  </script>
+</body>
+</html>

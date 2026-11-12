@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 3,
+  "id": "ink-ochre",
+  "name": "纸墨 · 赭石",
+  "tone": "warm",
+  "description": "暖调纸感，低饱和的赭石强调，读起来更像一本小册子。适合教程、随笔和产品说明。",
+  "modes": {
+    "light": {
+      "seeds": {
+        "bg": "#f5efe3",
+        "surface": "#fffdf7",
+        "ink": "#2a231d",
+        "muted": "#6a5d52",
+        "line": "#e0d3bd",
+        "accent": "#8c4a26",
+        "codeBg": "#efe2cf",
+        "success": "#4d6135",
+        "warn": "#7a4516",
+        "danger": "#9c3229",
+        "info": "#31536f"
+      }
+    },
+    "dark": {
+      "seeds": {
+        "bg": "#1a1512",
+        "surface": "#241d18",
+        "ink": "#eee4d8",
+        "muted": "#b0a394",
+        "line": "#3a2f26",
+        "accent": "#d6a177",
+        "accentFill": "#5a3823",
+        "onAccent": "#fbf5ee",
+        "codeBg": "#1d1713",
+        "success": "#a8c08a",
+        "warn": "#d6a177",
+        "danger": "#e59a8c",
+        "info": "#96b6d1"
+      }
+    }
+  }
+}

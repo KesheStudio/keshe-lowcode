@@ -1,0 +1,116 @@
+/* 低代码平台 · 无障碍补丁
+ *
+ * 放在 lc-controls.css 和 lc-editor.css 之后加载。只做四件事：
+ *   1. 焦点环在滚动容器 / overflow:hidden 容器里不被裁掉（改用内嵌环）；
+ *   2. 遮罩上的焦点（弹窗本体）用黑白反色的专用环，任何遮罩浓度下都看得见；
+ *   3. 跳转到正文的 skip link，以及被 sticky 头部挡住的焦点留出滚动余量；
+ *   4. Windows 高对比模式（forced-colors）下不让自定义颜色把边框/焦点吞掉。
+ *
+ * 复核数据见 src/theme/NOTES.md 的「无障碍复核」一节。
+ */
+
+/* ---------------- skip link ---------------- */
+
+.lc-skip-link {
+  position: absolute;
+  top: var(--lc-space-2);
+  left: var(--lc-space-2);
+  z-index: var(--lc-z-toast);
+  padding: var(--lc-space-2) var(--lc-space-3);
+  border: 1px solid var(--lc-color-line-strong);
+  border-radius: var(--lc-radius-sm);
+  background: var(--lc-color-surface);
+  color: var(--lc-color-ink);
+  font-size: var(--lc-text-sm);
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform var(--lc-motion-fast) var(--lc-ease-standard);
+}
+
+.lc-skip-link:focus,
+.lc-skip-link:focus-visible {
+  outline: 2px solid var(--lc-color-focus);
+  outline-offset: 2px;
+  transform: none;
+}
+
+/* ---------------- 容器内焦点：内嵌环 ---------------- */
+
+/* 这些容器有 overflow:auto / hidden，外发光式 box-shadow 会被裁掉一半。
+   键盘聚焦时改成 2px 内嵌环，贴在内边缘，一定看得见。
+   选择器比 .lc-btn:focus-visible / .lc-input:focus 各多一个类，且在文件后加载，
+   所以能稳定覆盖控件自带的焦点样式。 */
+.lc-dialog-body :focus-visible,
+.lc-sidebar-body :focus-visible,
+.lc-inspector-body :focus-visible,
+.lc-canvas-scroll :focus-visible,
+.lc-tree :focus-visible,
+.lc-table-wrap :focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--lc-color-focus);
+}
+
+/* 弹窗本体直接压在遮罩上，强调色环在浅色遮罩上对比度不够 3:1，
+   改用亮暗主题相反的黑白环（--lc-color-focus-overlay）。 */
+.lc-dialog:focus-visible {
+  box-shadow: none;
+  outline: 2px solid var(--lc-color-focus-overlay);
+  outline-offset: 2px;
+}
+
+/* ---------------- 焦点被 sticky 头部遮住的余量 ---------------- */
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  scroll-margin-block: 96px;
+}
+
+/* ---------------- 键盘可达性兜底 ---------------- */
+
+/* 链接默认可聚焦，但浏览器默认描边在深色底上经常看不见。 */
+a:focus-visible {
+  outline: 2px solid var(--lc-color-focus);
+  outline-offset: 2px;
+}
+
+/* aria-disabled 的按钮仍可聚焦（这是有意的：让读屏用户能读到禁用原因），
+   但不能让它看起来像可以点。 */
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* ---------------- 高对比模式 ---------------- */
+
+@media (forced-colors: active) {
+  .lc-btn,
+  .lc-icon-btn,
+  .lc-input,
+  .lc-select,
+  .lc-textarea,
+  .lc-tab,
+  .lc-page-btn,
+  .lc-panel,
+  .lc-dialog {
+    border-color: ButtonText;
+  }
+
+  :focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px;
+  }
+
+  .lc-dialog :focus-visible,
+  .lc-dialog-body :focus-visible,
+  .lc-sidebar-body :focus-visible,
+  .lc-inspector-body :focus-visible,
+  .lc-canvas-scroll :focus-visible,
+  .lc-tree :focus-visible,
+  .lc-table-wrap :focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: -2px;
+    box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lc-skip-link { transition-duration: 0ms; }
+}

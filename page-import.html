@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lc-mode="light" data-lc-mode-pref="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>页面导入 · 低代码建站器</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="lc-token" content="__LC_TOKEN__">
+<link rel="icon" href="vendor/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/lc-tokens.css">
+<link rel="stylesheet" href="assets/css/lc-controls.css">
+<link rel="stylesheet" href="assets/css/lc-editor.css">
+<link rel="stylesheet" href="assets/css/lc-responsive.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .lc-import-board { width: 100%; max-width: 920px; margin: 0 auto; padding: var(--lc-space-5) var(--lc-space-4); display: flex; flex-direction: column; gap: var(--lc-space-4); overflow-y: auto; }
+  .lc-import-card { border: var(--lc-border); border-radius: var(--lc-radius-md); background: var(--lc-color-surface); padding: var(--lc-space-4); }
+  .lc-import-card h2 { margin: 0 0 var(--lc-space-1); font-size: var(--lc-text-lg); }
+  .lc-import-card h2 small { color: var(--lc-color-muted); font-size: var(--lc-text-sm); font-weight: 400; }
+  .lc-import-note { margin: 0 0 var(--lc-space-3); color: var(--lc-color-muted); font-size: var(--lc-text-sm); line-height: 1.7; }
+  .lc-import-zone { display: flex; flex-direction: column; gap: 2px; align-items: center; justify-content: center; text-align: center; padding: var(--lc-space-5) var(--lc-space-3); border: 1px dashed var(--lc-color-line-strong); border-radius: var(--lc-radius-md); color: var(--lc-color-muted); cursor: pointer; transition: border-color .15s, background-color .15s; }
+  .lc-import-zone strong { color: var(--lc-color-fg); font-size: var(--lc-text-sm); font-weight: 500; }
+  .lc-import-zone span { font-size: var(--lc-text-xs); }
+  .lc-import-zone.is-dragging { border-color: var(--lc-color-accent); background: var(--lc-color-accent-soft); color: var(--lc-color-fg); }
+  .lc-import-zone.is-disabled { opacity: .55; cursor: not-allowed; }
+  .lc-import-bar { display: flex; align-items: center; gap: var(--lc-space-2); margin: var(--lc-space-2) 0 var(--lc-space-3); flex-wrap: wrap; }
+  /* 文件输入铺满按钮标签并隐藏，命中区就是整个按钮（至少 24 高）。 */
+  .lc-file-btn { position: relative; overflow: hidden; }
+  .lc-file-btn input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+  .lc-import-summary { min-width: 0; color: var(--lc-color-muted); font-size: var(--lc-text-xs); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lc-import-progress { display: flex; flex-direction: column; gap: var(--lc-space-1); margin-bottom: var(--lc-space-2); }
+  .lc-import-track { height: 4px; border-radius: var(--lc-radius-full); background: var(--lc-color-line); overflow: hidden; }
+  .lc-import-track span { display: block; height: 100%; width: 0; background: var(--lc-color-accent); transition: width .2s; }
+  .lc-import-progress span[data-import-text] { color: var(--lc-color-muted); font-size: var(--lc-text-xs); }
+  .lc-import-log { max-height: 220px; overflow: auto; padding: var(--lc-space-2); border: var(--lc-border); border-radius: var(--lc-radius-sm); background: var(--lc-color-surface-2); }
+  .lc-import-row { display: flex; flex-direction: column; gap: 1px; padding: 3px 0; font-size: var(--lc-text-xs); }
+  .lc-import-row + .lc-import-row { border-top: 1px solid var(--lc-color-line); }
+  .lc-import-row b { font-weight: 500; color: var(--lc-color-fg); }
+  .lc-import-row em { font-style: normal; color: var(--lc-color-muted); word-break: break-word; }
+  .lc-import-row.is-ok b { color: var(--lc-color-success); }
+  .lc-import-row.is-fail b { color: var(--lc-color-danger); }
+  .lc-import-row.is-note b { color: var(--lc-color-muted); }
+  .lc-page-row { display: flex; align-items: center; gap: var(--lc-space-3); padding: var(--lc-space-2) 0; }
+  .lc-page-row + .lc-page-row { border-top: 1px solid var(--lc-color-line); }
+  .lc-page-row-main { min-width: 0; flex: 1 1 auto; }
+  .lc-page-row-title { font-size: var(--lc-text-sm); color: var(--lc-color-fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lc-page-row-path { margin-top: 2px; font-family: var(--lc-font-mono); font-size: var(--lc-text-xs); color: var(--lc-color-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lc-import-empty { padding: var(--lc-space-4) 0; color: var(--lc-color-muted); font-size: var(--lc-text-sm); }
+  .lc-import-site { min-width: 0; }
+  .lc-import-site .lc-select { width: auto; min-width: 150px; max-width: 220px; }
+  @media (max-width: 640px) {
+    .lc-import-board { padding: var(--lc-space-3); }
+    .lc-import-site .lc-select { min-width: 0; max-width: 160px; }
+  }
+</style>
+</head>
+<body class="lc-shell">
+
+<header class="lc-topbar">
+  <a class="lc-brand lc-brand-link" href="home.html" title="返回工作台" aria-label="返回工作台">
+    <span class="lc-brand-mark" aria-hidden="true"></span>
+    <span class="lc-brand-text">页面导入</span>
+    <span class="lc-brand-sub">.page.json · 拖拽导入</span>
+  </a>
+
+  <div class="lc-topbar-side">
+    <label class="lc-field lc-import-site">
+      <span class="lc-label">项目</span>
+      <select class="lc-select" data-site-select aria-label="选择项目"></select>
+    </label>
+    <a class="lc-btn lc-btn-sm" data-back-builder href="builder.html">去 Builder</a>
+    <a class="lc-btn lc-btn-sm" href="home.html">返回工作台</a>
+  </div>
+</header>
+
+<main class="lc-main">
+  <section class="lc-import-board">
+    <div class="lc-import-card">
+      <h2>导入页面</h2>
+      <p class="lc-import-note">拖入或选择 <code>.page.json</code> 文件。导入只新增页面，同路径冲突会自动加后缀，不覆盖已有页面。</p>
+      <div class="lc-import-zone" data-drop-zone tabindex="0" role="button" aria-label="拖入页面文件导入">
+        <strong>把页面文件拖到这里</strong>
+        <span>.json · 支持多文件 · 单个 ≤ 512 KB</span>
+      </div>
+      <div class="lc-import-bar">
+        <label class="lc-btn lc-btn-sm lc-file-btn">选择文件<input type="file" accept=".json,application/json" multiple data-file-input></label>
+        <span class="lc-import-summary" data-import-summary>还没有导入记录</span>
+      </div>
+      <div class="lc-import-progress" data-import-progress hidden>
+        <div class="lc-import-track"><span data-import-bar></span></div>
+        <span data-import-text></span>
+      </div>
+      <div class="lc-import-log" data-import-log hidden></div>
+    </div>
+
+    <div class="lc-import-card">
+      <h2>现有页面 <small data-page-count>0</small></h2>
+      <p class="lc-import-note">导入成功的页面会出现在这里，点「编辑」进入 Builder 继续改区块。</p>
+      <div data-page-list><p class="lc-import-empty">正在读取页面…</p></div>
+    </div>
+  </section>
+</main>
+
+<script src="assets/page-import.js"></script>
+</body>
+</html>

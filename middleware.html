@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lc-mode="light" data-lc-mode-pref="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>中间件 · 低代码工作台</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="lc-token" content="__LC_TOKEN__">
+<link rel="icon" href="vendor/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/lc-tokens.css">
+<link rel="stylesheet" href="assets/css/lc-controls.css">
+<link rel="stylesheet" href="assets/css/lc-editor.css">
+<link rel="stylesheet" href="assets/css/lc-config-ui.css">
+<link rel="stylesheet" href="assets/css/lc-responsive.css">
+</head>
+<body class="lc-shell">
+
+<header class="lc-topbar">
+  <a class="lc-brand lc-brand-link" href="home.html" title="返回工作台">
+    <span class="lc-brand-mark" aria-hidden="true"></span>
+    <span class="lc-brand-text">中间件</span>
+    <span class="lc-brand-sub">内置预设 · 自定义连接</span>
+  </a>
+
+  <div class="lc-topbar-side">
+    <a class="lc-btn lc-btn-sm" href="home.html">返回工作台</a>
+    <a class="lc-btn lc-btn-sm" data-back-builder href="builder.html" title="回到当前项目的 Builder">返回编辑器</a>
+    <label class="lc-field lc-toolbar-site">
+      <span class="lc-label">项目</span>
+      <select class="lc-select" data-site-select aria-label="选择项目"></select>
+    </label>
+    <a class="lc-btn lc-btn-sm" href="config-center.html" data-backend-link data-site-link="config-center.html">配置中心</a>
+    <a class="lc-btn lc-btn-sm" href="export.html" data-site-link="export.html">导出</a>
+  </div>
+</header>
+
+<main class="lc-main lc-config-main">
+  <aside class="lc-sidebar" aria-label="中间件导航">
+    <div class="lc-sidebar-head">
+      <h2>中间件</h2>
+      <p>集合、组件、配置都归具体项目；先选项目再编辑。</p>
+    </div>
+    <div class="lc-sidebar-body">
+      <div class="lc-config-side-section">
+        <h3>内置</h3>
+        <nav class="lc-config-nav" data-builtin-nav></nav>
+      </div>
+      <div class="lc-config-side-section">
+        <h3>自定义</h3>
+        <nav class="lc-config-nav" data-custom-nav></nav>
+        <div class="lc-config-side-tools">
+          <button class="lc-btn lc-btn-sm" type="button" data-add-custom disabled>新增自定义中间件</button>
+        </div>
+      </div>
+      <div class="lc-config-side-section">
+        <h3>整份配置</h3>
+        <div class="lc-config-side-tools">
+          <button class="lc-btn lc-btn-sm" type="button" data-import disabled>导入 JSON</button>
+          <button class="lc-btn lc-btn-sm" type="button" data-export disabled>导出 JSON</button>
+        </div>
+      </div>
+    </div>
+    <div class="lc-sidebar-foot">
+      内置键名：<code>LC_CFG_&lt;GROUP&gt;_&lt;FIELD&gt;</code><br>
+      自定义键名：<code>MW_&lt;ID&gt;_&lt;FIELD&gt;</code>
+    </div>
+  </aside>
+
+  <section class="lc-workspace lc-config-workspace">
+    <div class="lc-toolbar">
+      <span class="lc-toolbar-title" data-page-title>中间件</span>
+      <span class="lc-toolbar-meta" data-page-meta></span>
+      <div class="lc-toolbar-actions">
+        <span class="lc-save-state" data-save-state>未选择项目</span>
+        <button class="lc-btn lc-btn-sm lc-btn-primary" type="button" data-save disabled>保存</button>
+      </div>
+    </div>
+
+    <div class="lc-config-scroll">
+      <div class="lc-config-gate" data-gate>
+        <h3 data-gate-title>先选择一个项目</h3>
+        <p>中间件配置会写进该项目的导出后端配置；未选项目时所有编辑保持禁用。</p>
+        <label class="lc-field">
+          <span class="lc-label">项目</span>
+          <select class="lc-select" data-gate-site aria-label="选择项目"></select>
+        </label>
+        <p class="lc-hint" data-gate-hint>正在读取项目列表…</p>
+      </div>
+
+      <div class="lc-config-shell-narrow" data-content hidden>
+        <div class="lc-config-hero">
+          <div class="lc-config-hero-card">
+            <h3>键名怎么来的</h3>
+            <p>内置组按 <code>LC_CFG_&lt;GROUP&gt;_&lt;FIELD&gt;</code> 注入，和环境变量名保持一致；自定义中间件的字段会映射成配置中心的 <code>MW_&lt;ID&gt;_&lt;FIELD&gt;</code>，后端用 <code>configCenter.get()</code> 读取。</p>
+            <div class="lc-config-rule">
+              <code>LC_CFG_POSTGRES_HOST</code>
+              <code>LC_CFG_REDIS_PASSWORD</code>
+              <code>MW_KAFKA_BROKER</code>
+            </div>
+          </div>
+          <div class="lc-config-hero-card">
+            <h3>保存后发生什么</h3>
+            <p>内置项同步到导出后端的 <code>database</code> / <code>cache</code> / <code>middlewareGroups</code>，自定义项落到 <code>customMiddleware</code>；密钥单独存放，不写进项目 JSON。</p>
+            <ul class="lc-layer-chain" style="margin-top:12px;">
+              <li>内置默认</li>
+              <li>平台生成</li>
+              <li>站点覆盖</li>
+              <li>环境变量</li>
+              <li>启动参数</li>
+            </ul>
+          </div>
+        </div>
+
+        <section class="lc-config-section" id="builtin-section">
+          <div class="lc-config-section-head">
+            <h2>内置中间件</h2>
+            <p>开启后才显示配置项；关闭会先确认，并清空该组已填内容与密钥。</p>
+          </div>
+          <div class="lc-mw-grid" data-builtin-grid></div>
+        </section>
+
+        <section class="lc-config-section" id="custom-section">
+          <div class="lc-config-section-head">
+            <h2>自定义中间件</h2>
+            <p>连接方式由你在后端代码里自行编写，平台只负责保存并注入键值。</p>
+            <button class="lc-btn lc-btn-sm" type="button" data-add-custom-2 disabled>新增</button>
+          </div>
+          <div data-custom-list></div>
+        </section>
+      </div>
+    </div>
+
+    <footer class="lc-statusbar">
+      <span data-status-site>未选择项目</span>
+      <span class="is-right" data-status-note>密钥保存在项目 .lowcode 目录，不写入项目 JSON</span>
+    </footer>
+  </section>
+</main>
+
+<div data-dialog-root></div>
+<input type="file" accept="application/json,.json" data-import-file hidden>
+
+<script src="/shared/middleware-catalog.js"></script>
+<script src="assets/config-ui.js"></script>
+<script src="assets/middleware.js"></script>
+</body>
+</html>

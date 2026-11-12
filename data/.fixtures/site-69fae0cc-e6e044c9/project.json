@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 2,
+  "configVersion": 5,
+  "site": {
+    "name": "资源迁移样本站",
+    "description": "验证旧包 assets 随迁",
+    "language": "zh-CN",
+    "logo": "",
+    "copyright": ""
+  },
+  "template": {
+    "id": "docs"
+  },
+  "theme": {
+    "activeId": "ink-green"
+  },
+  "navigation": {
+    "items": []
+  },
+  "footer": {
+    "text": ""
+  },
+  "export": {
+    "target": "web-static",
+    "web": {
+      "delivery": "static",
+      "domain": "",
+      "basePath": "/",
+      "cleanUrls": true,
+      "nginx": {
+        "enabled": false
+      }
+    },
+    "tauri": {
+      "productName": "资源迁移样本站",
+      "identifier": "com.example.app",
+      "version": "0.1.0",
+      "window": {
+        "width": 1024,
+        "height": 720,
+        "minWidth": 800,
+        "minHeight": 600,
+        "resizable": true
+      },
+      "icon": "assets/icons/app.png",
+      "protocol": "https",
+      "https": {
+        "mode": "generated"
+      },
+      "update": {
+        "enabled": false,
+        "endpoint": "",
+        "pubkey": ""
+      },
+      "bundle": {
+        "targets": [
+          "msi"
+        ]
+      }
+    },
+    "backend": {
+      "language": "none",
+      "host": "127.0.0.1",
+      "port": 8080,
+      "cors": {
+        "enabled": true,
+        "origins": [
+          "*"
+        ],
+        "credentials": false
+      },
+      "env": {},
+      "middleware": [],
+      "database": {
+        "driver": "sqlite",
+        "file": "data/app.db"
+      },
+      "configFile": "deploy/backend/config.yaml"
+    }
+  },
+  "content": {
+    "series": [],
+    "directions": [],
+    "topics": []
+  },
+  "legacy": {
+    "source": "lowcode-v1",
+    "componentsVersion": 1
+  }
+}
